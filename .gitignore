@@ -1,0 +1,10 @@
+**/*.env
+!**local.env
+**/*cache*/
+.coverage
+htmlcov
+.idea
+.vscode
+.docker
+*.prof
+profile.*
