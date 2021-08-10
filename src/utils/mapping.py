@@ -1,5 +1,5 @@
 import itertools
-from typing import Any, Tuple
+from typing import Any, Tuple, Iterable
 
 
 def choose_map_or_reversed_map(keys: set[str], mapping: dict[str, str]) -> Tuple[set[str], dict[str, str]]:
@@ -12,7 +12,7 @@ def choose_map_or_reversed_map(keys: set[str], mapping: dict[str, str]) -> Tuple
 
 
 def map_keys(
-    data: dict[str, Any], mapping: dict[str, str], preserve_unmapped: bool = True
+        data: dict[str, Any], mapping: dict[str, str], preserve_unmapped: bool = True
 ) -> Tuple[dict[str, Any], dict[str, Any]]:
     """
     A function which takes data and a mapping and return the mapped data. The functions also discovers the correct
@@ -22,16 +22,17 @@ def map_keys(
 
     keys_intersection, to_map = choose_map_or_reversed_map(keys=keys_in_data, mapping=mapping)
 
-    mapped_data = filter(
+    mapped_data: Iterable = filter(
         lambda kv: kv[1] is not None,
         map(lambda k: (to_map[k], data[k]), keys_intersection)
     )
-    unmapped_data = filter(
+    unmapped_data: Iterable = filter(
         lambda kv: kv[1] is not None,
         map(lambda k: (k, data[k]), keys_in_data - keys_intersection)
     )
 
     if preserve_unmapped:
+        unmapped_data = tuple(unmapped_data)
         return dict(itertools.chain(unmapped_data, mapped_data)), dict(unmapped_data)
 
     return dict(mapped_data), dict(unmapped_data)
