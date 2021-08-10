@@ -10,12 +10,7 @@ logger = logging.getLogger(__name__)
 async def process_message(letters, response, settings: EnvironmentSettings):
     while True:
         service_letter: ServiceLetter = await letters.get()
-        service_response = ServiceResponse(
-            event_trace=service_letter.event_trace,
-            service_identifier=settings.SERVICE_IDENTIFIER,
-            mat_identifier=service_letter.mat_identifier,
-            data=service_letter.data
-        )
+        service_response = ServiceResponse.from_service_letter(service_letter)
         data_mapping = map_keys(data=service_letter.data,
                                 mapping=service_letter.config.mapping,
                                 preserve_unmapped=service_letter.config.preserve_unmapped)
