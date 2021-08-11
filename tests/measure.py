@@ -27,9 +27,10 @@ async def kafka_produce(topic: str, letter_producer: AIOKafkaProducer, letters: 
     for _ in range(number):
         service_letter = ServiceLetter(
             event_trace=str(uuid.uuid4()),
-            mat_identifier="field_translator",
+            mat_id="field_translator",
             data=letter_factory(),
-            config=config_factory()
+            config=config_factory(),
+            index_in_flow=0
         )
         logger.info("Data sent: %s", service_letter.dict())
         await letter_producer.send_and_wait(topic=topic, value=service_letter)
@@ -44,7 +45,6 @@ async def kafka_consume(response_consumer: AIOKafkaConsumer, responses: Dict[str
         try:
             service_response: ServiceResponse = msg.value
             responses[service_response.event_trace] = time.time()
-            timing.append(service_response.stats.duration)
             logger.info("Received: %s", service_response.event_trace)
         except ValidationError as err:
             logger.error(

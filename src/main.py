@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 async def main(settings: EnvironmentSettings):
     letter_consumer, response_producer = kafka_factory(settings)
 
-    letters: asyncio.Queue[ServiceLetter] = Queue(maxsize=settings.NUMBER_OF_MAX_CONCURRENT_MESSAGES)
-    responses: asyncio.Queue[ServiceResponse] = Queue()
+    letters: Queue[ServiceLetter] = Queue(maxsize=settings.NUMBER_OF_MAX_CONCURRENT_MESSAGES)
+    responses: Queue[ServiceResponse] = Queue()
 
     processors = [
         asyncio.create_task(
-            process_message(letters, responses, settings)
+            process_message(letters, responses)
         ) for _ in range(settings.NUMBER_OF_CONCURRENT_SERVICE_CALLS)
     ]
     async with letter_consumer, response_producer:
