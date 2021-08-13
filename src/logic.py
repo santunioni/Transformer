@@ -19,7 +19,7 @@ async def process_message(letters: Queue[ServiceLetter], responses: Queue[Servic
                 preserve_unmapped=service_letter.config.preserve_unmapped
             )
 
-            if unmapped_data != {}:
+            if not service_letter.config.preserve_unmapped and unmapped_data != {}:
                 logger.warning("Unmapped data for event_trace=%s: %s", service_letter.event_trace, str(unmapped_data))
 
             service_response.data = mapped_data
