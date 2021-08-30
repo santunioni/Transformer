@@ -1,44 +1,42 @@
-import json
 from typing import Any, Tuple
-from collections import MutableMapping
+import collections
 
 
-def convert_flatten(d, parent_key='', sep='.'):
-    items = []
-    for k, v in d.items():
-        new_key = parent_key + sep + k if parent_key else k
+def flatten(d, sep="."):
 
-        if isinstance(v, MutableMapping):
-            items.extend(convert_flatten(v, new_key, sep=sep).items())
+    obj = collections.OrderedDict()
+
+    def recurse(t, parent_key=""):
+
+        if isinstance(t, list):
+            for i in range(len(t)):
+                recurse(t[i], parent_key + sep + str(i) if parent_key else str(i))
+        elif isinstance(t, dict):
+            for k, v in t.items():
+                recurse(v, parent_key + sep + k if parent_key else k)
         else:
-            items.append((new_key, v))
-    return dict(items)
+            obj[parent_key] = t
+
+    recurse(d)
+    return obj
 
 
 def map_keys(
         data: dict[str, Any], mapping: dict[str, str], preserve_unmapped: bool = True
 ) -> dict[str, Any]:
     match_result = {}
-    data_enrich = convert_flatten(data)
+    data_enrich = flatten(data)
 
     for map_key, map_value in mapping.items():
         map_value = map_value.replace("*", "")
-        splited = map_value.split(".")
-        new_query = []
-        normal_string = []
-        for v in splited:
-            if v.isnumeric():
-                new_query.append(".".join(normal_string))
-                normal_string = []
-            normal_string.append(v)
-
-        new_map_value = [v for v in splited if v.isnumeric()]
+        if map_value in data_enrich:
+            match_result[map_key] = data_enrich[map_value]
 
     if preserve_unmapped:
         for unmapped in (set(data_enrich.keys()) - set(mapping.values())):
             match_result[unmapped] = data_enrich[unmapped]
 
-    return match_result
+    return dict(match_result)
 
 
 if __name__ == "__main__":
@@ -190,4 +188,9 @@ if __name__ == "__main__":
         "expenses_changeable_default_value": "operacoes_credito.*0.condicao_credito.despesas.*0.valor_padrao_mutavel"
     }
     mapped = map_keys(data_, mapping_, preserve_unmapped=False)
-    print(mapped)
+    diff = set(mapping_) - set(mapped)
+
+    print("mapped: ", len(mapped))
+    print("mapping size: ", len(mapping_))
+    print("diff:", diff)
+    print("diff size: ", len(diff))
