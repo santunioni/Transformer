@@ -20,7 +20,7 @@ mypy:
 	@echo ""
 
 tests:
-	@poetry run pytest --cov=src --cov-report term-missing --cov-report html tests
+	@poetry run pytest --cov src --cov-report term-missing --cov-report html tests
 
 quality: lint mypy tests
 

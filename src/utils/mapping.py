@@ -1,38 +1,47 @@
-import itertools
-from typing import Any, Tuple, Iterable
+from typing import Any, Union, Optional
 
 
-def choose_map_or_reversed_map(keys: set[str], mapping: dict[str, str]) -> Tuple[set[str], dict[str, str]]:
-    reversed_mapping: dict[str, str] = dict(((v, k) for k, v in mapping.items()))
-    mapping_keys = set(mapping.keys())
-    reversed_mapping_keys = set(reversed_mapping.keys())
-    if len(keys & mapping_keys) > len(keys & reversed_mapping_keys):
-        return keys & mapping_keys, mapping
-    return keys & reversed_mapping_keys, reversed_mapping
+def flatten(
+        input_data: dict[str, Union[list, set, dict, str, int, bool, float, None]]
+) -> dict[str, Union[str, int, bool, float, None]]:
+    sep = "."
+    obj: dict[str, Union[str, int, bool, float, None]] = {}
+
+    def scan(input_value: Union[list, set, dict[str, Any], str, int, bool, float, None], parent_key: str = ""):
+        if isinstance(input_value, (list, set)):
+            for index, value in enumerate(input_value):
+                scan(value, parent_key + (sep if parent_key != "" else "") + "$[" + str(index) + "]")
+        elif isinstance(input_value, dict):
+            for key, value in input_value.items():
+                scan(value, parent_key + (sep if parent_key != "" else "") + key)
+        else:
+            obj[parent_key] = input_value
+
+    scan(input_data)
+    return obj
 
 
 def map_keys(
-        data: dict[str, Any], mapping: dict[str, str], preserve_unmapped: bool = True
-) -> Tuple[dict[str, Any], dict[str, Any]]:
-    """
-    A function which takes data and a mapping and return the mapped data. The functions also discovers the correct
-    order the mapping in case the wrong order is provided.
-    """
-    keys_in_data = set(data.keys())
+        data: dict[str, Any], /, *,
+        mapping: dict[str, str],
+        metadata: Optional[dict[str, Union[str, int, bool]]] = None,
+        preserve_unmapped: bool = True
+) -> dict[str, Union[str, int, float, bool, None]]:
+    flat_data = flatten(data)
+    translated_dict = {}
 
-    keys_intersection, to_map = choose_map_or_reversed_map(keys=keys_in_data, mapping=mapping)
+    for map_key, map_value in mapping.items():
 
-    mapped_data: Iterable = filter(
-        lambda kv: kv[1] is not None,
-        map(lambda k: (to_map[k], data[k]), keys_intersection)
-    )
-    unmapped_data: Iterable = filter(
-        lambda kv: kv[1] is not None,
-        map(lambda k: (k, data[k]), keys_in_data - keys_intersection)
-    )
+        if metadata is not None:
+            for meta_key, meta_value in metadata.items():
+                map_key = map_key.replace("${" + meta_key + "}", str(meta_value))
+                map_value = map_value.replace("${" + meta_key + "}", str(meta_value))
+
+        if map_key in flat_data:
+            translated_dict[map_value] = flat_data[map_key]
 
     if preserve_unmapped:
-        unmapped_data = tuple(unmapped_data)
-        return dict(itertools.chain(unmapped_data, mapped_data)), dict(unmapped_data)
+        for unmapped_key in set(flat_data.keys() - mapping.keys()):
+            translated_dict[unmapped_key] = flat_data[unmapped_key]
 
-    return dict(mapped_data), dict(unmapped_data)
+    return translated_dict
