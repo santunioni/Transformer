@@ -14,8 +14,9 @@ async def process_message(letters: Queue[ServiceLetter], responses: Queue[Servic
 
         try:
             mapped_data = map_keys(
-                data=service_letter.data,
+                service_letter.data,
                 mapping=service_letter.config.mapping,
+                metadata=service_letter.metadata,
                 preserve_unmapped=service_letter.config.preserve_unmapped
             )
 

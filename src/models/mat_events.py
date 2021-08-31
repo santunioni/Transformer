@@ -7,6 +7,7 @@ from src.models.service_config import ServiceConfig
 class MatEvent(BaseModel):
     event_trace: str
     mat_id: str
+    metadata: dict = {}
     data: dict
 
 
