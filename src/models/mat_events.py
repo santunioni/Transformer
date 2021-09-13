@@ -23,7 +23,7 @@ class ServiceResponse(Orquestrable):
     cancel_flow: bool = False
 
     @staticmethod
-    def from_service_letter(service_letter: ServiceLetter) -> ServiceResponse:
+    def from_letter(service_letter: ServiceLetter) -> ServiceResponse:
         return ServiceResponse(
             event_trace=service_letter.event_trace,
             mat_id=service_letter.mat_id,

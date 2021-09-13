@@ -6,7 +6,7 @@ interface AIOProducer {
     + async send(response: ServiceResponse) -> ProducerMetadata
 }
 interface AIOConsumer {
-    + async __aiter__() -> ConsumerMetadata
+    + async __aiter__() -> EntrypointMetadata
 }
 class AIOKafkaConsumerAdapter {
     + async __aiter__() -> ConsumerRecord
@@ -15,18 +15,18 @@ AIOKafkaConsumerAdapter .u.|> AIOConsumer
 
 abstract class ApplicationBridge {
     + application: Application
-    + {abstract} async handle(input: str | bytes)
+    + {abstract} extract_data(input: EntrypointMetadata)
 }
 ApplicationBridge o.l. Application
 
 abstract class ServerlessApplicationBridge {
     + async entrypoint(input: str | bytes)
-    + {abstract} async handle(input: str | bytes)
+    + {abstract} extract_data(input: EntrypointMetadata)
 }
 ServerlessApplicationBridge -u-|> ApplicationBridge
 
 class LambdaApplicationBridge {
-    + async handle(input: str | bytes)
+    + extract_data(input: AWSLambdaMetadata)
 }
 LambdaApplicationBridge -u-|> ServerlessApplicationBridge
 
@@ -34,20 +34,20 @@ LambdaApplicationBridge -u-|> ServerlessApplicationBridge
 abstract class ConsumerApplicationBridge {
     + aio_consumer: AIOConsumer
     + async consume()
-    + {abstract} async handle(input: str | bytes)
+    + {abstract} extract_data(input: EntrypointMetadata)
 }
 ConsumerApplicationBridge -u-|> ApplicationBridge
 AIOConsumer <.l. ConsumerApplicationBridge
 
 class KafkaConsumerBridgeToApplication {
-    + async handle(input: str | bytes)
+    + extract_data(input: ConsumerRecord)
 }
 KafkaConsumerBridgeToApplication -u-|> ConsumerApplicationBridge
 
 class Application {
     - letters: Queue[ServiceLetter]
     - aio_producer: AIOProducer
-    + async ingest_data(raw_data: str)
+    + async ingest_data(raw_data)
 }
 Application .l.> AIOProducer
 @enduml

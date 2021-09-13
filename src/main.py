@@ -2,9 +2,6 @@ import asyncio
 import logging
 from asyncio import Queue
 
-from src.communication import kafka_produce, kafka_consume
-from src.infra import kafka_factory
-from src.logic import process_message
 from src.models.mat_events import ServiceLetter, ServiceResponse
 from src.settings import EnvironmentSettings
 
@@ -24,16 +21,12 @@ async def main(settings: EnvironmentSettings):
     ]
     async with letter_consumer, response_producer:
         consumer = asyncio.create_task(kafka_consume(letter_consumer, letters))
-        producers = [
-            asyncio.create_task(kafka_produce(settings.KAFKA_TOPIC_SERVICE_RESPONSE, response_producer, responses))
-            for _ in range(settings.NUMBER_OF_KAFKA_PRODUCERS)
-        ]
 
-        await asyncio.gather(consumer, *processors, *producers)
+        await asyncio.gather(consumer, *processors)
         await letters.join()
         await responses.join()
 
-    for looper in producers + processors:
+    for looper in processors:
         looper.cancel()
 
 
