@@ -4,7 +4,7 @@ from src.models.mat_events import ServiceLetter, ServiceResponse
 from src.utils.mapping import map_keys
 
 
-async def service_entrypoint(letter: ServiceLetter) -> Optional[ServiceResponse]:
+async def letter_entrypoint(letter: ServiceLetter) -> Optional[ServiceResponse]:
     mapped_data = map_keys(
         letter.data,
         mapping=letter.config.mapping,

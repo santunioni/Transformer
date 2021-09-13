@@ -1,35 +1,38 @@
 from abc import ABC, abstractmethod
-from typing import Generic, Any, Union
+from typing import Any, Union
 
-from src.the_flash.abstractions.aio_comunicators import EntrypointRawData, AIOConsumer
+from src.the_flash.abstractions.aio_comunicators import AIOConsumer
 from src.the_flash.application import Application
 
 
-class ApplicationBridge(ABC, Generic[EntrypointRawData]):
+class ApplicationBridge(ABC):
 
     def __init__(self, application: Application):
-        self.application = application
+        self.__application = application
 
     @abstractmethod
-    def extract_data(self, payload: EntrypointRawData) -> Any:
+    def extract_data(self, payload) -> Any:
         ...
 
+    async def feed_application(self, raw_data) -> None:
+        await self.__application.ingest_data(self.extract_data(raw_data))
 
-class ConsumerBridge(ApplicationBridge[EntrypointRawData], ABC):
 
-    def __init__(self, application: Application, aio_consumer: AIOConsumer[EntrypointRawData]):
+class ConsumerBridge(ApplicationBridge, ABC):
+
+    def __init__(self, application: Application, aio_consumer: AIOConsumer):
         super().__init__(application)
-        self.aio_consumer = aio_consumer
+        self.__aio_consumer = aio_consumer
 
-    async def consume(self):
-        async for msg in self.aio_consumer:
-            await self.application.ingest_data(self.extract_data(msg))
+    async def consume(self) -> None:
+        async for msg in self.__aio_consumer:
+            await self.feed_application(msg)
 
 
-class ServerlessBridge(ApplicationBridge[EntrypointRawData], ABC):
+class ServerlessBridge(ApplicationBridge, ABC):
 
     def __init__(self, application: Application):
         super().__init__(application)
 
     async def entrypoint(self, raw_data: Union[str, bytes]):
-        await self.application.ingest_data(self.extract_data(raw_data))
+        await self.feed_application(raw_data)

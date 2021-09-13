@@ -1,33 +1,46 @@
 import asyncio
 import logging
 from asyncio import Queue
+from typing import Tuple
 
-from src.models.mat_events import ServiceLetter, ServiceResponse
 from src.settings import EnvironmentSettings
+from src.the_flash.abstractions.aio_comunicators import AIOProducer
+from src.the_flash.adapters.aiokafka.aiokafkaconsumer import KafkaConsumerBridge
+from src.the_flash.adapters.aiokafka.aiokafkaproducer import AIOProducerKafkaAdapter
+from src.the_flash.adapters.aiokafka.factory import kafka_factory, KafkaSettings
+from src.the_flash.application import Application
 
 logger = logging.getLogger(__name__)
 
 
+def pieces(settings: EnvironmentSettings) -> Tuple[Application, KafkaConsumerBridge]:
+    kafka_settings = KafkaSettings()
+    consumer, producer = kafka_factory(kafka_settings)
+    producer_adapter: AIOProducer = AIOProducerKafkaAdapter(
+        aio_kafka_producer=producer,
+        topic=kafka_settings.KAFKA_TOPIC_SERVICE_RESPONSE
+    )
+
+    app: Application = Application(
+        aio_producer=producer_adapter,
+        queue=Queue(maxsize=settings.MAX_CONCURRENT_MESSAGES)
+    )
+    entrypoint: KafkaConsumerBridge = KafkaConsumerBridge(
+        application=app,
+        aio_consumer=consumer
+    )
+    return app, entrypoint
+
+
 async def main(settings: EnvironmentSettings):
-    letter_consumer, response_producer = kafka_factory(settings)
+    app, entrypoint = pieces(settings)
+    async with app, entrypoint:
+        app.increase_tasks(settings.CONCURRENT_TASKS)
+        await asyncio.gather(*app.tasks, entrypoint.consume())
+        await app.queue.join()
 
-    letters: Queue[ServiceLetter] = Queue(maxsize=settings.NUMBER_OF_MAX_CONCURRENT_MESSAGES)
-    responses: Queue[ServiceResponse] = Queue()
-
-    processors = [
-        asyncio.create_task(
-            process_message(letters, responses)
-        ) for _ in range(settings.NUMBER_OF_CONCURRENT_SERVICE_CALLS)
-    ]
-    async with letter_consumer, response_producer:
-        consumer = asyncio.create_task(kafka_consume(letter_consumer, letters))
-
-        await asyncio.gather(consumer, *processors)
-        await letters.join()
-        await responses.join()
-
-    for looper in processors:
-        looper.cancel()
+    for task in app.tasks:
+        task.cancel()
 
 
 if __name__ == "__main__":

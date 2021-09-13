@@ -1,36 +1,70 @@
+import asyncio
 import logging
-from asyncio import Queue
+from asyncio import Queue, Task
+from typing import Callable, Optional, Mapping, Coroutine, List, Any
 
 from pydantic import ValidationError
 
-from src.models.mat_events import ServiceLetter
+from src.models.mat_events import ServiceLetter, ServiceResponse
 from src.the_flash.abstractions.aio_comunicators import AIOProducer
-from src.transformer.entrypoint import service_entrypoint
+from src.transformer.entrypoint import letter_entrypoint
 
 logger = logging.getLogger(__name__)
 
 
 class Application:
+    __custom_entries: Mapping[
+        str, Callable[[ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]
+    ] = {
+
+    }
+
+    @staticmethod
+    def __mat_entries(mat_id: str) -> Callable[[ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]:
+        if mat_id in Application.__custom_entries.keys():
+            return Application.__custom_entries[mat_id]
+        return letter_entrypoint
 
     def __init__(self, aio_producer: AIOProducer, queue: Queue[ServiceLetter] = Queue()):
-        self.aio_producer = aio_producer
-        self.queue = queue
+        self.__aio_producer = aio_producer
+        self.__queue = queue
+        self.__tasks: List[Task] = []
 
-    async def consume_letters(self):
+    @property
+    def tasks(self):
+        return self.__tasks
+
+    @property
+    def queue(self):
+        return self.__queue
+
+    async def __aenter__(self):
+        await self.__aio_producer.start()
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        await self.__aio_producer.stop()
+
+    def increase_tasks(self, amount: int = 1):
+        for _ in range(amount):
+            self.__tasks.append(asyncio.create_task(self.__consume_letters()))
+
+    async def __consume_letters(self) -> None:
         while True:
-            letter: ServiceLetter = await self.queue.get()
+            letter: ServiceLetter = await self.__queue.get()
             try:
-                response = await service_entrypoint(letter)
+                response = await Application.__mat_entries(letter.mat_id)(letter)
                 if response is not None:
-                    await self.aio_producer.send(response)
+                    result = await self.__aio_producer.send(response)
+                    if result:
+                        logger.info("Sent: %s", response.event_trace)
             except Exception:
                 logger.critical("Some general exception occurred", exc_info=True)
-            self.queue.task_done()
+            self.__queue.task_done()
 
-    async def ingest_data(self, raw_data):
+    async def ingest_data(self, raw_data) -> None:
         try:
             letter = ServiceLetter.parse_raw(raw_data)
             logger.info("Received: %s", letter.event_trace)
-            await self.queue.put(letter)
+            await self.__queue.put(letter)
         except ValidationError as err:
             logger.error("Got ValidationError while parsing message. Check traceback: %s", err)

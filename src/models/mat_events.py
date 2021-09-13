@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pydantic import BaseModel
+
 from src.models.service_config import ServiceConfig
 
 

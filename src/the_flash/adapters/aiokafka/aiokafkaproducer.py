@@ -10,11 +10,10 @@ class AIOProducerKafkaAdapter:
         self.__topic = topic
         self.__aio_kafka_producer = aio_kafka_producer
 
-    async def __aenter__(self):
+    async def start(self):
         await self.__aio_kafka_producer.start()
-        return self
 
-    async def __aexit__(self, exc_type, exc, tb):
+    async def stop(self):
         await self.__aio_kafka_producer.stop()
 
     async def send(self, response: ServiceResponse) -> RecordMetadata:

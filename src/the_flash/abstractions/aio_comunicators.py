@@ -1,18 +1,32 @@
-from typing import TypeVar, Protocol
+from __future__ import annotations
+
+from typing import Protocol
 
 from src.models.mat_events import ServiceResponse
 
-ProducerRawData = TypeVar("ProducerRawData")
-EntrypointRawData = TypeVar("EntrypointRawData")
 
+class AIOProducer(Protocol):
 
-class AIOProducer(Protocol[ProducerRawData]):
+    async def send(self, response: ServiceResponse):
+        ...
 
-    async def send(self, response: ServiceResponse) -> ProducerRawData:
+    async def start(self):
+        ...
+
+    async def stop(self):
         ...
 
 
-class AIOConsumer(Protocol[EntrypointRawData]):
+class AIOConsumer(Protocol):
 
-    async def __aiter__(self) -> EntrypointRawData:
+    async def __aiter__(self):
+        ...
+
+    async def __anext__(self):
+        ...
+
+    async def start(self):
+        ...
+
+    async def stop(self):
         ...

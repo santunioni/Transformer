@@ -15,12 +15,7 @@ class KafkaSettings(BaseSettings):
 
 
 @lru_cache
-def kafka_settings() -> KafkaSettings:
-    return KafkaSettings()
-
-
-def kafka_factory() -> Tuple[AIOKafkaConsumer, AIOKafkaProducer]:
-    settings = kafka_settings()
+def kafka_factory(settings: KafkaSettings) -> Tuple[AIOKafkaConsumer, AIOKafkaProducer]:
     kafka_conn_settings = dict(
         bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
         security_protocol="PLAINTEXT" if settings.IS_LOCALHOST else "SSL",

@@ -3,6 +3,7 @@
 **/*cache*/
 .coverage
 htmlcov
+htmlmypy
 .idea
 .vscode
 .docker
