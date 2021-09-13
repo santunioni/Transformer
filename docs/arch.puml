@@ -1,0 +1,82 @@
+@startuml
+'https://plantuml.com/class-diagram
+skinparam groupInheritance 3
+enum TransformConfigs {
+    map_keys = MapKeys
+    aggregate_data = AggregateData
+    add_key_value = AddKeyValue
+    delete_key_value = DeleteKeyValue
+}
+
+
+class ServiceConfig {
+    + <s>mapping: Dict[str, str] = {}</strike>
+    + <s>preserve_unmapped: bool = True</strike>
+    + commands: Sequence[CommandConfig]
+
+}
+class ServiceLetter {
+    + metadata: Dict
+    + data: Dict
+    + config: ServiceConfig
+}
+ServiceLetter *.r. ServiceConfig
+
+
+class CommandCollection {
+    - commands: List[TransformCommand]
+    + execute()
+    + configure(letter: ServiceLetter)
+}
+CommandCollection .l.|> Command
+CommandCollection o.d. TransformCommand
+CommandCollection .r.> ServiceLetter
+CommandCollection -u-> TransformConfigs
+
+
+interface CommandReceiver {
+    + data: dict
+    + metadata: dict
+}
+interface Command {
+    + execute()
+}
+abstract class TransformCommand {
+    + receiver: CommandReceiver
+    + {abstract} execute()
+}
+TransformCommand .l.> CommandReceiver
+TransformCommand .u.|> Command
+
+
+class MapKeys {
+    - config: MapKeysConfig
+    + execute()
+    {method} ...
+}
+MapKeys -u-|> TransformCommand
+
+
+class AggregateData {
+    - config: AggregateDataConfig
+    + execute()
+    {method} ...
+}
+AggregateData -u-|> TransformCommand
+
+
+class AddKeyValue {
+    - config: AddKeyValueConfig
+    + execute()
+    {method} ...
+}
+AddKeyValue -u-|> TransformCommand
+
+
+class DeleteKeyValue {
+    - config: DeleteKeyValueConfig
+    + execute()
+    {method} ...
+}
+DeleteKeyValue -u-|> TransformCommand
+@enduml
