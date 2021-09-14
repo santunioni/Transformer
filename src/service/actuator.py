@@ -23,8 +23,10 @@ class CommandActuator:
 
         :return:
         """
-        # TODO: Falta Implementar!!
-        ...
+        data = {}
+        for command_class in self.__commands:
+            data = command_class.execute()
+        return data
 
     def configure(self, service_letter: ServiceLetter):
         """
