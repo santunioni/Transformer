@@ -1,15 +1,22 @@
+import random
 import unittest
+import uuid
 
-from src.service.commands.map_keys import MapKeys, MapKeysConfig
+from src.service.commands.map_keys import MapKeys, MapKeysConfig, flatten_data
 from src.the_flash.models.mat_events import ServiceLetter
-from tests.factory.letter_factory import letter_gen
-from devtools import debug
+from tests.factory.letter_factory import config_factory, data_factory
 
 
 class TestMapping(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.letter = ServiceLetter.parse_raw(list(letter_gen(1))[0])
+        self.letter = ServiceLetter.parse_obj({
+            "event_trace": str(uuid.uuid4()),
+            "mat_id": "Alguma esteira",
+            "index_in_flow": 0,
+            "config": config_factory(),
+            "data": data_factory(),
+        })
         self.letter.data = {
             "id": 1645687,
             "cliente": {
@@ -94,6 +101,29 @@ class TestMapping(unittest.TestCase):
             ]
         }
         self.letter.metadata = {"type": "deal", "origin": "pipedrive"}
+
+    def test_backwards_compatibility(self):
+        raw_cfg = {
+            "mapping": {k: k.lower() for k in data_factory().keys()},
+            "preserve_unmapped": random.choice([True, False])
+        }
+        letter = ServiceLetter.parse_obj({
+            "event_trace": str(uuid.uuid4()),
+            "mat_id": "Alguma esteira",
+            "index_in_flow": 0,
+            "config": raw_cfg,
+            "data": {},
+        })
+        self.assertEqual(len(letter.config.commands), 1)
+        self.assertIsInstance(letter.config.commands[0], MapKeysConfig)
+        self.assertEqual(letter.config.commands[0].dict(), raw_cfg)
+
+    def test_flatten_dict(self):
+        flatten_dict = flatten_data(self.letter.data)
+        for k, v in flatten_dict.items():
+            self.assertFalse(isinstance(v, (dict, list, set)))
+
+    def test_mapped_dict(self):
         self.config = MapKeysConfig(mapping={
             "id": "${origin}_${type}_id",
             "cliente.codigo_orgao": "org_code",
@@ -158,13 +188,11 @@ class TestMapping(unittest.TestCase):
             "operacoes_credito.$[0].condicao_credito.valor_iof": "iof_value",
             "operacoes_credito.$[0].condicao_credito.valor_liquido": "net_value",
             "operacoes_credito.$[0].condicao_credito.valor_parcela": "installment_value",
-            "operacoes_credito.$[0].condicao_credito.valor_solicitado": "requested_value"}, preserve_unmapped=True)
+            "operacoes_credito.$[0].condicao_credito.valor_solicitado": "requested_value"}, preserve_unmapped=False)
         self.command = MapKeys(config=self.config, receiver=self.letter)
-
-    def test_mapped_dict(self):
         self.command.execute()
         self.assertEqual(
-            self.letter.data,
+
             {
                 'address': 'ARSE 32 Alameda 1',
                 'address_number': '326',
@@ -222,7 +250,8 @@ class TestMapping(unittest.TestCase):
                 'requested_value': 4117.48,
                 'state': 'TO',
                 'zip_code': '77021-050'
-            }
+            },
+            self.letter.data,
         )
 
 

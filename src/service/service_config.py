@@ -2,11 +2,12 @@ from typing import Dict, Sequence, Union
 
 from pydantic import BaseModel, root_validator
 
+from src.service.commands.any_config import AnyCommandConfig
 from src.service.commands.map_keys import MapKeysConfig
 
 
 class ServiceConfig(BaseModel):
-    commands: Sequence[Union[MapKeysConfig]] = []
+    commands: Sequence[AnyCommandConfig] = []
 
     @root_validator(pre=True)
     def populate_commands(cls, values: dict):
@@ -35,5 +36,6 @@ class ServiceConfig(BaseModel):
                 "mapping": mapping,
                 "preserve_unmapped": preserve_unmapped
             })
+            values.pop("mapping")
         values["commands"] = commands
         return values
