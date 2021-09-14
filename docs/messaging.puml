@@ -1,5 +1,6 @@
 @startuml
 'https://plantuml.com/class-diagram
+
 skinparam groupInheritance 3
 
 interface AIOProducer {
@@ -13,36 +14,36 @@ class AIOKafkaConsumerAdapter {
 }
 AIOKafkaConsumerAdapter .u.|> AIOConsumer
 
-abstract class ApplicationBridge {
+abstract class FeederImplementation {
     + application: Application
     + {abstract} extract_data(input: EntrypointMetadata)
 }
-ApplicationBridge o.l. Application
+FeederImplementation o.l. Application
 
-abstract class ServerlessApplicationBridge {
+abstract class ServerlessImplementation {
     + async entrypoint(input: str | bytes)
     + {abstract} extract_data(input: EntrypointMetadata)
 }
-ServerlessApplicationBridge -u-|> ApplicationBridge
+ServerlessImplementation -u-|> FeederImplementation
 
-class LambdaApplicationBridge {
+class LambdaFeeder {
     + extract_data(input: AWSLambdaMetadata)
 }
-LambdaApplicationBridge -u-|> ServerlessApplicationBridge
+LambdaFeeder -u-|> ServerlessImplementation
 
 
-abstract class ConsumerApplicationBridge {
+abstract class ConsumerImplementation {
     + aio_consumer: AIOConsumer
     + async consume()
     + {abstract} extract_data(input: EntrypointMetadata)
 }
-ConsumerApplicationBridge -u-|> ApplicationBridge
-AIOConsumer <.l. ConsumerApplicationBridge
+ConsumerImplementation -u-|> FeederImplementation
+AIOConsumer <.l. ConsumerImplementation
 
-class KafkaConsumerBridgeToApplication {
+class KafkaFeeder {
     + extract_data(input: ConsumerRecord)
 }
-KafkaConsumerBridgeToApplication -u-|> ConsumerApplicationBridge
+KafkaFeeder -u-|> ConsumerImplementation
 
 class Application {
     - letters: Queue[ServiceLetter]
@@ -50,4 +51,12 @@ class Application {
     + async ingest_data(raw_data)
 }
 Application .l.> AIOProducer
+
+class AIOKafkaProducerAdapter {
+    + async send()
+    + async __aenter__()
+    + async __aexit__()
+}
+
+AIOKafkaProducerAdapter -u-|> AIOProducer
 @enduml

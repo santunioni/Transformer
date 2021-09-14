@@ -7,6 +7,7 @@ from pydantic import BaseSettings
 
 
 class KafkaSettings(BaseSettings):
+    """Kafka settings needed to instantiate consumer and producers"""
     IS_LOCALHOST: bool = False
     KAFKA_BOOTSTRAP_SERVERS: str
     KAFKA_TOPIC_FIELD_TRANSLATOR: str
@@ -16,10 +17,17 @@ class KafkaSettings(BaseSettings):
 
 @lru_cache
 def kafka_settings() -> KafkaSettings:
+    """
+    :return: Kafka settings for the factory
+    """
     return KafkaSettings()
 
 
 def kafka_factory() -> Tuple[AIOKafkaConsumer, AIOKafkaProducer]:
+    """
+    Provides the producer and consumer to instantiate the producers and consumers.
+    :return: consumer and producer in a tuple
+    """
     settings = kafka_settings()
     kafka_conn_settings = dict(
         bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
