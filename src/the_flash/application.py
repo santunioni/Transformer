@@ -46,7 +46,7 @@ class Application:
     def queue(self):
         return self.__queue
 
-    def increase_tasks(self, amount: int = 1):
+    def process_tasks(self, amount: int = 1):
         for _ in range(amount):
             self.__tasks.append(asyncio.create_task(self.__process_letters()))
 
@@ -56,6 +56,7 @@ class Application:
         necessary transformations. And them it sends it back to Kafka Queue.
         :return: None
         """
+        # TODO: Falta chamar a transformação!!
         while True:
             letter: ServiceLetter = await self.__queue.get()
             try:

@@ -2,7 +2,7 @@ from typing import Union, Any
 
 from pydantic import BaseModel
 
-from src.service.abstractions import TransformCommand, CommandReceiver
+from src.service.abstractions import TransformCommand
 
 
 class MapKeysConfig(BaseModel):
@@ -12,9 +12,9 @@ class MapKeysConfig(BaseModel):
 
 class MapKeys(TransformCommand):
 
-    def __init__(self, receiver: CommandReceiver, config: MapKeysConfig):
+    def __init__(self, data: dict, metadata: dict, config: MapKeysConfig):
         """"""
-        super().__init__(receiver)
+        super().__init__(data, metadata)
         self.__config = config
 
     def __flatten(self) -> dict[str, Union[str, int, bool, float, None]]:
@@ -38,7 +38,7 @@ class MapKeys(TransformCommand):
         scan(self.data)
         return obj
 
-    def execute(self) -> None:
+    def execute(self) -> dict:
         """
 
         :return:
@@ -61,3 +61,4 @@ class MapKeys(TransformCommand):
                 translated_dict[unmapped_key] = flat_data[unmapped_key]
 
         self.data = translated_dict
+        return self.data
