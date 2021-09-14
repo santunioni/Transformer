@@ -13,14 +13,15 @@ class ServiceConfig {
     + <s>mapping: Dict[str, str] = {}</strike>
     + <s>preserve_unmapped: bool = True</strike>
     + commands: Sequence[CommandConfig]
-
 }
+ServiceConfig *.r. ServiceLetter
+
 class ServiceLetter {
     + metadata: Dict
     + data: Dict
     + config: ServiceConfig
 }
-ServiceLetter *.r. ServiceConfig
+ServiceLetter .d.|> CommandReceiver
 
 
 class CommandCollection {
@@ -28,9 +29,9 @@ class CommandCollection {
     + execute()
     + configure(letter: ServiceLetter)
 }
-CommandCollection .l.|> Command
+CommandCollection .r.|> Command
 CommandCollection o.d. TransformCommand
-CommandCollection .r.> ServiceLetter
+CommandCollection .l.> ServiceLetter
 CommandCollection -u-> TransformConfigs
 
 
