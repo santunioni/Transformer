@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from src.the_flash.models.mat_events import ServiceLetter, ServiceResponse
 from src.the_flash.senders.aio_producer import AIOProducer
-from src.transformer.entrypoint import letter_entrypoint
+from src.service.entrypoint import letter_entrypoint
 
 logger = logging.getLogger(__name__)
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 import ujson
 from pydantic import BaseModel
 
-from src.the_flash.models.service_config import ServiceConfig
+from src.service.service_config import ServiceConfig
 
 
 def ujson_dumps(data, default, **dumps_kwargs):
