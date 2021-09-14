@@ -6,13 +6,13 @@ from typing import Tuple, AsyncIterator
 
 import uvloop
 
-from src.settings import EnvironmentSettings
 from src.the_flash.application import Application
 from src.the_flash.feeders.abstract_feeders import ConsumerImplementation
 from src.the_flash.feeders.consumer_feeders.aiokafka.factory import KafkaSettings, kafka_factory
 from src.the_flash.feeders.consumer_feeders.aiokafka.kafka_feeder import KafkaFeeder
 from src.the_flash.senders.aio_kafka_producer import AIOProducerKafkaAdapter
 from src.the_flash.senders.aio_producer import AIOProducer
+from src.the_flash.settings import EnvironmentSettings
 
 logger = logging.getLogger(__name__)
 

@@ -9,27 +9,28 @@ enum TransformConfigs {
 }
 
 
-class ServiceConfig {
+package From-orchestrator {
+class ServiceConfig <<Pydantic>> {
     + <s>mapping: Dict[str, str] = {}</strike>
     + <s>preserve_unmapped: bool = True</strike>
     + commands: Sequence[CommandConfig]
 }
-ServiceConfig *.r. ServiceLetter
+ServiceConfig .r.* ServiceLetter
 
-class ServiceLetter {
+class ServiceLetter <<Pydantic>> {
     + metadata: Dict
     + data: Dict
     + config: ServiceConfig
 }
+}
+ServiceConfig o.-. CommandConfig
 ServiceLetter .d.|> CommandReceiver
-
 
 class CommandCollection {
     - commands: List[TransformCommand]
-    + execute()
+    + execute_all()
     + configure(letter: ServiceLetter)
 }
-CommandCollection .r.|> Command
 CommandCollection o.d. TransformCommand
 CommandCollection .l.> ServiceLetter
 CommandCollection -u-> TransformConfigs
@@ -39,15 +40,12 @@ interface CommandReceiver {
     + data: dict
     + metadata: dict
 }
-interface Command {
-    + execute()
-}
+
 abstract class TransformCommand {
     + receiver: CommandReceiver
     + {abstract} execute()
 }
 TransformCommand .l.> CommandReceiver
-TransformCommand .u.|> Command
 
 
 class MapKeys {
@@ -80,4 +78,19 @@ class DeleteKeyValue {
     {method} ...
 }
 DeleteKeyValue -u-|> TransformCommand
+
+
+class MapKeysConfig <<Pydantic>>
+MapKeysConfig .d.|> CommandConfig
+MapKeys o.d. MapKeysConfig
+class AggregateDataConfig <<Pydantic>>
+AggregateDataConfig .d.|> CommandConfig
+AggregateData o.d. AggregateDataConfig
+class AddKeyValueConfig <<Pydantic>>
+AddKeyValueConfig .d.|> CommandConfig
+AddKeyValue o.d. AddKeyValueConfig
+class DeleteKeyValueConfig <<Pydantic>>
+DeleteKeyValueConfig .d.|> CommandConfig
+DeleteKeyValue o.d. DeleteKeyValueConfig
+interface CommandConfig
 @enduml

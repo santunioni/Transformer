@@ -1,6 +1,6 @@
 from typing import Optional
 
-from src.models.mat_events import ServiceLetter, ServiceResponse
+from src.the_flash.models.mat_events import ServiceLetter, ServiceResponse
 from src.utils.mapping import map_keys
 
 

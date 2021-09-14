@@ -5,7 +5,7 @@ from typing import Callable, Optional, Mapping, Coroutine, List, Any
 
 from pydantic import ValidationError
 
-from src.models.mat_events import ServiceLetter, ServiceResponse
+from src.the_flash.models.mat_events import ServiceLetter, ServiceResponse
 from src.the_flash.senders.aio_producer import AIOProducer
 from src.transformer.entrypoint import letter_entrypoint
 

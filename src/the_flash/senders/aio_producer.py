@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from src.models.mat_events import ServiceResponse
+from src.the_flash.models.mat_events import ServiceResponse
 
 
 class AIOProducer(Protocol):

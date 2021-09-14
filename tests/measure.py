@@ -3,19 +3,18 @@ import contextlib
 import logging
 import uuid
 
+from aiokafka import AIOKafkaProducer
 from dotenv import load_dotenv, find_dotenv
 
-from src.models.mat_events import ServiceLetter
+from src.the_flash.models.mat_events import ServiceLetter
 # / ---------------------------------------- CONFIGS ----------------------------------------
 from src.the_flash.feeders.consumer_feeders.aiokafka.factory import kafka_factory, KafkaSettings
 from tests.factory.letter_factory import data_factory, config_factory
 
 logger = logging.getLogger(__name__)
-from aiocache import cached
 
 
-@cached()
-async def get_producer():
+async def get_producer() -> AIOKafkaProducer:
     _, producer = kafka_factory(KafkaSettings())
     await contextlib.AsyncExitStack().enter_async_context(producer)
     return producer

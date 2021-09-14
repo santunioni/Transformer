@@ -1,7 +1,7 @@
 from aiokafka import AIOKafkaProducer
 from aiokafka.structs import RecordMetadata
 
-from src.models.mat_events import ServiceResponse
+from src.the_flash.models.mat_events import ServiceResponse
 
 
 class AIOProducerKafkaAdapter:
