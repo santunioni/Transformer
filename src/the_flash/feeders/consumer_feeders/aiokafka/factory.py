@@ -1,4 +1,3 @@
-from functools import lru_cache
 from typing import Tuple
 
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
@@ -7,6 +6,7 @@ from pydantic import BaseSettings
 
 
 class KafkaSettings(BaseSettings):
+    """Kafka settings needed to instantiate consumer and producers"""
     IS_LOCALHOST: bool = False
     KAFKA_BOOTSTRAP_SERVERS: str
     KAFKA_TOPIC_FIELD_TRANSLATOR: str
@@ -17,8 +17,11 @@ class KafkaSettings(BaseSettings):
         return hash(str(self))
 
 
-@lru_cache
 def kafka_factory(settings: KafkaSettings) -> Tuple[AIOKafkaConsumer, AIOKafkaProducer]:
+    """
+    Provides the producer and consumer to instantiate the producers and consumers.
+    :return: consumer and producer in a tuple
+    """
     kafka_conn_settings = dict(
         bootstrap_servers=settings.KAFKA_BOOTSTRAP_SERVERS,
         security_protocol="PLAINTEXT" if settings.IS_LOCALHOST else "SSL",

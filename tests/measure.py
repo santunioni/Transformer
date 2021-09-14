@@ -6,7 +6,7 @@ from dotenv import load_dotenv, find_dotenv
 
 from src.models.mat_events import ServiceLetter
 # / ---------------------------------------- CONFIGS ----------------------------------------
-from src.the_flash.adapters.aiokafka.factory import KafkaSettings, kafka_factory
+from src.the_flash.feeders.consumer_feeders.aiokafka.factory import kafka_factory, KafkaSettings
 from tests.factory.letter_factory import data_factory, config_factory
 
 logger = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ async def main(number_of_messages: int):
 if __name__ == "__main__":
     load_dotenv(find_dotenv(filename="local.env", raise_error_if_not_found=True))
     try:
-        asyncio.run(main(100000))
+        asyncio.run(main(1000))
     except BaseException as e:
         print(e)
         print("Shutting down.")

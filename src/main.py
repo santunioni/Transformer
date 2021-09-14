@@ -7,18 +7,19 @@ from typing import Tuple, AsyncIterator
 import uvloop
 
 from src.settings import EnvironmentSettings
-from src.the_flash.abstractions.aio_comunicators import AIOProducer
-from src.the_flash.adapters.abstract_feeders import ConsumerFeeder
-from src.the_flash.adapters.aiokafka.aio_producer_adapter import AIOProducerKafkaAdapter
-from src.the_flash.adapters.aiokafka.consumer_feeder import KafkaConsumerFeeder
-from src.the_flash.adapters.aiokafka.factory import kafka_factory, KafkaSettings
 from src.the_flash.application import Application
+from src.the_flash.feeders.abstract_feeders import ConsumerImplementation
+from src.the_flash.feeders.consumer_feeders.aiokafka.factory import KafkaSettings, kafka_factory
+from src.the_flash.feeders.consumer_feeders.aiokafka.kafka_feeder import KafkaFeeder
+from src.the_flash.senders.aio_kafka_producer import AIOProducerKafkaAdapter
+from src.the_flash.senders.aio_producer import AIOProducer
 
 logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
-async def instantiate_pieces(settings: EnvironmentSettings) -> AsyncIterator[Tuple[Application, ConsumerFeeder]]:
+async def instantiate_pieces(settings: EnvironmentSettings) -> AsyncIterator[Tuple[Application,
+                                                                                   ConsumerImplementation]]:
     kafka_settings = KafkaSettings()
     consumer, producer = kafka_factory(kafka_settings)
     producer_adapter: AIOProducer = AIOProducerKafkaAdapter(
@@ -29,7 +30,7 @@ async def instantiate_pieces(settings: EnvironmentSettings) -> AsyncIterator[Tup
         aio_producer=producer_adapter,
         queue=Queue(maxsize=settings.MAX_CONCURRENT_MESSAGES)
     )
-    feeder: ConsumerFeeder = KafkaConsumerFeeder(
+    feeder: ConsumerImplementation = KafkaFeeder(
         application=app,
         aio_consumer=consumer
     )

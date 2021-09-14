@@ -6,13 +6,17 @@ from typing import Callable, Optional, Mapping, Coroutine, List, Any
 from pydantic import ValidationError
 
 from src.models.mat_events import ServiceLetter, ServiceResponse
-from src.the_flash.abstractions.aio_comunicators import AIOProducer
+from src.the_flash.senders.aio_producer import AIOProducer
 from src.transformer.entrypoint import letter_entrypoint
 
 logger = logging.getLogger(__name__)
 
 
 class Application:
+    """
+    This is the highest level class in the code, responsible for calling the methods that trigger the major
+    events in the code.
+    """
     __custom_entries: Mapping[
         str, Callable[[ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]
     ] = {
@@ -26,6 +30,10 @@ class Application:
         return letter_entrypoint
 
     def __init__(self, aio_producer: AIOProducer, queue: Queue[ServiceLetter] = Queue()):
+        """
+        :param aio_producer: The producer that will send the treated data back to TheFlash services.
+        :param queue: This queue holds the data so they can be picked asynchronously to be treated and sent.
+        """
         self.__aio_producer = aio_producer
         self.__queue = queue
         self.__tasks: List[Task] = []
@@ -40,9 +48,14 @@ class Application:
 
     def increase_tasks(self, amount: int = 1):
         for _ in range(amount):
-            self.__tasks.append(asyncio.create_task(self.__consume_letters()))
+            self.__tasks.append(asyncio.create_task(self.__process_letters()))
 
-    async def __consume_letters(self) -> None:
+    async def __process_letters(self) -> None:
+        """
+        This method implement the core functionality of this code, it processes the configuration JSON applying the
+        necessary transformations. And them it sends it back to Kafka Queue.
+        :return: None
+        """
         while True:
             letter: ServiceLetter = await self.__queue.get()
             try:
@@ -56,6 +69,12 @@ class Application:
             self.__queue.task_done()
 
     async def ingest_data(self, raw_data) -> None:
+        """
+        This method is responsible for putting data inside the queue. But before it does that it turns the JSON into
+        a dictionary, a format that the processing step above is able handle.
+        :param raw_data: JSON with configuration fields.
+        :return: None
+        """
         try:
             letter = ServiceLetter.parse_raw(raw_data)
             logger.info("Received: %s", letter.event_trace)
