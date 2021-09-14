@@ -1,0 +1,12 @@
+**/*.env
+!**local.env
+**/*cache*/
+.coverage
+htmlcov
+htmlmypy
+.idea
+.vscode
+.docker
+*.prof
+profile.*
+*.diff

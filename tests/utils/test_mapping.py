@@ -153,8 +153,7 @@ class TestMapping(unittest.TestCase):
             "operacoes_credito.$[0].condicao_credito.valor_iof": "iof_value",
             "operacoes_credito.$[0].condicao_credito.valor_liquido": "net_value",
             "operacoes_credito.$[0].condicao_credito.valor_parcela": "installment_value",
-            "operacoes_credito.$[0].condicao_credito.valor_solicitado": "requested_value"
-        }
+            "operacoes_credito.$[0].condicao_credito.valor_solicitado": "requested_value"}
 
     def test_flatten_dict(self):
         flatten_dict = flatten(self.input_data)

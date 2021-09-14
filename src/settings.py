@@ -9,5 +9,5 @@ logging.basicConfig(
 
 
 class EnvironmentSettings(BaseSettings):
-    MAX_CONCURRENT_MESSAGES: int = 1000
+    MAX_CONCURRENT_MESSAGES: int = 2000
     CONCURRENT_TASKS: int = 1000

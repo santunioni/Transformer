@@ -17,4 +17,4 @@ class AIOProducerKafkaAdapter:
         await self.__aio_kafka_producer.stop()
 
     async def send(self, response: ServiceResponse) -> RecordMetadata:
-        return await self.__aio_kafka_producer.send_and_wait(self.__topic, response.json().encode("utf-8"))
+        return await self.__aio_kafka_producer.send_and_wait(self.__topic, value=response.json().encode("utf-8"))

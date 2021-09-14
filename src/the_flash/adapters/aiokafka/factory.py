@@ -13,6 +13,9 @@ class KafkaSettings(BaseSettings):
     KAFKA_TOPIC_SERVICE_RESPONSE: str
     KAFKA_CONSUMER_GROUP_ID: str = "field_translator"
 
+    def __hash__(self):
+        return hash(str(self))
+
 
 @lru_cache
 def kafka_factory(settings: KafkaSettings) -> Tuple[AIOKafkaConsumer, AIOKafkaProducer]:

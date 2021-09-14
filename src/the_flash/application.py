@@ -38,12 +38,6 @@ class Application:
     def queue(self):
         return self.__queue
 
-    async def __aenter__(self):
-        await self.__aio_producer.start()
-
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self.__aio_producer.stop()
-
     def increase_tasks(self, amount: int = 1):
         for _ in range(amount):
             self.__tasks.append(asyncio.create_task(self.__consume_letters()))

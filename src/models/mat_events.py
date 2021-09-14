@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+import ujson
 from pydantic import BaseModel
 
 from src.models.service_config import ServiceConfig
+
+
+def ujson_dumps(data, default, **dumps_kwargs):
+    return ujson.dumps(data, ensure_ascii=False)
 
 
 class MatEvent(BaseModel):
@@ -10,6 +15,10 @@ class MatEvent(BaseModel):
     mat_id: str
     metadata: dict = {}
     data: dict
+
+    class Config:
+        json_dumps = ujson_dumps
+        json_loads = ujson.loads
 
 
 class Orquestrable(MatEvent):

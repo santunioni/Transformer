@@ -10,12 +10,6 @@ class AIOProducer(Protocol):
     async def send(self, response: ServiceResponse):
         ...
 
-    async def start(self):
-        ...
-
-    async def stop(self):
-        ...
-
 
 class AIOConsumer(Protocol):
 
@@ -23,10 +17,4 @@ class AIOConsumer(Protocol):
         ...
 
     async def __anext__(self):
-        ...
-
-    async def start(self):
-        ...
-
-    async def stop(self):
         ...

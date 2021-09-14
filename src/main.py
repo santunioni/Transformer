@@ -1,42 +1,48 @@
 import asyncio
 import logging
 from asyncio import Queue
-from typing import Tuple
+from contextlib import asynccontextmanager
+from typing import Tuple, AsyncIterator
+
+import uvloop
 
 from src.settings import EnvironmentSettings
 from src.the_flash.abstractions.aio_comunicators import AIOProducer
-from src.the_flash.adapters.aiokafka.aiokafkaconsumer import KafkaConsumerBridge
-from src.the_flash.adapters.aiokafka.aiokafkaproducer import AIOProducerKafkaAdapter
+from src.the_flash.adapters.abstract_feeders import ConsumerFeeder
+from src.the_flash.adapters.aiokafka.aio_producer_adapter import AIOProducerKafkaAdapter
+from src.the_flash.adapters.aiokafka.consumer_feeder import KafkaConsumerFeeder
 from src.the_flash.adapters.aiokafka.factory import kafka_factory, KafkaSettings
 from src.the_flash.application import Application
 
 logger = logging.getLogger(__name__)
 
 
-def pieces(settings: EnvironmentSettings) -> Tuple[Application, KafkaConsumerBridge]:
+@asynccontextmanager
+async def instantiate_pieces(settings: EnvironmentSettings) -> AsyncIterator[Tuple[Application, ConsumerFeeder]]:
     kafka_settings = KafkaSettings()
     consumer, producer = kafka_factory(kafka_settings)
     producer_adapter: AIOProducer = AIOProducerKafkaAdapter(
         aio_kafka_producer=producer,
         topic=kafka_settings.KAFKA_TOPIC_SERVICE_RESPONSE
     )
-
-    app: Application = Application(
+    app = Application(
         aio_producer=producer_adapter,
         queue=Queue(maxsize=settings.MAX_CONCURRENT_MESSAGES)
     )
-    entrypoint: KafkaConsumerBridge = KafkaConsumerBridge(
+    feeder: ConsumerFeeder = KafkaConsumerFeeder(
         application=app,
         aio_consumer=consumer
     )
-    return app, entrypoint
+
+    async with producer, consumer:
+        yield app, feeder
 
 
 async def main(settings: EnvironmentSettings):
-    app, entrypoint = pieces(settings)
-    async with app, entrypoint:
+    async with instantiate_pieces(settings) as pieces:
+        app, feeder = pieces
         app.increase_tasks(settings.CONCURRENT_TASKS)
-        await asyncio.gather(*app.tasks, entrypoint.consume())
+        await asyncio.gather(feeder.consume(), *app.tasks)
         await app.queue.join()
 
     for task in app.tasks:
@@ -44,5 +50,5 @@ async def main(settings: EnvironmentSettings):
 
 
 if __name__ == "__main__":
-    environment_settings = EnvironmentSettings()
-    asyncio.run(main(environment_settings))
+    uvloop.install()
+    asyncio.run(main(EnvironmentSettings()))

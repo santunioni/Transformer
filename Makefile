@@ -3,7 +3,7 @@ include local.env
 include .env
 export
 
-container_name=field_translator
+container_name=field-translator
 
 lint:
 	@poetry run autopep8 --jobs 4 -r --aggressive --aggressive --in-place src tests
@@ -31,9 +31,7 @@ run:
 docker-run:
 	@docker rm -f $(container_name) || true
 	@docker build . -t decode/$(container_name):latest
-	@docker run -itd --env-file=local.env --network host --name $(container_name) decode/$(container_name):latest
-	@docker logs $(container_name) -f
-	@docker rm -f $(container_name) || true
+	@docker run -it --env-file=local.env --network host --name $(container_name) decode/$(container_name):latest
 
 measure:
 	@poetry run python -m tests.measure
