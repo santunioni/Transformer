@@ -10,6 +10,7 @@ from src.the_flash.models.mat_events import ServiceLetter
 # / ---------------------------------------- CONFIGS ----------------------------------------
 from src.the_flash.feeders.consumer_feeders.aiokafka.factory import kafka_factory, KafkaSettings
 from tests.factory.letter_factory import data_factory, config_factory
+from .factory.letter_factory import letter_gen
 
 logger = logging.getLogger(__name__)
 
@@ -18,17 +19,6 @@ async def get_producer() -> AIOKafkaProducer:
     _, producer = kafka_factory(KafkaSettings())
     await contextlib.AsyncExitStack().enter_async_context(producer)
     return producer
-
-
-def letter_gen(number: int):
-    for _ in range(number):
-        yield ServiceLetter(
-            event_trace=str(uuid.uuid4()),
-            mat_id="field_translator",
-            data=data_factory(),
-            config=config_factory(),
-            index_in_flow=0
-        ).json().encode("utf-8")
 
 
 async def send_sequence(number: int):

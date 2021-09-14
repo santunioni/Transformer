@@ -7,7 +7,7 @@ from pydantic import ValidationError
 
 from src.the_flash.models.mat_events import ServiceLetter, ServiceResponse
 from src.the_flash.senders.aio_producer import AIOProducer
-from src.service.entrypoint import letter_entrypoint
+from src.service.entrypoint import transform
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ class Application:
     def __mat_entries(mat_id: str) -> Callable[[ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]:
         if mat_id in Application.__custom_entries.keys():
             return Application.__custom_entries[mat_id]
-        return letter_entrypoint
+        return transform
 
     def __init__(self, aio_producer: AIOProducer, queue: Queue[ServiceLetter] = Queue()):
         """

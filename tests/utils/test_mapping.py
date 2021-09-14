@@ -1,12 +1,16 @@
 import unittest
 
-from src.utils.mapping import flatten, map_keys
+from src.service.commands.map_keys import MapKeys, MapKeysConfig
+from src.the_flash.models.mat_events import ServiceLetter
+from tests.factory.letter_factory import letter_gen
+from devtools import debug
 
 
 class TestMapping(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.input_data = {
+        self.letter = ServiceLetter.parse_raw(list(letter_gen(1))[0])
+        self.letter.data = {
             "id": 1645687,
             "cliente": {
                 "nome": "Marli Aparecida Ana das Neves",
@@ -89,7 +93,8 @@ class TestMapping(unittest.TestCase):
                 }
             ]
         }
-        self.mapping = {
+        self.letter.metadata = {"type": "deal", "origin": "pipedrive"}
+        self.config = MapKeysConfig(mapping={
             "id": "${origin}_${type}_id",
             "cliente.codigo_orgao": "org_code",
             "cliente.codigo_tipo_beneficio": "benefit_type_code",
@@ -153,22 +158,13 @@ class TestMapping(unittest.TestCase):
             "operacoes_credito.$[0].condicao_credito.valor_iof": "iof_value",
             "operacoes_credito.$[0].condicao_credito.valor_liquido": "net_value",
             "operacoes_credito.$[0].condicao_credito.valor_parcela": "installment_value",
-            "operacoes_credito.$[0].condicao_credito.valor_solicitado": "requested_value"}
-
-    def test_flatten_dict(self):
-        flatten_dict = flatten(self.input_data)
-        for k, v in flatten_dict.items():
-            self.assertFalse(isinstance(v, (dict, list, set)))
+            "operacoes_credito.$[0].condicao_credito.valor_solicitado": "requested_value"}, preserve_unmapped=True)
+        self.command = MapKeys(config=self.config, receiver=self.letter)
 
     def test_mapped_dict(self):
-        mapped_dict = map_keys(
-            self.input_data,
-            mapping=self.mapping,
-            metadata={"type": "deal", "origin": "pipedrive"},
-            preserve_unmapped=False
-        )
+        self.command.execute()
         self.assertEqual(
-            mapped_dict,
+            self.letter.data,
             {
                 'address': 'ARSE 32 Alameda 1',
                 'address_number': '326',
