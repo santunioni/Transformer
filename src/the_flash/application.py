@@ -5,7 +5,7 @@ from typing import Callable, Optional, Mapping, Coroutine, List, Any
 
 from pydantic import ValidationError
 
-from src.service.entrypoint import handler
+from src.service.entrypoint import default_letter_handler
 from src.the_flash.models.mat_events import ServiceLetter, ServiceResponse
 from src.the_flash.senders.aio_producer import AIOProducer
 
@@ -17,18 +17,19 @@ class Application:
     This is the highest level class in the code, responsible for calling the methods that trigger the major
     events in the code.
     """
-    __custom_entries: Mapping[str, Callable[[
-        ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]] = {}
+    __custom_letter_handlers: Mapping[
+        str, Callable[[ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]
+    ] = {}
 
     @staticmethod
     def __mat_entries(
-            mat_id: str) -> Callable[[ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]:
-        if mat_id in Application.__custom_entries.keys():
-            return Application.__custom_entries[mat_id]
-        return handler
+            mat_id: str
+    ) -> Callable[[ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]:
+        if mat_id in Application.__custom_letter_handlers.keys():
+            return Application.__custom_letter_handlers[mat_id]
+        return default_letter_handler
 
-    def __init__(self, aio_producer: AIOProducer,
-                 queue: Queue[ServiceLetter] = Queue()):
+    def __init__(self, aio_producer: AIOProducer, queue: Queue[ServiceLetter] = Queue()):
         """
         :param aio_producer: The producer that will send the treated data back to TheFlash services.
         :param queue: This queue holds the data so they can be picked asynchronously to be treated and sent.
@@ -45,7 +46,7 @@ class Application:
     def queue(self):
         return self.__queue
 
-    def process_tasks(self, amount: int = 1):
+    def increase_process_tasks(self, amount: int = 1):
         for _ in range(amount):
             self.__tasks.append(asyncio.create_task(self.__process_letters()))
 
@@ -55,7 +56,6 @@ class Application:
         necessary transformations. And them it sends it back to Kafka Queue.
         :return: None
         """
-        # TODO: Falta chamar a transformação!!
         while True:
             letter: ServiceLetter = await self.__queue.get()
             try:
@@ -67,7 +67,8 @@ class Application:
             except Exception:
                 logger.critical(
                     "Some general exception occurred",
-                    exc_info=True)
+                    exc_info=True
+                )
             self.__queue.task_done()
 
     async def ingest_data(self, raw_data) -> None:

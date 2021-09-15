@@ -4,7 +4,7 @@ import uuid
 import aiounittest
 
 from src.service.commands.map_keys import MapKeys, MapKeysConfig, flatten_data
-from src.service.entrypoint import handler
+from src.service.entrypoint import default_letter_handler
 from src.the_flash.models.mat_events import ServiceLetter
 from tests.factory.letter_factory import data_factory
 
@@ -242,7 +242,7 @@ class TestBackwardsCompatibility(SetupMapping):
                 "preserve_unmapped": False
             }
         })
-        response = await handler(letter)
+        response = await default_letter_handler(letter)
         self.assertEqual(
             self.target_data,
             response.data

@@ -42,7 +42,7 @@ async def instantiate_pieces(settings: EnvironmentSettings) -> AsyncIterator[Tup
 async def main(settings: EnvironmentSettings):
     async with instantiate_pieces(settings) as pieces:
         app, feeder = pieces
-        app.process_tasks(settings.CONCURRENT_TASKS)
+        app.increase_process_tasks(settings.CONCURRENT_TASKS)
         await asyncio.gather(feeder.consume(), *app.tasks)
         await app.queue.join()
 
