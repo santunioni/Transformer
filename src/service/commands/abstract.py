@@ -21,9 +21,9 @@ class TransformerConfig(BaseModel):
 
 class Transformer(ABC):
 
+    @abstractmethod
     def __init__(self, config: TransformerConfig):
-        logger.info(f"Estou instanciando a classe: %s", self.__class__.__name__)
-        self.__config = config
+        logger.info("Estou instanciando a classe: %s", self.__class__.__name__)
 
     @abstractmethod
     def transform(self, data: dict, metadata: dict) -> dict:

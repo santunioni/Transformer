@@ -17,7 +17,8 @@ class KafkaSettings(BaseSettings):
         return hash(str(self))
 
 
-def kafka_factory(settings: KafkaSettings) -> Tuple[AIOKafkaConsumer, AIOKafkaProducer]:
+def kafka_factory(
+        settings: KafkaSettings) -> Tuple[AIOKafkaConsumer, AIOKafkaProducer]:
     """
     Provides the producer and consumer to instantiate the producers and consumers.
     :return: consumer and producer in a tuple

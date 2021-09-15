@@ -17,19 +17,18 @@ class Application:
     This is the highest level class in the code, responsible for calling the methods that trigger the major
     events in the code.
     """
-    __custom_entries: Mapping[
-        str, Callable[[ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]
-    ] = {
-
-    }
+    __custom_entries: Mapping[str, Callable[[
+                                                ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]] = {}
 
     @staticmethod
-    def __mat_entries(mat_id: str) -> Callable[[ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]:
+    def __mat_entries(
+            mat_id: str) -> Callable[[ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]:
         if mat_id in Application.__custom_entries.keys():
             return Application.__custom_entries[mat_id]
         return handler
 
-    def __init__(self, aio_producer: AIOProducer, queue: Queue[ServiceLetter] = Queue()):
+    def __init__(self, aio_producer: AIOProducer,
+                 queue: Queue[ServiceLetter] = Queue()):
         """
         :param aio_producer: The producer that will send the treated data back to TheFlash services.
         :param queue: This queue holds the data so they can be picked asynchronously to be treated and sent.
@@ -65,7 +64,9 @@ class Application:
                     if result:
                         logger.info("Sent: %s", response.event_trace)
             except Exception:
-                logger.critical("Some general exception occurred", exc_info=True)
+                logger.critical(
+                    "Some general exception occurred",
+                    exc_info=True)
             self.__queue.task_done()
 
     async def ingest_data(self, raw_data) -> None:
@@ -80,4 +81,5 @@ class Application:
             logger.info("Received: %s", letter.event_trace)
             await self.__queue.put(letter)
         except ValidationError as err:
-            logger.error("Got ValidationError while parsing message. Check traceback: %s", err)
+            logger.error(
+                "Got ValidationError while parsing message. Check traceback: %s", err)

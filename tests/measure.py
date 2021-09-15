@@ -6,7 +6,7 @@ from functools import lru_cache
 from aiokafka import AIOKafkaProducer
 from dotenv import load_dotenv, find_dotenv
 
-# / ---------------------------------------- CONFIGS ----------------------------------------
+# / ---------------------------------------- CONFIGS ---------------------
 from src.the_flash.feeders.consumer_feeders.aiokafka.factory import kafka_factory, KafkaSettings
 from tests.factory.letter_factory import letter_gen
 
@@ -40,7 +40,10 @@ async def send_parallel(number: int):
 
 
 if __name__ == "__main__":
-    load_dotenv(find_dotenv(filename="local.env", raise_error_if_not_found=True))
+    load_dotenv(
+        find_dotenv(
+            filename="local.env",
+            raise_error_if_not_found=True))
     try:
         asyncio.run(send_sequence(1))
     except BaseException as e:
