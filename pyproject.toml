@@ -2,7 +2,11 @@
 name = "field_translator"
 version = "0.1.0"
 description = ""
-authors = ["otavio <otavio-dantas@live.com>"]
+authors = [
+    "Otavio Dantas <otavio-dantas@live.com>",
+    "Vinícius <vinicius.vargas.ext@decode.buzz",
+    "Pedro Dardengo <pedro.mesquita.ext@decode.buzz"
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
