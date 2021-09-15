@@ -10,13 +10,10 @@ from tests.factory.letter_factory import data_factory
 
 
 class SetupMapping(aiounittest.AsyncTestCase):
-    @property
-    def metadata(self):
-        return {"type": "deal", "origin": "pipedrive"}
 
-    @property
-    def data(self):
-        return {"id": 1645687,
+    def setUp(self) -> None:
+        self.metadata = {"type": "deal", "origin": "pipedrive"}
+        self.data = {"id": 1645687,
                 "cliente": {"nome": "Marli Aparecida Ana das Neves",
                             "email": "marliaparecidaanadasneves-77@decode.buzz",
                             "telefone": "(63) 36366-1878",
@@ -259,7 +256,8 @@ class TestMapping(SetupMapping):
 
     def test_mapped_dict(self):
         self.transformer_config = MapKeysConfig(
-            mapping=self.mapping, preserve_unmapped=False, name="map-keys")
+            mapping=self.mapping, preserve_unmapped=False, name="map-keys"
+        )
         self.mapper = MapKeys(config=self.transformer_config)
         self.assertEqual(
             self.target_data,
