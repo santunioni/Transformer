@@ -1,11 +1,12 @@
-from typing import Optional, Union
+from typing import Optional, Union, Literal
 
 from src.service.transform.abstract import Transformer, TransformerConfig
 
 
 class AddKeyValueConfig(TransformerConfig):
-    key_to_add: str
-    value_to_delete: Optional[Union[str, list, dict, int, float, bool]]
+    name: Literal["add-key-value"]
+    key: str
+    value: Optional[Union[str, list, dict, int, float, bool]]
 
 
 class AddKeyValue(Transformer):
@@ -20,5 +21,5 @@ class AddKeyValue(Transformer):
 
         :return:
         """
-        data[self.__config.key_to_add] = self.__config.value_to_delete
+        data[self.__config.key] = self.__config.value
         return data

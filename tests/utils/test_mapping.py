@@ -3,7 +3,7 @@ import uuid
 
 import aiounittest
 
-from src.service.commands.map_keys import MapKeys, MapKeysConfig, flatten_data
+from src.service.transform.commands.map_keys import MapKeys, MapKeysConfig, flatten_data
 from src.service.entrypoint import default_letter_handler
 from src.the_flash.models.mat_events import ServiceLetter
 from tests.factory.letter_factory import data_factory
@@ -224,11 +224,12 @@ class TestBackwardsCompatibility(SetupMapping):
             "config": raw_cfg,
             "data": {},
         })
-        self.assertEqual(len(letter.config.commands.__root__), 1)
+        self.assertEqual(len(letter.config.transforms.__root__), 1)
         self.assertIsInstance(
-            letter.config.commands.__root__[0],
+            letter.config.transforms.__root__[0],
             MapKeysConfig)
-        self.assertEqual(letter.config.commands.__root__[0].dict(), raw_cfg)
+        generated_config = letter.config.transforms.__root__[0].dict()
+        self.assertTrue(all(generated_config[k] == v for k, v in raw_cfg.items()))
 
     async def test_handle_letter(self):
         letter = ServiceLetter.parse_obj({
@@ -258,7 +259,7 @@ class TestMapping(SetupMapping):
 
     def test_mapped_dict(self):
         self.transformer_config = MapKeysConfig(
-            mapping=self.mapping, preserve_unmapped=False)
+            mapping=self.mapping, preserve_unmapped=False, name="map-keys")
         self.mapper = MapKeys(config=self.transformer_config)
         self.assertEqual(
             self.target_data,

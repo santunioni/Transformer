@@ -1,13 +1,16 @@
+from typing import Literal
+
 from src.service.transform.abstract import Transformer, TransformerConfig
 
 
-class DeleteKeyValueConfig(TransformerConfig):
-    key_to_delete: dict[str, str]
+class DeleteKeyConfig(TransformerConfig):
+    name: Literal["delete-keys"]
+    keys: list[str]
 
 
-class DeleteKeyValue(Transformer):
+class DeleteKey(Transformer):
 
-    def __init__(self, config: DeleteKeyValueConfig):
+    def __init__(self, config: DeleteKeyConfig):
         """"""
         super().__init__(config)
         self.__config = config
@@ -17,5 +20,8 @@ class DeleteKeyValue(Transformer):
 
         :return:
         """
-        del data[self.__config.key_to_delete]
+        try:
+            del data[self.__config.keys]
+        except KeyError:
+            pass
         return data

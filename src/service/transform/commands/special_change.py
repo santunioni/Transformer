@@ -21,8 +21,8 @@ class SpecialChangeKeyValue(Transformer):
 
         :return:
         """
-        value_1 = data[self.__config.key_1]
-        value_2 = data[self.__config.key_2]
+        value_1 = data.get(self.__config.key_1)
+        value_2 = data.get(self.__config.key_2)
         del data[self.__config.key_1]
         del data[self.__config.key_2]
         new_key_1 = self.__config.key_1 + '_' + value_1.lower()

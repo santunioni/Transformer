@@ -1,17 +1,17 @@
+from __future__ import annotations
+
 from functools import lru_cache
 from typing import Sequence, Union, Type
 
-from src.service.transform.abstract import TransformerConfig, Transformer
+from src.service.transform.abstract import TransformerConfig, Transformer, BaseTransformerConfig
 from src.service.transform.commands.add_key import AddKeyValueConfig, AddKeyValue
 from src.service.transform.commands.aggregate_keys import AggregateKeyValue, AggregateKeyValueConfig
 from src.service.transform.commands.special_change import SpecialChangeKeyValueConfig, SpecialChangeKeyValue
-from src.service.transform.commands.del_key import DeleteKeyValueConfig, DeleteKeyValue
+from src.service.transform.commands.del_key import DeleteKeyConfig, DeleteKey
 from src.service.transform.commands.map_keys import MapKeysConfig, MapKeys
 
-AnyTransformerConfig = Union[MapKeysConfig]
 
-
-class TransformerCollectionConfig(TransformerConfig):
+class TransformerCollectionConfig(BaseTransformerConfig):
     __root__: Sequence[AnyTransformerConfig]
 
 
@@ -27,14 +27,27 @@ class TransformerCollection(Transformer):
         return data
 
 
+AnyTransformerConfig = Union[
+    MapKeysConfig,
+    DeleteKeyConfig,
+    SpecialChangeKeyValueConfig,
+    AggregateKeyValueConfig,
+    AddKeyValueConfig,
+    TransformerCollectionConfig
+]
+
+
 CONFIG_NAME_TO_TRANSFORMER_CLASS: dict[str, Type[Transformer]] = {
     MapKeysConfig.__name__: MapKeys,
     SpecialChangeKeyValueConfig.__name__: SpecialChangeKeyValue,
     AddKeyValueConfig.__name__: AddKeyValue,
-    DeleteKeyValueConfig.__name__: DeleteKeyValue,
+    DeleteKeyConfig.__name__: DeleteKey,
     AggregateKeyValueConfig.__name__: AggregateKeyValue,
     TransformerCollectionConfig.__name__: TransformerCollection
 }
+
+
+TransformerCollectionConfig.update_forward_refs()
 
 
 @lru_cache

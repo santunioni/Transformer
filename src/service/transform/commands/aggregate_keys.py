@@ -1,8 +1,11 @@
+from typing import Literal
+
 from src.service.transform.abstract import Transformer, TransformerConfig
 
 
 class AggregateKeyValueConfig(TransformerConfig):
-    key_list: list[str]
+    name: Literal["aggregate-keys"]
+    keys: list[str]
     new_key: str
 
 
@@ -19,7 +22,7 @@ class AggregateKeyValue(Transformer):
         :return:
         """
         value_list = []
-        for key in self.__config.key_list:
+        for key in self.__config.keys:
             value_list.append(data[key])
             del data[key]
         data[self.__config.new_key] = value_list
