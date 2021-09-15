@@ -1,7 +1,6 @@
 from typing import Union, Any
 
-from src.service.abstractions import TransformCommand
-from src.service.commands.base_config import BaseCommandConfig
+from src.service.commands.abstract import TransformerConfig, Transformer
 
 
 def flatten_data(
@@ -24,15 +23,16 @@ def flatten_data(
     return obj
 
 
-class MapKeysConfig(BaseCommandConfig):
+class MapKeysConfig(TransformerConfig):
     mapping: dict[str, str]
     preserve_unmapped: bool = True
 
 
-class MapKeys(TransformCommand):
+class MapKeys(Transformer):
 
     def __init__(self, config: MapKeysConfig):
         """"""
+        super().__init__(config)
         self.__config = config
 
     def transform(self, data: dict, metadata: dict) -> dict:

@@ -1,13 +1,10 @@
-from typing import Dict, Sequence, Union
-
 from pydantic import BaseModel, root_validator
 
-from src.service.commands.any_config import AnyCommandConfig
-from src.service.commands.map_keys import MapKeysConfig
+from src.service.commands.collection import TransformerCollectionConfig
 
 
 class ServiceConfig(BaseModel):
-    commands: Sequence[AnyCommandConfig] = []
+    commands: TransformerCollectionConfig
 
     @root_validator(pre=True)
     def populate_commands(cls, values: dict):

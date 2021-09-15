@@ -2,22 +2,26 @@ import random
 import unittest
 import uuid
 
+import aiounittest
+
 from src.service.commands.map_keys import MapKeys, MapKeysConfig, flatten_data
+from src.service.entrypoint import handler
 from src.the_flash.models.mat_events import ServiceLetter
 from tests.factory.letter_factory import config_factory, data_factory
 
 
-class TestMapping(unittest.TestCase):
+class TestMapping(aiounittest.AsyncTestCase):
 
     def setUp(self) -> None:
-        self.letter = ServiceLetter.parse_obj({
-            "event_trace": str(uuid.uuid4()),
-            "mat_id": "Alguma esteira",
-            "index_in_flow": 0,
-            "config": config_factory(),
-            "data": data_factory(),
-        })
-        self.letter.data = {
+        ...
+
+    @property
+    def metadata(self):
+        return {"type": "deal", "origin": "pipedrive"}
+
+    @property
+    def data(self):
+        return {
             "id": 1645687,
             "cliente": {
                 "nome": "Marli Aparecida Ana das Neves",
@@ -100,31 +104,71 @@ class TestMapping(unittest.TestCase):
                 }
             ]
         }
-        self.letter.metadata = {"type": "deal", "origin": "pipedrive"}
 
-    def test_backwards_compatibility(self):
-        raw_cfg = {
-            "mapping": {k: k.lower() for k in data_factory().keys()},
-            "preserve_unmapped": random.choice([True, False])
-        }
-        letter = ServiceLetter.parse_obj({
-            "event_trace": str(uuid.uuid4()),
-            "mat_id": "Alguma esteira",
-            "index_in_flow": 0,
-            "config": raw_cfg,
-            "data": {},
-        })
-        self.assertEqual(len(letter.config.commands), 1)
-        self.assertIsInstance(letter.config.commands[0], MapKeysConfig)
-        self.assertEqual(letter.config.commands[0].dict(), raw_cfg)
+    @property
+    def target_data(self):
+        return {
+                'address': 'ARSE 32 Alameda 1',
+                'address_number': '326',
+                'address_type': 'FISICO',
+                'annual_appropriation_rate': 23.8721,
+                'annual_cet_rate': 25.6687,
+                'annual_reference_rate': 24.238,
+                'bank_account_digit': '1',
+                'bank_account_number': '71444',
+                'bank_account_type': 'CONTA_CORRENTE_INDIVIDUAL',
+                'bank_ag_digit': '4',
+                'bank_ag_number': '265',
+                'bank_number': '001',
+                'benefit_type_code': 42,
+                'birth_date': '18-02-1989',
+                'city': 'Palmas',
+                'client_value': 4117.48,
+                'consigned_margin': 100,
+                'cpf': '99915697902',
+                'deadline': 84,
+                'document_emission_date': '10-02-2000',
+                'document_number': '407941319',
+                'email': 'marliaparecidaanadasneves-77@decode.buzz',
+                'expenses_code': 1234,
+                'expenses_financed': 'sim',
+                'expenses_maximum_value': 2,
+                'expenses_minimum_value': 1,
+                'financed_value': 4246.6,
+                'financing_table_code': '703347',
+                'financing_table_description': 'INSS_NOV_DIG_NORMAL',
+                'first_due_date': '07-10-2021',
+                'installment_value': 100,
+                'iof_value': 129.12,
+                'last_due_date': '07-09-2028',
+                'lp_form_code': 7,
+                'marital_status': 'CASADO',
+                'method': 'VALOR_SOLICITADO',
+                'monthly_appropriation_rate': 1.8,
+                'monthly_cet_rate': 1.8957,
+                'monthly_income': 1000,
+                'monthly_reference_rate': 1.825,
+                'name': 'Marli Aparecida Ana das Neves',
+                'nationality': 'BRASILEIRA',
+                'neighborhood': 'Plano Diretor Sul',
+                'net_value': 4117.48,
+                'optin': True,
+                'org_code': '000501',
+                'phone': '(63) 36366-1878',
+                'pipedrive_deal_id': 1645687,
+                'ppe': False,
+                'preferencial_enrollment': '0000000000',
+                'product_code': '000440',
+                'product_description': 'INSS - MARGEM',
+                'raw_value': 8400,
+                'requested_value': 4117.48,
+                'state': 'TO',
+                'zip_code': '77021-050'
+            }
 
-    def test_flatten_dict(self):
-        flatten_dict = flatten_data(self.letter.data)
-        for k, v in flatten_dict.items():
-            self.assertFalse(isinstance(v, (dict, list, set)))
-
-    def test_mapped_dict(self):
-        self.config = MapKeysConfig(mapping={
+    @property
+    def mapping(self):
+        return {
             "id": "${origin}_${type}_id",
             "cliente.codigo_orgao": "org_code",
             "cliente.codigo_tipo_beneficio": "benefit_type_code",
@@ -188,72 +232,55 @@ class TestMapping(unittest.TestCase):
             "operacoes_credito.$[0].condicao_credito.valor_iof": "iof_value",
             "operacoes_credito.$[0].condicao_credito.valor_liquido": "net_value",
             "operacoes_credito.$[0].condicao_credito.valor_parcela": "installment_value",
-            "operacoes_credito.$[0].condicao_credito.valor_solicitado": "requested_value"}, preserve_unmapped=False)
-        self.command = MapKeys(config=self.config, receiver=self.letter)
-        self.command.execute()
-        self.assertEqual(
+            "operacoes_credito.$[0].condicao_credito.valor_solicitado": "requested_value"}
 
-            {
-                'address': 'ARSE 32 Alameda 1',
-                'address_number': '326',
-                'address_type': 'FISICO',
-                'annual_appropriation_rate': 23.8721,
-                'annual_cet_rate': 25.6687,
-                'annual_reference_rate': 24.238,
-                'bank_account_digit': '1',
-                'bank_account_number': '71444',
-                'bank_account_type': 'CONTA_CORRENTE_INDIVIDUAL',
-                'bank_ag_digit': '4',
-                'bank_ag_number': '265',
-                'bank_number': '001',
-                'benefit_type_code': 42,
-                'birth_date': '18-02-1989',
-                'city': 'Palmas',
-                'client_value': 4117.48,
-                'consigned_margin': 100,
-                'cpf': '99915697902',
-                'deadline': 84,
-                'document_emission_date': '10-02-2000',
-                'document_number': '407941319',
-                'email': 'marliaparecidaanadasneves-77@decode.buzz',
-                'expenses_code': 1234,
-                'expenses_financed': 'sim',
-                'expenses_maximum_value': 2,
-                'expenses_minimum_value': 1,
-                'financed_value': 4246.6,
-                'financing_table_code': '703347',
-                'financing_table_description': 'INSS_NOV_DIG_NORMAL',
-                'first_due_date': '07-10-2021',
-                'installment_value': 100,
-                'iof_value': 129.12,
-                'last_due_date': '07-09-2028',
-                'lp_form_code': 7,
-                'marital_status': 'CASADO',
-                'method': 'VALOR_SOLICITADO',
-                'monthly_appropriation_rate': 1.8,
-                'monthly_cet_rate': 1.8957,
-                'monthly_income': 1000,
-                'monthly_reference_rate': 1.825,
-                'name': 'Marli Aparecida Ana das Neves',
-                'nationality': 'BRASILEIRA',
-                'neighborhood': 'Plano Diretor Sul',
-                'net_value': 4117.48,
-                'optin': True,
-                'org_code': '000501',
-                'phone': '(63) 36366-1878',
-                'pipedrive_deal_id': 1645687,
-                'ppe': False,
-                'preferencial_enrollment': '0000000000',
-                'product_code': '000440',
-                'product_description': 'INSS - MARGEM',
-                'raw_value': 8400,
-                'requested_value': 4117.48,
-                'state': 'TO',
-                'zip_code': '77021-050'
-            },
-            self.letter.data,
+    def test_backwards_compatibility(self):
+        raw_cfg = {
+            "mapping": {k: k.lower() for k in data_factory().keys()},
+            "preserve_unmapped": random.choice([True, False])
+        }
+        letter = ServiceLetter.parse_obj({
+            "event_trace": str(uuid.uuid4()),
+            "mat_id": "Alguma esteira",
+            "index_in_flow": 0,
+            "config": raw_cfg,
+            "data": {},
+        })
+        self.assertEqual(len(letter.config.commands.__root__), 1)
+        self.assertIsInstance(letter.config.commands.__root__[0], MapKeysConfig)
+        self.assertEqual(letter.config.commands.__root__[0].dict(), raw_cfg)
+
+    def test_flatten_dict(self):
+        flatten_dict = flatten_data(self.data)
+        for k, v in flatten_dict.items():
+            self.assertFalse(isinstance(v, (dict, list, set)))
+
+    def test_mapped_dict(self):
+        self.transformer_config = MapKeysConfig(mapping=self.mapping, preserve_unmapped=False)
+        self.mapper = MapKeys(config=self.transformer_config)
+        self.assertEqual(
+            self.target_data,
+            self.mapper.transform(self.data, self.metadata),
+        )
+
+    async def test_handle_letter(self):
+        letter = ServiceLetter.parse_obj({
+            "mat_id": "Alguma Esteira",
+            "event_trace": str(uuid.uuid4()),
+            "index_in_flow": 0,
+            "data": self.data,
+            "metadata": self.metadata,
+            "config": {
+                "mapping": self.mapping,
+                "preserve_unmapped": False
+            }
+        })
+        response = await handler(letter)
+        self.assertEqual(
+            self.target_data,
+            response.data
         )
 
 
 if __name__ == '__main__':
-    unittest.main()
+    aiounittest.run_sync()

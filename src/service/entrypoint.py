@@ -1,13 +1,11 @@
 from typing import Optional
 
-from src.service.actuator import CommandActuator
+from src.service.commands.collection import get_transformer
 from src.the_flash.models.mat_events import ServiceLetter, ServiceResponse
 
 
-async def transform(letter: ServiceLetter) -> Optional[ServiceResponse]:
-    actuator = CommandActuator()
-    actuator.configure(service_letter=letter)
-    actuator.execute_all_commands()
+async def handler(letter: ServiceLetter) -> Optional[ServiceResponse]:
+    transformer = get_transformer(letter.config.commands)
     response = ServiceResponse.from_letter(letter)
-    response.data = letter.data
+    response.data = transformer.transform(letter.data, letter.metadata)
     return response

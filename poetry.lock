@@ -13,6 +13,17 @@ kafka-python = ">=2.0.0"
 snappy = ["python-snappy (>=0.5)"]
 
 [[package]]
+name = "aiounittest"
+version = "1.4.0"
+description = "Test asyncio code more easily."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+wrapt = "*"
+
+[[package]]
 name = "astroid"
 version = "2.7.3"
 description = "An abstract syntax tree for Python with inference support."
@@ -462,7 +473,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "9396d3664b90dcf98b767117af6f7a4929c8e95a6de649d8281efa7d0512720c"
+content-hash = "365fbda03e25b7efe2a4554891e22c19e1d6cc3205ebff4d6376607420dce3cd"
 
 [metadata.files]
 aiokafka = [
@@ -487,6 +498,10 @@ aiokafka = [
     {file = "aiokafka-0.7.2-cp39-cp39-win32.whl", hash = "sha256:a3bfe4ad7d3829a98c8391a9a28f179b47df4f66e26ea5b1c665f872b6e21809"},
     {file = "aiokafka-0.7.2-cp39-cp39-win_amd64.whl", hash = "sha256:6116b68ca975caafd7efd338ffdaec63789e1c334af6174e20edc1d16d14e463"},
     {file = "aiokafka-0.7.2.tar.gz", hash = "sha256:a8fc41d18731d8879483aecb93ae7ebf5457f63daf4c8923ddc046792c2c3096"},
+]
+aiounittest = [
+    {file = "aiounittest-1.4.0-py3-none-any.whl", hash = "sha256:c47c5a87f5bba67ee7a0d593422083266db0800aea48705b768c4e3f51d9ed4a"},
+    {file = "aiounittest-1.4.0.tar.gz", hash = "sha256:5bd6b507a0df4f3497340fce3f6d41b8e558f5c0ad266efc7cebe5bc41c6211b"},
 ]
 astroid = [
     {file = "astroid-2.7.3-py3-none-any.whl", hash = "sha256:dc1e8b28427d6bbef6b8842b18765ab58f558c42bb80540bd7648c98412af25e"},

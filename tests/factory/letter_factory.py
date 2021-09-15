@@ -28,7 +28,7 @@ def config_factory():
     return config
 
 
-def letter_gen(number: int) -> ServiceLetter:
+def letter_gen(number):
     for _ in range(number):
         yield ServiceLetter.parse_obj(dict(
             event_trace=str(uuid.uuid4()),

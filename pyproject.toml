@@ -25,6 +25,7 @@ lxml = "^4.6.3"
 snakeviz = "^2.1.0"
 types-ujson = "^0.1.1"
 Faker = "^8.12.1"
+aiounittest = "^1.4.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
