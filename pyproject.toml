@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "field_translator"
-version = "0.1.0"
-description = ""
+name = "JSON Transformer"
+version = "1.2.0"
+description = "Declare possible commands for manipulating JSON Data."
 authors = [
     "Otavio Dantas <otavio-dantas@live.com>",
     "Vinícius <vinicius.vargas.ext@decode.buzz",
