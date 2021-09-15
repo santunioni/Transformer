@@ -23,7 +23,10 @@ class Transformer(ABC):
 
     @abstractmethod
     def __init__(self, config: TransformerConfig):
-        logger.info("Estou instanciando a classe: %s", self.__class__.__name__)
+        logger.info(
+            "Initializing object of class %s with config parameter of class %s ...",
+            self.__class__.__name__, config.__class__.__name__
+        )
 
     @abstractmethod
     def transform(self, data: dict, metadata: dict) -> dict:
