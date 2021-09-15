@@ -1,6 +1,9 @@
+import logging
 from typing import Literal
 
 from src.service.transform.abstract import Transformer, TransformerConfig
+
+logger = logging.getLogger(__name__)
 
 
 class AggregateKeyValueConfig(TransformerConfig):
@@ -23,7 +26,8 @@ class AggregateKeyValue(Transformer):
         """
         value_list = []
         for key in self.__config.keys:
-            value_list.append(data[key])
-            del data[key]
+            if key in data.keys():
+                value_list.append(data[key])
+                del data[key]
         data[self.__config.new_key] = value_list
         return data
