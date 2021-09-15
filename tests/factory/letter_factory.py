@@ -19,17 +19,6 @@ def data_factory():
     return lying_data
 
 
-def letter_gen(number: int) -> ServiceLetter:
-    for _ in range(number):
-        yield ServiceLetter(
-            event_trace=str(uuid.uuid4()),
-            mat_id="field_translator",
-            data=data_factory(),
-            config=config_factory(),
-            index_in_flow=0
-        ).json().encode("utf-8")
-
-
 def config_factory():
     lying_data = data_factory()
     config = {
@@ -37,3 +26,14 @@ def config_factory():
         "preserve_unmapped": random.choice([True, False])
     }
     return config
+
+
+def letter_gen(number):
+    for _ in range(number):
+        yield ServiceLetter.parse_obj(dict(
+            event_trace=str(uuid.uuid4()),
+            mat_id="field_translator",
+            data=data_factory(),
+            config=config_factory(),
+            index_in_flow=0
+        ))

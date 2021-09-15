@@ -11,7 +11,8 @@ class KafkaFeeder(ConsumerImplementation):
     The Kafka feeder implements the Kafka feeding method.
     """
 
-    def __init__(self, application: Application, aio_consumer: AIOKafkaConsumer):
+    def __init__(self, application: Application,
+                 aio_consumer: AIOKafkaConsumer):
         super().__init__(application, aio_consumer)
 
     def extract_data(self, payload: ConsumerRecord) -> Union[str, bytes, dict]:

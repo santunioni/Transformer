@@ -1,9 +1,12 @@
 # Translator Field
 
-The translation service will be essential for standardizing data flowing on the mat. With this service implemented on the mat, it is possible to state that the data will be treated according to the mat standard.
+The translation service will be essential for standardizing data flowing on the mat. With this service implemented on
+the mat, it is possible to state that the data will be treated according to the mat standard.
 
 ## Input
-The service will receive the data normally, like any other service, and as a configuration, it will receive a dictionary, containing all field mappings.
+
+The service will receive the data normally, like any other service, and as a configuration, it will receive a
+dictionary, containing all field mappings.
 
 ```
 class ServiceLetter(MatEvent):

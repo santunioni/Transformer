@@ -4,10 +4,7 @@ import ujson
 from pydantic import BaseModel
 
 from src.service.service_config import ServiceConfig
-
-
-def ujson_dumps(data, default, **dumps_kwargs):
-    return ujson.dumps(data, ensure_ascii=False)
+from src.the_flash.utils import ujson_dumps
 
 
 class MatEvent(BaseModel):
