@@ -3,12 +3,12 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Sequence, Union, Type
 
-from src.service.transform.abstract import TransformerConfig, Transformer, BaseTransformerConfig
+from src.service.transform.abstract import Transformer, BaseTransformerConfig
 from src.service.transform.commands.add_key import AddKeyValueConfig, AddKeyValue
 from src.service.transform.commands.aggregate_keys import AggregateKeyValue, AggregateKeyValueConfig
-from src.service.transform.commands.special_change import SpecialChangeKeyValueConfig, SpecialChangeKeyValue
 from src.service.transform.commands.del_key import DeleteKeyConfig, DeleteKey
 from src.service.transform.commands.map_keys import MapKeysConfig, MapKeys
+from src.service.transform.commands.special_change import SpecialChangeKeyValueConfig, SpecialChangeKeyValue
 
 
 class TransformerCollectionConfig(BaseTransformerConfig):
@@ -51,5 +51,5 @@ TransformerCollectionConfig.update_forward_refs()
 
 
 @lru_cache
-def get_transformer(config: TransformerConfig) -> Transformer:
+def get_transformer(config: BaseTransformerConfig) -> Transformer:
     return CONFIG_NAME_TO_TRANSFORMER_CLASS[config.__class__.__name__](config)

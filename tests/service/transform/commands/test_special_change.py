@@ -1,13 +1,13 @@
 import unittest
 
 
-class MyTestCase(unittest.TestCase):
+class TestSpecialChange(unittest.TestCase):
 
     def setUp(self) -> None:
         ...
 
-    def test_something(self):
-        self.assertEqual(True, False)  # add assertion here
+    def test_fisica_1(self):
+        self.assertEqual(1+1, 2)
 
 
 if __name__ == '__main__':
