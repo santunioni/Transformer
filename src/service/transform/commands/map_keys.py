@@ -1,6 +1,6 @@
 from typing import Union, Any
 
-from src.service.commands.abstract import TransformerConfig, Transformer
+from src.service.transform.abstract import TransformerConfig, Transformer
 
 
 def flatten_data(

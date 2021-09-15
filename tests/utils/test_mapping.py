@@ -3,7 +3,7 @@ import uuid
 
 import aiounittest
 
-from src.service.commands.map_keys import MapKeys, MapKeysConfig, flatten_data
+from src.service.transform.commands.map_keys import MapKeys, MapKeysConfig, flatten_data
 from src.service.entrypoint import handler
 from src.the_flash.models.mat_events import ServiceLetter
 from tests.factory.letter_factory import data_factory

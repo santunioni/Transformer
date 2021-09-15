@@ -1,6 +1,6 @@
 from pydantic import BaseModel, root_validator
 
-from src.service.commands.collection import TransformerCollectionConfig
+from src.service.transform.collection import TransformerCollectionConfig
 
 
 class ServiceConfig(BaseModel):
@@ -16,7 +16,7 @@ class ServiceConfig(BaseModel):
         }
         into
         {
-            "commands": [
+            "transform": [
                 {
                     "mapping": {"...": "...."},
                     "preserve_unmapped: True
@@ -27,12 +27,12 @@ class ServiceConfig(BaseModel):
         """
         mapping = values.get("mapping")
         preserve_unmapped = values.get("preserve_unmapped", True)
-        commands = values.get("commands", [])
+        commands = values.get("transform", [])
         if mapping is not None:
             commands.insert(0, {
                 "mapping": mapping,
                 "preserve_unmapped": preserve_unmapped
             })
             values.pop("mapping")
-        values["commands"] = commands
+        values["transform"] = commands
         return values
