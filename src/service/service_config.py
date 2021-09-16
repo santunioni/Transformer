@@ -1,13 +1,13 @@
 from pydantic import BaseModel, root_validator
 
-from src.service.commands.collection import TransformerCollectionConfig
+from src.service.transform.collection import TransformerCollectionConfig
 
 
 class ServiceConfig(BaseModel):
-    commands: TransformerCollectionConfig
+    transforms: TransformerCollectionConfig
 
     @root_validator(pre=True)
-    def populate_commands(cls, values: dict):
+    def populate_transform(cls, values: dict):
         """Adapt ServiceConfig for backwards compatibility.
         Transforms
         {
@@ -16,7 +16,7 @@ class ServiceConfig(BaseModel):
         }
         into
         {
-            "commands": [
+            "transforms": [
                 {
                     "mapping": {"...": "...."},
                     "preserve_unmapped: True
@@ -27,12 +27,13 @@ class ServiceConfig(BaseModel):
         """
         mapping = values.get("mapping")
         preserve_unmapped = values.get("preserve_unmapped", True)
-        commands = values.get("commands", [])
+        transforms = values.get("transforms", [])
         if mapping is not None:
-            commands.insert(0, {
+            transforms.insert(0, {
+                "command_name": "map-keys",
                 "mapping": mapping,
                 "preserve_unmapped": preserve_unmapped
             })
             values.pop("mapping")
-        values["commands"] = commands
+        values["transforms"] = transforms
         return values

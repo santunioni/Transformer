@@ -1,6 +1,6 @@
-from typing import Union, Any
+from typing import Union, Any, Literal
 
-from src.service.commands.abstract import TransformerConfig, Transformer
+from src.service.transform.abstract import TransformerConfig, Transformer
 
 
 def flatten_data(
@@ -26,6 +26,7 @@ def flatten_data(
 
 
 class MapKeysConfig(TransformerConfig):
+    command_name: Literal["map-keys"]
     mapping: dict[str, str]
     preserve_unmapped: bool = True
 
