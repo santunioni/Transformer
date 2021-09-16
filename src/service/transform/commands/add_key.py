@@ -3,16 +3,17 @@ from typing import Optional, Union, Literal
 from src.service.transform.abstract import Transformer, TransformerConfig
 
 
-class AddKeyValueConfig(TransformerConfig):
-    name: Literal["add-key-value"]
-    key: str
-    value: Optional[Union[str, list, dict, int, float, bool]]
+class AddKeyValuesConfig(TransformerConfig):
+    command_name: Literal["add-key-values"]
+    key_values: dict
 
 
-class AddKeyValue(Transformer):
+class AddKeyValues(Transformer):
 
-    def __init__(self, config: AddKeyValueConfig):
-        """"""
+    def __init__(self, config: AddKeyValuesConfig):
+        """
+        :param config:
+        """
         super().__init__(config)
         self.__config = config
 
@@ -21,5 +22,5 @@ class AddKeyValue(Transformer):
 
         :return:
         """
-        data[self.__config.key] = self.__config.value
+        # TODO: Ainda falta fazer implementação
         return data

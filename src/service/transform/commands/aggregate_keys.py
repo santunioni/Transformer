@@ -2,16 +2,25 @@ import logging
 import re
 from typing import Literal, Optional
 
+from pydantic import root_validator
+
 from src.service.transform.abstract import Transformer, TransformerConfig
 
 logger = logging.getLogger(__name__)
 
 
 class AggregateKeyValueConfig(TransformerConfig):
-    name: Literal["aggregate-keys"]
-    keys: list[str]
+    command_name: Literal["aggregate-keys"]
+    keys: Optional[list[str]]
     pattern: Optional[str]
     new_key: str
+
+    @root_validator
+    def check_if_at_least_one_is_passed(cls, values):
+        keys, pattern = values.get('keys'), values.get('pattern')
+        if keys is None and pattern is None:
+            raise ValueError("Keys and Pattern can't be both None.")
+        return values
 
 
 class AggregateKeyValue(Transformer):
@@ -26,6 +35,7 @@ class AggregateKeyValue(Transformer):
 
         :return:
         """
+        data_copy = data.copy()
         value_list = []
         if self.__config.keys is not None:
             keys_filter = filter(lambda k: k in data.keys(), self.__config.keys)
@@ -35,7 +45,7 @@ class AggregateKeyValue(Transformer):
 
         for key in keys_filter:
             value_list.append(data[key])
-            del data[key]
+            del data_copy[key]
 
-        data[self.__config.new_key] = value_list
-        return data
+        data_copy[self.__config.new_key] = value_list
+        return data_copy
