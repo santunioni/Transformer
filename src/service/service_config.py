@@ -30,7 +30,7 @@ class ServiceConfig(BaseModel):
         transforms = values.get("transforms", [])
         if mapping is not None:
             transforms.insert(0, {
-                "name": "map-keys",
+                "command_name": "map-keys",
                 "mapping": mapping,
                 "preserve_unmapped": preserve_unmapped
             })

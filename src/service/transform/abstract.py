@@ -20,7 +20,7 @@ class BaseTransformerConfig(BaseModel):
 
 
 class TransformerConfig(BaseTransformerConfig):
-    name: str
+    command_name: str
 
 
 class Transformer(ABC):

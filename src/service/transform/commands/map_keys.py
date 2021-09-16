@@ -26,7 +26,7 @@ def flatten_data(
 
 
 class MapKeysConfig(TransformerConfig):
-    name: Literal["map-keys"]
+    command_name: Literal["map-keys"]
     mapping: dict[str, str]
     preserve_unmapped: bool = True
 
