@@ -4,9 +4,9 @@ from functools import lru_cache
 from typing import Sequence, Union, Type
 
 from src.service.transform.abstract import Transformer, BaseTransformerConfig
-from src.service.transform.commands.add_key import AddKeyValuesConfig, AddKeyValues
+from src.service.transform.commands.add_key import AddKeyValueConfig, AddKeyValue
 from src.service.transform.commands.aggregate_keys import AggregateKeyValue, AggregateKeyValueConfig
-from src.service.transform.commands.del_key import DeleteKeysConfig, DeleteKeys
+from src.service.transform.commands.del_key import DeleteKeyConfig, DeleteKey
 from src.service.transform.commands.map_keys import MapKeysConfig, MapKeys
 from src.service.transform.commands.empiricus_change import EmpiricusChangeKeyValueConfig, EmpiricusChangeKeyValue
 
@@ -29,10 +29,10 @@ class TransformerCollection(Transformer):
 
 AnyTransformerConfig = Union[
     MapKeysConfig,
-    DeleteKeysConfig,
+    DeleteKeyConfig,
     EmpiricusChangeKeyValueConfig,
     AggregateKeyValueConfig,
-    AddKeyValuesConfig,
+    AddKeyValueConfig,
     TransformerCollectionConfig
 ]
 
@@ -40,8 +40,8 @@ AnyTransformerConfig = Union[
 CONFIG_NAME_TO_TRANSFORMER_CLASS: dict[str, Type[Transformer]] = {
     MapKeysConfig.__name__: MapKeys,
     EmpiricusChangeKeyValueConfig.__name__: EmpiricusChangeKeyValue,
-    AddKeyValuesConfig.__name__: AddKeyValues,
-    DeleteKeysConfig.__name__: DeleteKeys,
+    AddKeyValueConfig.__name__: AddKeyValue,
+    DeleteKeyConfig.__name__: DeleteKey,
     AggregateKeyValueConfig.__name__: AggregateKeyValue,
     TransformerCollectionConfig.__name__: TransformerCollection
 }
