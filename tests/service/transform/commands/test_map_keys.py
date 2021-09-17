@@ -4,7 +4,7 @@ import uuid
 import aiounittest
 
 from src.service.entrypoint import default_letter_handler
-from src.service.transform.commands.map_keys import MapKeys, MapKeysConfig, flatten_data
+from src.service.transform.commands.map_keys import MapKeys, MapKeysConfig
 from src.the_flash.models.mat_events import ServiceLetter
 from tests.factory.letter_factory import data_factory
 
@@ -229,6 +229,44 @@ class SetupMapping(aiounittest.AsyncTestCase):
             "operacoes_credito.$[0].condicao_credito.valor_solicitado": "requested_value"
         }
 
+    @property
+    def nested_mapping(self):
+        return {
+            "id": "${origin}_${type}_id",
+            "cliente.dados_bancarios.$[0].digito_agencia": "bank_data.$[0].agency_digit",
+            "cliente.dados_bancarios.$[0].digito_conta": "bank_data.$[0].account_digit",
+            "cliente.dados_bancarios.$[0].tipo_conta": "bank_data.$[0].account_type",
+            "cliente.cpf": "client.cpf",
+            "cliente.email": "client.email",
+            "cliente.nome": "name",
+            "operacoes_credito.$[0].condicao_credito.despesas.$[0].codigo": "bank_data.$[0].credit_operations.$[0].expenses_code",
+            "operacoes_credito.$[0].condicao_credito.valor_solicitado": "bank_data.$[0].credit_operations.$[0].valor_solicitado"
+        }
+
+    @property
+    def nested_target_data(self):
+        return {
+            'pipedrive_deal_id': 1645687,
+            'client': {
+                'cpf': '99915697902',
+                'email': 'marliaparecidaanadasneves-77@decode.buzz'
+            },
+            'name': 'Marli Aparecida Ana das Neves',
+            'bank_data': [
+                {
+                    'agency_digit': "4",
+                    'account_digit': '1',
+                    'account_type': 'CONTA_CORRENTE_INDIVIDUAL',
+                    'credit_operations': [
+                        {
+                            'expenses_code': 1234,
+                            'valor_solicitado': 4117.48
+                        }
+                    ]
+                }
+            ]
+        }
+
 
 class TestBackwardsCompatibility(SetupMapping):
 
@@ -273,14 +311,23 @@ class TestBackwardsCompatibility(SetupMapping):
 class TestMapping(SetupMapping):
 
     def test_flatten_dict(self):
-        flatten_dict = flatten_data(self.data)
+        flatten_dict = MapKeys.flatten_data(self.data)
         for k, v in flatten_dict.items():
             self.assertFalse(isinstance(v, (dict, list, set)))
 
     def test_mapped_dict(self):
-        self.transformer_config = MapKeysConfig(mapping=self.mapping, preserve_unmapped=False, command_name="map-keys")
-        self.mapper = MapKeys(config=self.transformer_config)
-        self.assertEqual(self.target_data, self.mapper.transform(self.data, self.metadata))
+        transformer_config = MapKeysConfig(mapping=self.mapping, preserve_unmapped=False, command_name="map-keys")
+        mapper = MapKeys(config=transformer_config)
+        self.assertEqual(self.target_data, mapper.transform(self.data, self.metadata))
+
+    def test_unflatted_dict(self):
+        transformer_config = MapKeysConfig(
+            mapping=self.nested_mapping,
+            preserve_unmapped=False,
+            command_name="map-keys"
+        )
+        mapper = MapKeys(config=transformer_config)
+        self.assertEqual(self.nested_target_data, mapper.transform(self.data, self.metadata))
 
 
 if __name__ == '__main__':

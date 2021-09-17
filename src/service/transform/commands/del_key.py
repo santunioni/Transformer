@@ -7,6 +7,11 @@ from src.service.transform.abstract import Transformer, TransformerConfig
 
 
 class DeleteKeysConfig(TransformerConfig):
+    """
+    Keys are a list of keys to be deleted.
+    Pattern are a RegEx pattern that will instruct the transformer to delete every key that is a fullmatch to the
+    pattern.
+    """
     command_name: Literal["delete-keys"]
     keys: Optional[list[str]]
     pattern: Optional[str]
@@ -20,6 +25,11 @@ class DeleteKeysConfig(TransformerConfig):
 
 
 class DeleteKeys(Transformer):
+    """
+    This simply delete key-value pairs from the data dict. Its possible to specify the keys directly or to
+    pass a Regular Expression (RegEx), every key that is a complete match to the RegEx will be deleted.
+    Both can be used at the same time.
+    """
 
     def __init__(self, config: DeleteKeysConfig):
         """"""
@@ -28,8 +38,10 @@ class DeleteKeys(Transformer):
 
     def transform(self, data: dict, metadata: dict) -> dict:
         """
-
-        :return:
+        Implements the deletion of key-value pairs.
+        :param data: Data that contains the keys that should be deleted.
+        :param metadata: Metadata.
+        :return: Data without keys.
         """
         data_copy = data.copy()
         if self.__config.keys is not None:

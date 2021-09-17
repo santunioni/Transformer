@@ -10,6 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 class AggregateKeyValueConfig(TransformerConfig):
+    """
+    The Keys are optional, and can be used to aggregate all values of these keys.
+    The pattern aggregates all values with the pattern into the new key.
+    Both can be used at the same time but they cant be both None.
+    """
     command_name: Literal["aggregate-keys"]
     keys: Optional[list[str]]
     pattern: Optional[str]
@@ -24,7 +29,11 @@ class AggregateKeyValueConfig(TransformerConfig):
 
 
 class AggregateKeyValue(Transformer):
-
+    """
+    This transform is responsible for aggregating data. Pass a list of keys or a RegEx pattern and the keys
+    will be stored inside a list in a new_key.
+    Both pattern and Keys list can be used at the same time.
+    """
     def __init__(self, config: AggregateKeyValueConfig):
         """"""
         super().__init__(config)
@@ -32,18 +41,37 @@ class AggregateKeyValue(Transformer):
 
     def transform(self, data: dict, metadata: dict) -> dict:
         """
+        new_key: emails
+        pattern: ^(email_).
+        or
+        keys: ['email_1', 'email_2', 'email_3']
+
+        turns this:
+        {
+            "email_1": "a@g.com,
+            "email_2": "b@g.com",
+            "email_3": "c@g.com"
+        }
+
+        into this:
+
+        {
+            emails: ["a@g.com", "b@g.com", "c@g.com"]
+        }
 
         :return:
         """
         data_copy = data.copy()
         value_list = []
+        keys_set = set()
+        pattern_keys_set = set()
         if self.__config.keys is not None:
-            keys_filter = filter(lambda k: k in data.keys(), self.__config.keys)
-        else:
+            keys_set = set(filter(lambda k: k in data.keys(), self.__config.keys))
+        if self.__config.pattern is not None:
             pattern = re.compile(self.__config.pattern)
-            keys_filter = filter(lambda k: bool(pattern.fullmatch(k)), data.keys())
+            pattern_keys_set = set(filter(lambda k: bool(pattern.fullmatch(k)), data.keys()))
 
-        for key in keys_filter:
+        for key in set.union(keys_set, pattern_keys_set):
             value_list.append(data[key])
             del data_copy[key]
 

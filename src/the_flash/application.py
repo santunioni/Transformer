@@ -22,9 +22,8 @@ class Application:
     ] = {}
 
     @staticmethod
-    def __mat_entries(
-            mat_id: str
-    ) -> Callable[[ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]:
+    def __mat_entries(mat_id: str
+                      ) -> Callable[[ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]:
         if mat_id in Application.__custom_letter_handlers.keys():
             return Application.__custom_letter_handlers[mat_id]
         return default_letter_handler
