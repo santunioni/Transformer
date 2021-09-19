@@ -4,8 +4,8 @@ version = "1.2.0"
 description = "Declare possible commands for manipulating JSON Data."
 authors = [
     "Otavio Dantas <otavio-dantas@live.com>",
-    "Vinícius <vinicius.vargas.ext@decode.buzz",
-    "Pedro Dardengo <pedro.mesquita.ext@decode.buzz"
+    "Vinícius <vinicius.vargas.ext@decode.buzz>",
+    "Pedro Dardengo <pedro.mesquita.ext@decode.buzz>"
 ]
 
 [tool.poetry.dependencies]
@@ -16,6 +16,8 @@ python-dateutil = "^2.8.1"
 uvloop = "^0.16.0"
 ujson = "^4.1.0"
 msgpack = "^1.0.2"
+the_flash = {git = "ssh://git@gitlab.decode.buzz/the-flash/core/the-flash-framework.git", rev = "develop"}
+
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
@@ -30,7 +32,3 @@ snakeviz = "^2.1.0"
 types-ujson = "^0.1.1"
 Faker = "^8.12.1"
 aiounittest = "^1.4.0"
-
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
