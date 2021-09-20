@@ -1,6 +1,6 @@
 import unittest
 
-from src.service.transform.commands.empiricus_change import EmpiricusChangeKeyValueConfig, EmpiricusChangeKeyValue
+from src.transform.commands.empiricus_change import EmpiricusChangeKeyValueConfig, EmpiricusChangeKeyValue
 
 
 class TestSpecialChange(unittest.TestCase):

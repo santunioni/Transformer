@@ -3,7 +3,7 @@ import uuid
 
 from faker import Faker
 
-from src.the_flash.models.mat_events import ServiceLetter
+from the_flash.models.mat_events import ServiceLetter
 
 fake = Faker()
 
@@ -30,9 +30,9 @@ def config_factory():
 
 def letter_gen(number):
     for _ in range(number):
-        yield ServiceLetter.parse_obj(dict(
+        yield ServiceLetter[dict].parse_obj(dict(
             event_trace=str(uuid.uuid4()),
-            mat_id="field_translator",
+            mat_id=random.choice(["alguma esteira", "pme"]),
             data=data_factory(),
             config=config_factory(),
             index_in_flow=0

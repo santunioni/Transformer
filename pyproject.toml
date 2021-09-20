@@ -10,12 +10,6 @@ authors = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-aiokafka = "^0.7.1"
-pydantic = "^1.8.2"
-python-dateutil = "^2.8.1"
-uvloop = "^0.16.0"
-ujson = "^4.1.0"
-msgpack = "^1.0.2"
 the_flash = {git = "ssh://git@gitlab.decode.buzz/the-flash/core/the-flash-framework.git", rev = "develop"}
 
 

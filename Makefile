@@ -15,7 +15,7 @@ lint:
 mypy:
 	@echo "/ -------------------------- mypy analysis starts -----------------------------"
 	@echo "Starting mypy analysis in src/ and tests/ folders."
-	@poetry run mypy src tests
+	@poetry run mypy src
 	@echo "-------------------------- mypy analysis ends ----------------------------- /"
 	@echo ""
 

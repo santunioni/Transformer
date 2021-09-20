@@ -3,15 +3,14 @@ from abc import ABC, abstractmethod
 
 import ujson
 from pydantic import BaseModel
-
-from src.the_flash.utils import ujson_dumps
+from the_flash.utils.parsing import ujson_dumps
 
 logger = logging.getLogger(__name__)
 
 
 class BaseTransformerConfig(BaseModel):
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(str(self))
 
     class Config:

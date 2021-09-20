@@ -1,13 +1,14 @@
-from pydantic import BaseModel, root_validator
+from pydantic import root_validator
+from the_flash import BaseHashableModel
 
-from src.service.transform.collection import TransformerCollectionConfig
+from src.transform.collection import TransformerCollectionConfig
 
 
-class ServiceConfig(BaseModel):
+class TransformConfig(BaseHashableModel):
     transforms: TransformerCollectionConfig
 
     @root_validator(pre=True)
-    def populate_transform(cls, values: dict):
+    def populate_transform(cls, values: dict) -> dict:
         """Adapt ServiceConfig for backwards compatibility.
         Transforms
         {

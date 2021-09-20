@@ -3,9 +3,10 @@ import uuid
 
 import aiounittest
 
-from src.service.entrypoint import default_letter_handler
-from src.service.transform.commands.map_keys import MapKeys, MapKeysConfig, flatten_data
-from src.the_flash.models.mat_events import ServiceLetter
+from src.main import transform_data
+from src.service_config import TransformConfig
+from src.transform.commands.map_keys import MapKeys, MapKeysConfig, flatten_data
+from the_flash.models.mat_events import ServiceLetter
 from tests.factory.letter_factory import data_factory
 
 
@@ -237,7 +238,7 @@ class TestBackwardsCompatibility(SetupMapping):
             "mapping": {k: k.lower() for k in data_factory().keys()},
             "preserve_unmapped": random.choice([True, False])
         }
-        letter = ServiceLetter.parse_obj({
+        letter = ServiceLetter[TransformConfig].parse_obj({
             "event_trace": str(uuid.uuid4()),
             "mat_id": "Alguma esteira",
             "index_in_flow": 0,
@@ -252,7 +253,7 @@ class TestBackwardsCompatibility(SetupMapping):
         self.assertTrue(all(generated_config[k] == v for k, v in raw_cfg.items()))
 
     async def test_handle_letter(self):
-        letter = ServiceLetter.parse_obj({
+        letter = ServiceLetter[TransformConfig].parse_obj({
             "mat_id": "Alguma Esteira",
             "event_trace": str(uuid.uuid4()),
             "index_in_flow": 0,
@@ -263,7 +264,7 @@ class TestBackwardsCompatibility(SetupMapping):
                 "preserve_unmapped": False
             }
         })
-        response = await default_letter_handler(letter)
+        response = transform_data(letter)
         self.assertEqual(
             self.target_data,
             response.data

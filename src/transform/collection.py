@@ -3,12 +3,12 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Sequence, Union, Type
 
-from src.service.transform.abstract import Transformer, BaseTransformerConfig
-from src.service.transform.commands.add_key import AddKeyValueConfig, AddKeyValue
-from src.service.transform.commands.aggregate_keys import AggregateKeyValue, AggregateKeyValueConfig
-from src.service.transform.commands.del_key import DeleteKeyConfig, DeleteKey
-from src.service.transform.commands.map_keys import MapKeysConfig, MapKeys
-from src.service.transform.commands.empiricus_change import EmpiricusChangeKeyValueConfig, EmpiricusChangeKeyValue
+from src.transform.abstract import Transformer, BaseTransformerConfig
+from src.transform.commands.add_key import AddKeyValueConfig, AddKeyValue
+from src.transform.commands.aggregate_keys import AggregateKeyValue, AggregateKeyValueConfig
+from src.transform.commands.del_key import DeleteKeyConfig, DeleteKey
+from src.transform.commands.empiricus_change import EmpiricusChangeKeyValueConfig, EmpiricusChangeKeyValue
+from src.transform.commands.map_keys import MapKeysConfig, MapKeys
 
 
 class TransformerCollectionConfig(BaseTransformerConfig):
@@ -36,7 +36,6 @@ AnyTransformerConfig = Union[
     TransformerCollectionConfig
 ]
 
-
 CONFIG_NAME_TO_TRANSFORMER_CLASS: dict[str, Type[Transformer]] = {
     MapKeysConfig.__name__: MapKeys,
     EmpiricusChangeKeyValueConfig.__name__: EmpiricusChangeKeyValue,
@@ -45,7 +44,6 @@ CONFIG_NAME_TO_TRANSFORMER_CLASS: dict[str, Type[Transformer]] = {
     AggregateKeyValueConfig.__name__: AggregateKeyValue,
     TransformerCollectionConfig.__name__: TransformerCollection
 }
-
 
 TransformerCollectionConfig.update_forward_refs()
 

@@ -2,7 +2,7 @@ from typing import Union, Optional, Literal
 
 from pydantic import StrictStr, StrictBool, StrictFloat, StrictInt
 
-from src.service.transform.abstract import Transformer, TransformerConfig
+from src.transform.abstract import Transformer, TransformerConfig
 
 
 class EmpiricusChangeKeyValueConfig(TransformerConfig):

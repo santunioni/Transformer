@@ -1,6 +1,6 @@
 from typing import Optional, Union, Literal
 
-from src.service.transform.abstract import Transformer, TransformerConfig
+from src.transform.abstract import Transformer, TransformerConfig
 
 
 class AddKeyValueConfig(TransformerConfig):

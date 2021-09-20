@@ -1,6 +1,6 @@
 from typing import Union, Any, Literal
 
-from src.service.transform.abstract import TransformerConfig, Transformer
+from src.transform.abstract import TransformerConfig, Transformer
 
 
 def flatten_data(
@@ -10,11 +10,11 @@ def flatten_data(
     obj: dict[str, Union[str, int, bool, float, None]] = {}
 
     def scan(input_value: Union[list, set, dict[str, Any],
-                                str, int, bool, float, None], parent_key: str = ""):
+                                str, int, bool, float, None], parent_key: str = "") -> None:
         if isinstance(input_value, (list, set)):
             for index, value in enumerate(input_value):
                 scan(value, parent_key + (sep if parent_key !=
-                                          "" else "") + "$[" + str(index) + "]")
+                                                 "" else "") + "$[" + str(index) + "]")
         elif isinstance(input_value, dict):
             for key, value in input_value.items():
                 scan(value, parent_key + (sep if parent_key != "" else "") + key)

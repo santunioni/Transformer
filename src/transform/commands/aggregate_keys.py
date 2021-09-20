@@ -2,7 +2,7 @@ import logging
 import re
 from typing import Literal, Optional
 
-from src.service.transform.abstract import Transformer, TransformerConfig
+from src.transform.abstract import Transformer, TransformerConfig
 
 logger = logging.getLogger(__name__)
 
