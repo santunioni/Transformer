@@ -9,25 +9,28 @@ class TestAddKeyValues(unittest.TestCase):
     def data(self) -> dict:
         return {
             "id": 1645687,
-            "a": True,
-            "b": {'a': 's', 'g': [1, 2]},
-            "c": [1, 2, 3, 4],
+            "a": "A-VALUE",
+            "b": "B-VALUE",
+            "e": {'a': 's', 'g': [1, 2]},
+            "f": [1, 2, 3, 4],
         }
 
     @property
     def target_data(self) -> dict:
         return {
             "id": 1645687,
-            "a": True,
-            "b": {'a': 's', 'b': [1, 2]},
-            "c": [1, 2, 3, 4],
-
+            "a": "A-VALUE",
+            "b": "B-VALUE",
+            "e": {'a': 's', 'g': [1, 2]},
+            "f": [1, 2, 3, 4],
+            "a_a-value": True,
+            "b_b-value": "a-value_b-value",
         }
 
     def test_aggregate_keys(self):
         key_values = {
-            'e': True,
-            'f': 'a long word'
+            'a_${a}': True,
+            'b_${b}': '${a}_${b}'
         }
         self.transformer_config = AddKeyValuesConfig(command_name="add-key-values", key_values=key_values)
         self.transformer = AddKeyValues(config=self.transformer_config)

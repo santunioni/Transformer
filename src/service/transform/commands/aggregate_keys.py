@@ -1,6 +1,5 @@
 import logging
-import re
-from typing import Literal, Optional
+from typing import Literal, Optional, Pattern
 
 from pydantic import root_validator
 
@@ -17,14 +16,13 @@ class AggregateKeyValueConfig(TransformerConfig):
     """
     command_name: Literal["aggregate-keys"]
     keys: Optional[list[str]]
-    pattern: Optional[str]
+    pattern: Optional[Pattern]
     new_key: str
 
     @root_validator
     def check_if_at_least_one_is_passed(cls, values):
         keys, pattern = values.get('keys'), values.get('pattern')
-        if keys is None and pattern is None:
-            raise ValueError("Keys and Pattern can't be both None.")
+        assert not (keys is None and pattern is None), "Keys and Pattern can't be both None."
         return values
 
 
@@ -68,7 +66,7 @@ class AggregateKeyValue(Transformer):
         if self.__config.keys is not None:
             keys_set = set(filter(lambda k: k in data.keys(), self.__config.keys))
         if self.__config.pattern is not None:
-            pattern = re.compile(self.__config.pattern)
+            pattern = self.__config.pattern
             pattern_keys_set = set(filter(lambda k: bool(pattern.fullmatch(k)), data.keys()))
 
         for key in set.union(keys_set, pattern_keys_set):

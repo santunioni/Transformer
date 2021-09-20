@@ -163,7 +163,7 @@ class SetupMapping(aiounittest.AsyncTestCase):
     @property
     def mapping(self):
         return {
-            "id": "${origin}_${type}_id",
+            "id": "@{origin}_@{type}_id",
             "cliente.codigo_orgao": "org_code",
             "cliente.codigo_tipo_beneficio": "benefit_type_code",
             "cliente.cpf": "cpf",
@@ -232,7 +232,7 @@ class SetupMapping(aiounittest.AsyncTestCase):
     @property
     def nested_mapping(self):
         return {
-            "id": "${origin}_${type}_id",
+            "id": "@{origin}_@{type}_id",
             "cliente.dados_bancarios.$[0].digito_agencia": "bank_data.$[0].agency_digit",
             "cliente.dados_bancarios.$[0].digito_conta": "bank_data.$[0].account_digit",
             "cliente.dados_bancarios.$[0].tipo_conta": "bank_data.$[0].account_type",

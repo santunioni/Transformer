@@ -1,4 +1,4 @@
-from typing import Union, Any, Literal
+from typing import Union, Any, Literal, Optional
 
 from src.service.transform.abstract import TransformerConfig, Transformer
 
@@ -49,16 +49,14 @@ class MapKeys(Transformer):
         :return: transformed and restructured data.
         """
         flat_data = MapKeys.flatten_data(data)
-        translated_dict = {}
+        translated_dict: dict = {}
 
         for map_key, map_value in self.__config.mapping.items():
 
             if metadata is not None:
                 for meta_key, meta_value in metadata.items():
-                    map_key = map_key.replace(
-                        "${" + meta_key + "}", str(meta_value))
-                    map_value = map_value.replace(
-                        "${" + meta_key + "}", str(meta_value))
+                    map_key = map_key.replace("@{" + meta_key + "}", str(meta_value))
+                    map_value = map_value.replace("@{" + meta_key + "}", str(meta_value))
 
             if map_key in flat_data:
                 commands = map_value.split('.')
@@ -122,7 +120,7 @@ class MapKeys(Transformer):
         command = command_list[0]
         new_command_list = command_list[1:]
 
-        if '$[' not in command:
+        if '$[' not in command and isinstance(current_structure, dict):
             if len(command_list) == 1:
                 current_structure[command] = value
                 return current_structure
@@ -146,7 +144,7 @@ class MapKeys(Transformer):
         return current_structure
 
     @staticmethod
-    def __create_big_enough_list(index: int, list_to_write: list):
+    def __create_big_enough_list(index: int, list_to_write: Optional[list[Any]]):
         """
         It gets a list structure in list_to_write and them puts its values in the correct indexes in a list
         of length given by index. But only if the index is greater than the length list_to_write, otherwise it simply
