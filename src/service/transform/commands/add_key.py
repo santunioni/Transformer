@@ -34,6 +34,7 @@ class AddKeyValues(Transformer):
 
     Only keys that map to strings can be passed. The strings are passed with .lower() method.
     """
+
     def __init__(self, config: AddKeyValuesConfig):
         super().__init__(config)
         self.__config = config
@@ -50,9 +51,11 @@ class AddKeyValues(Transformer):
         replaced_key_value_dict = {}
         for key, value in self.__config.key_values.items():
             if '${' in key:
-                key = AddKeyValues._replace_key_placeholders_with_values(key, data, metadata)
+                key = AddKeyValues._replace_key_placeholders_with_values(
+                    key, data, metadata)
             if isinstance(value, str) and '${' in value:
-                value = AddKeyValues._replace_key_placeholders_with_values(value, data, metadata)
+                value = AddKeyValues._replace_key_placeholders_with_values(
+                    value, data, metadata)
             replaced_key_value_dict[key] = value
 
         data = {**data, **replaced_key_value_dict}
@@ -60,7 +63,8 @@ class AddKeyValues(Transformer):
         return data
 
     @staticmethod
-    def _replace_key_placeholders_with_values(string: str, data: dict, metadata: dict) -> str:
+    def _replace_key_placeholders_with_values(
+            string: str, data: dict, metadata: dict) -> str:
         """
         Implements the actual substitution of placeholders to values.
         Placeholders inside ${} seek their values in the current data.
@@ -76,5 +80,6 @@ class AddKeyValues(Transformer):
             string = string.replace('${' + key + '}', str(data[key]).lower())
         if metadata is not None:
             for key in metadata_keys:
-                string = string.replace('@{' + key + '}', str(metadata[key]).lower())
+                string = string.replace(
+                    '@{' + key + '}', str(metadata[key]).lower())
         return string

@@ -9,7 +9,8 @@ class EmpiricusChangeKeyValueConfig(TransformerConfig):
     command_name: Literal["empiricus-change"]
     key_1: str = 'plan_type'
     key_2: str = 'proposal_status'
-    new_value: Optional[Union[StrictStr, list, dict, StrictInt, StrictFloat, StrictBool]] = True
+    new_value: Optional[Union[StrictStr, list, dict,
+                              StrictInt, StrictFloat, StrictBool]] = True
 
 
 class EmpiricusChangeKeyValue(Transformer):

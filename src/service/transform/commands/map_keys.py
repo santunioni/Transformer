@@ -55,22 +55,39 @@ class MapKeys(Transformer):
 
             if metadata is not None:
                 for meta_key, meta_value in metadata.items():
-                    map_key = map_key.replace("@{" + meta_key + "}", str(meta_value))
-                    map_value = map_value.replace("@{" + meta_key + "}", str(meta_value))
+                    map_key = map_key.replace(
+                        "@{" + meta_key + "}", str(meta_value))
+                    map_value = map_value.replace(
+                        "@{" + meta_key + "}", str(meta_value))
 
             if map_key in flat_data:
                 commands = map_value.split('.')
-                translated_dict = MapKeys.__map_data(translated_dict, commands, flat_data[map_key])
+                translated_dict = MapKeys.__map_data(
+                    translated_dict, commands, flat_data[map_key])
 
         if self.__config.preserve_unmapped:
-            for unmapped_key in set(flat_data.keys() - self.__config.mapping.keys()):
+            for unmapped_key in set(
+                    flat_data.keys() -
+                    self.__config.mapping.keys()):
                 translated_dict[unmapped_key] = flat_data[unmapped_key]
 
         return translated_dict
 
     @staticmethod
-    def flatten_data(input_data: dict[str, Union[list, set, dict, str, int, bool, float, None]]
-                     ) -> dict[str, Union[str, int, bool, float, None]]:
+    def flatten_data(input_data: dict[str,
+                                      Union[list,
+                                            set,
+                                            dict,
+                                            str,
+                                            int,
+                                            bool,
+                                            float,
+                                            None]]) -> dict[str,
+                                                            Union[str,
+                                                                  int,
+                                                                  bool,
+                                                                  float,
+                                                                  None]]:
         """
         This method is recursive by necessity. It flattens the keys inside data.
         A key_1 of dictionary inside a another dict inside a list inside another dict
@@ -82,15 +99,24 @@ class MapKeys(Transformer):
         sep = "."
         obj: dict[str, Union[str, int, bool, float, None]] = {}
 
-        def scan(input_value: Union[list, set, dict[str, Any],
-                                    str, int, bool, float, None], parent_key: str = ""):
+        def scan(input_value: Union[list,
+                                    set,
+                                    dict[str,
+                                         Any],
+                                    str,
+                                    int,
+                                    bool,
+                                    float,
+                                    None],
+                 parent_key: str = ""):
             if isinstance(input_value, (list, set)):
                 for index, value in enumerate(input_value):
                     scan(value, parent_key + (sep if parent_key !=
-                                                     "" else "") + "$[" + str(index) + "]")
+                                              "" else "") + "$[" + str(index) + "]")
             elif isinstance(input_value, dict):
                 for key, value in input_value.items():
-                    scan(value, parent_key + (sep if parent_key != "" else "") + key)
+                    scan(value, parent_key +
+                         (sep if parent_key != "" else "") + key)
             else:
                 obj[parent_key] = input_value
 
@@ -98,7 +124,8 @@ class MapKeys(Transformer):
         return obj
 
     @staticmethod
-    def __map_data(current_structure: Union[dict, list], command_list: list[str], value):
+    def __map_data(
+            current_structure: Union[dict, list], command_list: list[str], value):
         """
         This method is also recursive by necessity. It reads the values from the mapping
         in order to build the new data structure.
@@ -125,26 +152,33 @@ class MapKeys(Transformer):
                 current_structure[command] = value
                 return current_structure
             if '$[' not in command_list[1]:
-                next_structure = current_structure[command] if command in current_structure.keys() else {}
+                next_structure = current_structure[command] if command in current_structure.keys() else {
+                }
             else:
                 index = int(command_list[1].replace('$[', '').replace(']', ''))
-                next_structure = MapKeys.__create_big_enough_list(index, current_structure.get(command))
-            current_structure[command] = MapKeys.__map_data(next_structure, new_command_list, value)
+                next_structure = MapKeys.__create_big_enough_list(
+                    index, current_structure.get(command))
+            current_structure[command] = MapKeys.__map_data(
+                next_structure, new_command_list, value)
         else:
             index = int(command.replace('$[', '').replace(']', ''))
             if len(command_list) == 1:
                 current_structure[index] = value
                 return current_structure
             if '$[' not in command_list[1]:
-                next_structure = current_structure[index] if current_structure[index] is not None else {}
+                next_structure = current_structure[index] if current_structure[index] is not None else {
+                }
             else:
-                next_structure = MapKeys.__create_big_enough_list(index, current_structure[index])
-            current_structure[index] = MapKeys.__map_data(next_structure, new_command_list, value)
+                next_structure = MapKeys.__create_big_enough_list(
+                    index, current_structure[index])
+            current_structure[index] = MapKeys.__map_data(
+                next_structure, new_command_list, value)
 
         return current_structure
 
     @staticmethod
-    def __create_big_enough_list(index: int, list_to_write: Optional[list[Any]]):
+    def __create_big_enough_list(index: int,
+                                 list_to_write: Optional[list[Any]]):
         """
         It gets a list structure in list_to_write and them puts its values in the correct indexes in a list
         of length given by index. But only if the index is greater than the length list_to_write, otherwise it simply
@@ -159,8 +193,8 @@ class MapKeys(Transformer):
             return list_to_be_overwritten
 
         if len(list_to_be_overwritten) > len(list_to_write):
-            for index, value in enumerate(list_to_write):
-                list_to_be_overwritten[index] = value
+            for c_index, value in enumerate(list_to_write):
+                list_to_be_overwritten[c_index] = value
             return list_to_be_overwritten
-        else:
-            return list_to_write
+
+        return list_to_write

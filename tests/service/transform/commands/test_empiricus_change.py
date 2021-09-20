@@ -26,11 +26,13 @@ class TestSpecialChange(unittest.TestCase):
         }
 
     def test_special_change(self):
-        self.transformer_config = EmpiricusChangeKeyValueConfig(command_name="empiricus-change",
-                                                                key_1="plan_type",
-                                                                key_2="proposal_status",
-                                                                new_value=True)
-        self.transformer = EmpiricusChangeKeyValue(config=self.transformer_config)
+        self.transformer_config = EmpiricusChangeKeyValueConfig(
+            command_name="empiricus-change",
+            key_1="plan_type",
+            key_2="proposal_status",
+            new_value=True)
+        self.transformer = EmpiricusChangeKeyValue(
+            config=self.transformer_config)
         transformed_data = self.transformer.transform(self.data, {})
         self.assertEqual(self.target_data, transformed_data)
 

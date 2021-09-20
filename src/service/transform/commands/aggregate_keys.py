@@ -22,7 +22,8 @@ class AggregateKeyValueConfig(TransformerConfig):
     @root_validator
     def check_if_at_least_one_is_passed(cls, values):
         keys, pattern = values.get('keys'), values.get('pattern')
-        assert not (keys is None and pattern is None), "Keys and Pattern can't be both None."
+        assert not (
+            keys is None and pattern is None), "Keys and Pattern can't be both None."
         return values
 
 
@@ -32,6 +33,7 @@ class AggregateKeyValue(Transformer):
     will be stored inside a list in a new_key.
     Both pattern and Keys list can be used at the same time.
     """
+
     def __init__(self, config: AggregateKeyValueConfig):
         """"""
         super().__init__(config)
@@ -64,10 +66,17 @@ class AggregateKeyValue(Transformer):
         keys_set = set()
         pattern_keys_set = set()
         if self.__config.keys is not None:
-            keys_set = set(filter(lambda k: k in data.keys(), self.__config.keys))
+            keys_set = set(
+                filter(
+                    lambda k: k in data.keys(),
+                    self.__config.keys))
         if self.__config.pattern is not None:
             pattern = self.__config.pattern
-            pattern_keys_set = set(filter(lambda k: bool(pattern.fullmatch(k)), data.keys()))
+            pattern_keys_set = set(
+                filter(
+                    lambda k: bool(
+                        pattern.fullmatch(k)),
+                    data.keys()))
 
         for key in set.union(keys_set, pattern_keys_set):
             value_list.append(data[key])

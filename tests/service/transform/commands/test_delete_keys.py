@@ -27,9 +27,8 @@ class TestDeleteKeys(unittest.TestCase):
         }
 
     def test_delete_keys(self):
-        self.transformer_config = DeleteKeysConfig(command_name="delete-keys",
-                                                   keys=['email_1', 'email_2', 'email_3']
-                                                   )
+        self.transformer_config = DeleteKeysConfig(
+            command_name="delete-keys", keys=['email_1', 'email_2', 'email_3'])
         self.transformer = DeleteKeys(config=self.transformer_config)
         transformed_data = self.transformer.transform(self.data, {})
         self.assertEqual(self.target_data, transformed_data)

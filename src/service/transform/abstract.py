@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 class BaseTransformerConfig(BaseModel):
     """This class is a general class for transformer config."""
+
     def __hash__(self):
         return hash(str(self))
 
@@ -36,8 +37,8 @@ class Transformer(ABC):
     def __init__(self, config: BaseTransformerConfig):
         logger.info(
             "Initializing object of class %s with config parameter of class %s ...",
-            self.__class__.__name__, config.__class__.__name__
-        )
+            self.__class__.__name__,
+            config.__class__.__name__)
 
     @abstractmethod
     def transform(self, data: dict, metadata: dict) -> dict:

@@ -32,7 +32,8 @@ class TestAddKeyValues(unittest.TestCase):
             'a_${a}': True,
             'b_${b}': '${a}_${b}'
         }
-        self.transformer_config = AddKeyValuesConfig(command_name="add-key-values", key_values=key_values)
+        self.transformer_config = AddKeyValuesConfig(
+            command_name="add-key-values", key_values=key_values)
         self.transformer = AddKeyValues(config=self.transformer_config)
         transformed_data = self.transformer.transform(self.data, {})
         self.assertEqual(self.target_data, transformed_data)

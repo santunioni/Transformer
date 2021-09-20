@@ -1,4 +1,3 @@
-import re
 from typing import Literal, Optional, Pattern
 
 from pydantic import root_validator
@@ -19,7 +18,8 @@ class DeleteKeysConfig(TransformerConfig):
     @root_validator
     def check_if_at_least_one_is_passed(cls, values):
         keys, pattern = values.get('keys'), values.get('pattern')
-        assert not (keys is None and pattern is None), "Keys and Pattern can't be both None."
+        assert not (
+            keys is None and pattern is None), "Keys and Pattern can't be both None."
         return values
 
 
@@ -51,7 +51,10 @@ class DeleteKeys(Transformer):
                     pass
         if self.__config.pattern is not None:
             pattern = self.__config.pattern
-            for key in filter(lambda k: bool(pattern.fullmatch(k)), data.keys()):
+            for key in filter(
+                    lambda k: bool(
+                        pattern.fullmatch(k)),
+                    data.keys()):
                 try:
                     del data_copy[key]
                 except KeyError:
