@@ -379,7 +379,7 @@ python-versions = "*"
 
 [[package]]
 name = "the-flash"
-version = "0.1.1"
+version = "0.1.2"
 description = "A Framework for developing microservices attachable to The Flash."
 category = "main"
 optional = false
@@ -396,8 +396,8 @@ uvloop = "^0.16.0"
 [package.source]
 type = "git"
 url = "ssh://git@gitlab.decode.buzz/the-flash/core/the-flash-framework.git"
-reference = "v0.1.1"
-resolved_reference = "df8c4da9bab30b352dec3704cb856ab40f58558f"
+reference = "v0.1.2"
+resolved_reference = "12157b545a76e4dd596d74810ec63926a803216a"
 
 [[package]]
 name = "toml"
@@ -463,7 +463,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "74676becda92abc60711444d30f1bffadcc67c204b01c2d892e397ad8b1fac40"
+content-hash = "bd18b73ccd9f8550f8d87cdb7eeadea33f13979e2321806ba1f7370189aad1e8"
 
 [metadata.files]
 aiokafka = [
