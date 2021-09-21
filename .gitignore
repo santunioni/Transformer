@@ -10,3 +10,4 @@ htmlmypy
 *.prof
 profile.*
 *.diff
+.ssh

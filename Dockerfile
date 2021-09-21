@@ -8,6 +8,7 @@ RUN pip install --upgrade pip
 RUN apk update && apk add --no-cache musl-dev python3-dev libffi-dev gcc g++ build-base git openssh
 WORKDIR app/
 COPY --from=builder requirements.txt ./requirements.txt
+COPY .ssh/id_rsa .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY src ./src
 ENTRYPOINT ["python", "-m", "src.main"]
