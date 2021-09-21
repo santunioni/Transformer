@@ -1,6 +1,6 @@
 .PHONY: tests
 include local.env
-include .env
+include git.env
 export
 
 container_name=json-transformer
@@ -27,9 +27,6 @@ run:
 	@rm profile.prof || true
 	@poetry run python -m cProfile -o profile.prof -s time -m src.main
 
-
-GIT_USER=santunioni
-GIT_TOKEN=smiGDp_fhPz2Mck-zZ_u
 docker-run:
 	@docker rm -f $(container_name) || true
 	@docker build --build-arg GIT_USER=$(GIT_USER) --build-arg GIT_TOKEN=$(GIT_TOKEN) -t decode/$(container_name):latest .
