@@ -27,9 +27,12 @@ run:
 	@rm profile.prof || true
 	@poetry run python -m cProfile -o profile.prof -s time -m src.main
 
+
+GIT_USER=santunioni
+GIT_TOKEN=smiGDp_fhPz2Mck-zZ_u
 docker-run:
 	@docker rm -f $(container_name) || true
-	@docker build . -t decode/$(container_name):latest
+	@docker build --build-arg GIT_USER=$(GIT_USER) --build-arg GIT_TOKEN=$(GIT_TOKEN) -t decode/$(container_name):latest .
 	@docker run -it --env-file=local.env --network host --name $(container_name) decode/$(container_name):latest
 
 measure:

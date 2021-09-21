@@ -1,10 +1,5 @@
 services:
 
-  app:
-    build: .
-    volumes:
-      - ${HOME}/.ssh:
-
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     network_mode: host
