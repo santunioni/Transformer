@@ -51,10 +51,7 @@ class DeleteKeys(Transformer):
                     pass
         if self.__config.pattern is not None:
             pattern = self.__config.pattern
-            for key in filter(
-                    lambda k: bool(
-                        pattern.fullmatch(k)),
-                    data.keys()):
+            for key in filter(lambda k: bool(pattern.fullmatch(k)), data.keys()):
                 try:
                     del data_copy[key]
                 except KeyError:

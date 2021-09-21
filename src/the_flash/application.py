@@ -27,8 +27,7 @@ class Application:
             return Application.__custom_letter_handlers[mat_id]
         return default_letter_handler
 
-    def __init__(self, aio_producer: AIOProducer,
-                 queue: Queue[ServiceLetter] = Queue()):
+    def __init__(self, aio_producer: AIOProducer, queue: Queue[ServiceLetter] = Queue()):
         """
         :param aio_producer: The producer that will send the treated data back to TheFlash services.
         :param queue: This queue holds the data so they can be picked asynchronously to be treated and sent.
@@ -64,10 +63,7 @@ class Application:
                     if result:
                         logger.info("Sent: %s", response.event_trace)
             except Exception:
-                logger.critical(
-                    "Some general exception occurred",
-                    exc_info=True
-                )
+                logger.critical("Some general exception occurred", exc_info=True)
             self.__queue.task_done()
 
     async def ingest_data(self, raw_data) -> None:
