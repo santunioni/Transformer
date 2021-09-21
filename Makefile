@@ -1,12 +1,11 @@
-.PHONY: tests migrations
+.PHONY: tests
 include local.env
 include .env
 export
 
-container_name=field-translator
+container_name=json-transformer
 
 lint:
-	@poetry run autopep8 --jobs 4 -r --aggressive --aggressive --in-place src tests
 	@echo "/ -------------------------- pylint analysis starts -----------------------------"
 	@poetry run pylint --rcfile=pylintrc.cfg --jobs 4 src
 	@echo "-------------------------- pylint analysis ends ----------------------------- /"
@@ -36,22 +35,8 @@ docker-run:
 measure:
 	@poetry run python -m tests.measure
 
-main:
-	@poetry run python -m src.main
-
 view-profile:
 	@poetry run snakeviz profile.prof -b firefox
 
 infra-up:
-	@docker-compose up --build -d
-
-infra-down:
-	@docker-compose down --remove-orphans
-
-infra-logs:
-	@docker-compose logs -f
-
-volume-prune:
-	@docker volume prune -f
-
-infra-refresh: infra-down volume-prune infra-up infra-logs
+	@docker-compose up --build

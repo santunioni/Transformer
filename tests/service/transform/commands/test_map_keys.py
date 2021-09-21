@@ -4,7 +4,7 @@ import uuid
 import aiounittest
 
 from src.main import transform_data
-from src.service_config import TransformConfig
+from src.transform.service_config import TransformConfig
 from src.transform.commands.map_keys import MapKeys, MapKeysConfig, flatten_data
 from the_flash.models.mat_events import ServiceLetter
 from tests.factory.letter_factory import data_factory

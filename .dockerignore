@@ -1,12 +1,11 @@
-**/*.env
-!**local.env
+.vscode/
+.docker/
 **/*cache*/
-.coverage
 htmlcov
 htmlmypy
 .idea
-.vscode
-.docker
+**/*.env
+.coverage
 *.prof
 profile.*
-*.diff
+**/*.diff
