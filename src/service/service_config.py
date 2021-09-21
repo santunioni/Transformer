@@ -1,10 +1,10 @@
 from pydantic import BaseModel, root_validator
 
-from src.service.transform.collection import TransformerCollectionConfig
+from src.service.transform.collection import TransformerChainConfig
 
 
 class ServiceConfig(BaseModel):
-    transforms: TransformerCollectionConfig
+    transforms: TransformerChainConfig
 
     @root_validator(pre=True)
     def populate_transform(cls, values: dict):

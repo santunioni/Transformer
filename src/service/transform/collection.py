@@ -15,7 +15,7 @@ from src.service.transform.commands.empiricus_change import EmpiricusChangeKeyVa
 logger = logging.getLogger(__name__)
 
 
-class TransformerCollectionConfig(BaseTransformerConfig):
+class TransformerChainConfig(BaseTransformerConfig):
     __root__: Sequence[AnyTransformerConfig]
 
 
@@ -28,10 +28,10 @@ class TransformerChain(Transformer):
     This class is fundamental to the sequential calls of Transformer.
     The config json will come as a list of calls to transformers. get_transformer method will then
     instantiate this class first.
-    This class is clalled first
+    This class is called first
     """
 
-    def __init__(self, config: TransformerCollectionConfig):
+    def __init__(self, config: TransformerChainConfig):
         super().__init__(config)
         self.__transformers = tuple(map(get_transformer, config.__root__))
 
@@ -60,7 +60,7 @@ AnyTransformerConfig = Union[
     EmpiricusChangeKeyValueConfig,
     AggregateKeyValueConfig,
     AddKeyValuesConfig,
-    TransformerCollectionConfig
+    TransformerChainConfig
 ]
 
 """Its important to notice that this dictionary is responsible for getting a class out of the config.
@@ -71,11 +71,11 @@ CONFIG_NAME_TO_TRANSFORMER_CLASS: dict[str, Type[Transformer]] = {
     AddKeyValuesConfig.__name__: AddKeyValues,
     DeleteKeysConfig.__name__: DeleteKeys,
     AggregateKeyValueConfig.__name__: AggregateKeyValue,
-    TransformerCollectionConfig.__name__: TransformerChain
+    TransformerChainConfig.__name__: TransformerChain
 }
 
 """This only exists because TransformerChain has a reference to itself during its creation"""
-TransformerCollectionConfig.update_forward_refs()
+TransformerChainConfig.update_forward_refs()
 
 
 @lru_cache

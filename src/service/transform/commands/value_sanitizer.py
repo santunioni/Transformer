@@ -39,11 +39,12 @@ class ValueSanitizer(Transformer):
             value = data[key]
             if self.__config.sub_pattern:
                 value = re.sub(self.__config.sub_pattern, self.__config.sub_string, value)
-            if isinstance(self.__config.string_methods, list):
-                for string_method_name in self.__config.string_methods:
-                    value = getattr(str, string_method_name)(value)
-            else:
-                value = getattr(str, self.__config.string_methods)(value)
+            if self.__config.string_methods is not None:
+                if isinstance(self.__config.string_methods, list):
+                    for string_method_name in self.__config.string_methods:
+                        value = getattr(str, string_method_name)(value)
+                else:
+                    value = getattr(str, self.__config.string_methods)(value)
             del data_copy[key]
             data_copy[key] = value
         return data_copy

@@ -1,96 +1,54 @@
 @startuml
 'https://plantuml.com/class-diagram
-skinparam groupInheritance 3
-enum TransformConfigs {
-    map_keys = MapKeys
-    aggregate_data = AggregateData
-    add_key_value = AddKeyValue
-    delete_key_value = DeleteKeyValue
+class BaseTransformerConfig <<pydantic>> {
+}
+class TransformerChainConfig <<pydantic>> {
+__root__: Sequence[TransformerConfig]
+}
+class TransformerConfig <<pydantic>> {
+command_name: str
 }
 
-
-package From-orchestrator {
-class ServiceConfig <<Pydantic>> {
-    + <s>mapping: Dict[str, str] = {}</strike>
-    + <s>preserve_unmapped: bool = True</strike>
-    + commands: Sequence[CommandConfig]
-}
-ServiceConfig .r.* ServiceLetter
-
-class ServiceLetter <<Pydantic>> {
-    + metadata: Dict
-    + data: Dict
-    + config: ServiceConfig
-}
-}
-ServiceConfig o.-. CommandConfig
-ServiceLetter .d.|> CommandReceiver
-
-class CommandCollection {
-    - commands: List[TransformCommand]
-    + execute_all()
-    + configure(letter: ServiceLetter)
-}
-CommandCollection o.d. TransformCommand
-CommandCollection .l.> ServiceLetter
-CommandCollection -u-> TransformConfigs
-
-
-interface CommandReceiver {
-    + data: dict
-    + metadata: dict
+abstract Transformer {
+    config: BaseTransformerConfig
+    + transform()
 }
 
-abstract class TransformCommand {
-    + receiver: CommandReceiver
-    + {abstract} execute()
+class TransformerChain {
+    config: TransformerChainConfig
+    + transform()
 }
-TransformCommand .l.> CommandReceiver
-
 
 class MapKeys {
     - config: MapKeysConfig
-    + execute()
-    {method} ...
+    + transform()
 }
-MapKeys -u-|> TransformCommand
 
-
-class AggregateData {
-    - config: AggregateDataConfig
-    + execute()
-    {method} ...
+class MapKeysConfig <<pydantic>> {
+    command_name: Literal['map_keys']
+    mapping: dict
 }
-AggregateData -u-|> TransformCommand
 
 
-class AddKeyValue {
-    - config: AddKeyValueConfig
-    + execute()
-    {method} ...
+
+class AnotherTransform {
+    - config: AnotherTransformConfig
+    + transform()
 }
-AddKeyValue -u-|> TransformCommand
 
 
-class DeleteKeyValue {
-    - config: DeleteKeyValueConfig
-    + execute()
-    {method} ...
-}
-DeleteKeyValue -u-|> TransformCommand
 
+TransformerChain -r-|> Transformer
+TransformerChain *-l- TransformerChainConfig
 
-class MapKeysConfig <<Pydantic>>
-MapKeysConfig .d.|> CommandConfig
-MapKeys o.d. MapKeysConfig
-class AggregateDataConfig <<Pydantic>>
-AggregateDataConfig .d.|> CommandConfig
-AggregateData o.d. AggregateDataConfig
-class AddKeyValueConfig <<Pydantic>>
-AddKeyValueConfig .d.|> CommandConfig
-AddKeyValue o.d. AddKeyValueConfig
-class DeleteKeyValueConfig <<Pydantic>>
-DeleteKeyValueConfig .d.|> CommandConfig
-DeleteKeyValue o.d. DeleteKeyValueConfig
-interface CommandConfig
+TransformerConfig -u-|> BaseTransformerConfig
+TransformerChainConfig --|> BaseTransformerConfig
+Transformer --* BaseTransformerConfig
+
+MapKeys -u-|> Transformer
+MapKeys *-d- MapKeysConfig
+MapKeysConfig -d-|> TransformerConfig
+AnotherTransform -u-|> Transformer
+AnotherTransform *-d- AnotherTransformConfig
+AnotherTransformConfig -d-|> TransformerConfig
 @enduml
