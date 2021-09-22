@@ -7,7 +7,9 @@ RUN poetry export --without-hashes > requirements.txt
 
 FROM python:3.9
 # Installing build dependencies
-RUN apk update && apk add --no-cache musl-dev python3-dev libffi-dev gcc g++ build-base git
+# RUN apk update && apk add --no-cache musl-dev python3-dev libffi-dev gcc g++ build-base git
+RUN apt update && apt install --no-cache musl-dev python3-dev libffi-dev gcc g++ build-essentials git
+
 
 # Setting up python virtual env for user
 RUN adduser -S the_flash
