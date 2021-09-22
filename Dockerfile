@@ -1,12 +1,11 @@
-FROM python:3.8 as builder
+FROM python:3.9 as builder
 RUN pip install poetry
 COPY poetry.lock pyproject.toml ./
 RUN poetry export --without-hashes > requirements.txt
 
 
 
-FROM python:3.8-alpine
-
+FROM python:3.9
 # Installing build dependencies
 RUN apk update && apk add --no-cache musl-dev python3-dev libffi-dev gcc g++ build-base git
 
