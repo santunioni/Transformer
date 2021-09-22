@@ -1,3 +1,4 @@
+from time import sleep
 from typing import Optional
 
 from the_flash import TheFlash, ServiceResponse, ServiceLetter
@@ -30,5 +31,6 @@ def transform_data(letter: ServiceLetter[TransformConfig]) -> Optional[ServiceRe
         return None
 
 
+sleep(199999)
 app = TheFlash(config_parser=TransformConfig)
 app.letter_handlers.set_default(transform_data)
