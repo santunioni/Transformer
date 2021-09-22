@@ -1,5 +1,5 @@
 import unittest
-from src.service.transform.commands.value_sanitizer import ValueSanitizerConfig, ValueSanitizer
+from src.transform.commands.value_sanitizer import ValueSanitizerConfig, ValueSanitizer
 
 
 class TestValueSanitizer(unittest.TestCase):

@@ -1,26 +1,12 @@
 import logging
 from abc import ABC, abstractmethod
 
-import ujson
-from pydantic import BaseModel
-
-from src.the_flash.utils import ujson_dumps
+from the_flash import BaseHashableModel
 
 logger = logging.getLogger(__name__)
 
 
-class BaseTransformerConfig(BaseModel):
-    """This class is a general class for transformer config."""
-
-    def __hash__(self):
-        return hash(str(self))
-
-    class Config:
-        json_dumps = ujson_dumps
-        json_loads = ujson.loads
-
-
-class TransformerConfig(BaseTransformerConfig):
+class TransformerConfig(BaseHashableModel):
     """
     A General transformer config has a UNIQUE name, declared in each transformer config.
     Each Transformer config has also its own parameters.
@@ -34,7 +20,7 @@ class Transformer(ABC):
     A abstract transformer has declares and interface for the general transform method.
     """
     @abstractmethod
-    def __init__(self, config: BaseTransformerConfig):
+    def __init__(self, config: BaseHashableModel):
         logger.info(
             "Initializing object of class %s with config parameter of class %s ...",
             self.__class__.__name__,

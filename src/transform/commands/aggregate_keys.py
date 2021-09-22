@@ -3,7 +3,7 @@ from typing import Literal, Optional, Pattern
 
 from pydantic import root_validator
 
-from src.service.transform.abstract import Transformer, TransformerConfig
+from ..abstract import Transformer, TransformerConfig
 
 logger = logging.getLogger(__name__)
 

@@ -4,18 +4,19 @@ import logging
 from functools import lru_cache
 from typing import Sequence, Union, Type
 
-from src.service.transform.abstract import Transformer, BaseTransformerConfig
-from src.service.transform.commands.add_key import AddKeyValuesConfig, AddKeyValues
-from src.service.transform.commands.aggregate_keys import AggregateKeyValue, AggregateKeyValueConfig
-from src.service.transform.commands.del_key import DeleteKeysConfig, DeleteKeys
-from src.service.transform.commands.map_keys import MapKeysConfig, MapKeys
+from the_flash import BaseHashableModel
 
-from src.service.transform.commands.value_sanitizer import ValueSanitizer, ValueSanitizerConfig
+from .abstract import Transformer
+from .commands.add_key import AddKeyValuesConfig, AddKeyValues
+from .commands.aggregate_keys import AggregateKeyValueConfig, AggregateKeyValue
+from .commands.del_key import DeleteKeysConfig, DeleteKeys
+from .commands.map_keys import MapKeysConfig, MapKeys
+from .commands.value_sanitizer import ValueSanitizerConfig, ValueSanitizer
 
 logger = logging.getLogger(__name__)
 
 
-class TransformerChainConfig(BaseTransformerConfig):
+class TransformerChainConfig(BaseHashableModel):
     __root__: Sequence[AnyTransformerConfig]
 
 
@@ -79,7 +80,7 @@ TransformerChainConfig.update_forward_refs()
 
 
 @lru_cache
-def get_transformer(config: BaseTransformerConfig) -> Transformer:
+def get_transformer(config: BaseHashableModel) -> Transformer:
     """
     This function is responsible for getting a transformer. The first time it is called in the entrypoint it will
     be used to call the TransformerChain, which in turn, calls this functions as many times as requested in the

@@ -1,6 +1,6 @@
 import unittest
 
-from src.service.transform.commands.del_key import DeleteKeysConfig, DeleteKeys
+from src.transform.commands.del_key import DeleteKeysConfig, DeleteKeys
 
 
 class TestDeleteKeys(unittest.TestCase):

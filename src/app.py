@@ -1,10 +1,12 @@
 from typing import Optional
 
-from src.service.transform.collection import get_transformer, AtomicTransformerException
-from src.the_flash.models.mat_events import ServiceLetter, ServiceResponse
+from the_flash import TheFlash, ServiceResponse, ServiceLetter
+
+from src.transform.chain import get_transformer, AtomicTransformerException
+from src.transform.config import TransformConfig
 
 
-async def default_letter_handler(letter: ServiceLetter) -> Optional[ServiceResponse]:
+def transform_data(letter: ServiceLetter[TransformConfig]) -> Optional[ServiceResponse]:
     """
     This function is responsible for getting the transformations that should be perfomed (specified in the letter)
     and calling the transform method whichever transformer was selected.
@@ -26,3 +28,7 @@ async def default_letter_handler(letter: ServiceLetter) -> Optional[ServiceRespo
         return response
     except AtomicTransformerException:
         return None
+
+
+app = TheFlash(config_parser=TransformConfig)
+app.letter_handlers.set_default(transform_data)

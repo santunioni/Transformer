@@ -1,6 +1,6 @@
 from typing import Union, Any, Literal, Optional
 
-from src.service.transform.abstract import TransformerConfig, Transformer
+from ..abstract import TransformerConfig, Transformer
 
 
 class MapKeysConfig(TransformerConfig):
@@ -22,6 +22,7 @@ class MapKeys(Transformer):
     """
 
     def __init__(self, config: MapKeysConfig):
+        """"""
         super().__init__(config)
         self.__config = config
 
@@ -143,8 +144,7 @@ class MapKeys(Transformer):
         return current_structure
 
     @staticmethod
-    def __create_big_enough_list(index: int,
-                                 list_to_write: Optional[list[Any]]):
+    def __create_big_enough_list(index: int, list_to_write: Optional[list[Any]]):
         """
         It gets a list structure in list_to_write and them puts its values in the correct indexes in a list
         of length given by index. But only if the index is greater than the length list_to_write, otherwise it simply

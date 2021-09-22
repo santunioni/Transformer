@@ -1,9 +1,10 @@
-from pydantic import BaseModel, root_validator
+from pydantic import root_validator
+from the_flash import BaseHashableModel
 
-from src.service.transform.collection import TransformerChainConfig
+from .chain import TransformerChainConfig
 
 
-class ServiceConfig(BaseModel):
+class TransformConfig(BaseHashableModel):
     transforms: TransformerChainConfig
 
     @root_validator(pre=True)

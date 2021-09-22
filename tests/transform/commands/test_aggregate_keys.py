@@ -1,6 +1,6 @@
 import unittest
 
-from src.service.transform.commands.aggregate_keys import AggregateKeyValueConfig, AggregateKeyValue
+from src.transform.commands.aggregate_keys import AggregateKeyValueConfig, AggregateKeyValue
 
 
 class TestAggregateKeys(unittest.TestCase):

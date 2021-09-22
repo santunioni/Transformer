@@ -1,7 +1,7 @@
 import re
 from typing import Literal
 
-from src.service.transform.abstract import Transformer, TransformerConfig
+from ..abstract import Transformer, TransformerConfig
 
 
 class AddKeyValuesConfig(TransformerConfig):

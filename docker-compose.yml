@@ -1,13 +1,11 @@
-version: '2'
 services:
+
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     network_mode: host
     environment:
       ZOOKEEPER_CLIENT_PORT: 32181
       ZOOKEEPER_TICK_TIME: 2000
-    extra_hosts:
-      - "moby:127.0.0.1"
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -19,5 +17,3 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: localhost:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    extra_hosts:
-      - "moby:127.0.0.1"

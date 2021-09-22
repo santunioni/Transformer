@@ -1,7 +1,7 @@
 import re
 from typing import Literal, Optional, Pattern, Union
 
-from src.service.transform.abstract import Transformer, TransformerConfig
+from ..abstract import Transformer, TransformerConfig
 
 
 class ValueSanitizerConfig(TransformerConfig):
