@@ -1,14 +1,15 @@
 from pydantic import BaseModel, root_validator
 
-from src.service.transform.collection import TransformerCollectionConfig
+from src.service.transform.collection import TransformerChainConfig
 
 
 class ServiceConfig(BaseModel):
-    transforms: TransformerCollectionConfig
+    transforms: TransformerChainConfig
 
     @root_validator(pre=True)
     def populate_transform(cls, values: dict):
-        """Adapt ServiceConfig for backwards compatibility.
+        """
+        Adapt ServiceConfig for backwards compatibility.
         Transforms
         {
             "mapping": {"...": "...."},
@@ -24,6 +25,8 @@ class ServiceConfig(BaseModel):
             ]
         }
         before initializing the pydantic object.
+        :param values:
+        :return:
         """
         mapping = values.get("mapping")
         preserve_unmapped = values.get("preserve_unmapped", True)

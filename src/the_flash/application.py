@@ -17,14 +17,12 @@ class Application:
     This is the highest level class in the code, responsible for calling the methods that trigger the major
     events in the code.
     """
-    __custom_letter_handlers: Mapping[
-        str, Callable[[ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]
-    ] = {}
+    __custom_letter_handlers: Mapping[str, Callable[[
+        ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]] = {}
 
     @staticmethod
     def __mat_entries(
-            mat_id: str
-    ) -> Callable[[ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]:
+            mat_id: str) -> Callable[[ServiceLetter], Coroutine[Any, Any, Optional[ServiceResponse]]]:
         if mat_id in Application.__custom_letter_handlers.keys():
             return Application.__custom_letter_handlers[mat_id]
         return default_letter_handler
@@ -65,10 +63,7 @@ class Application:
                     if result:
                         logger.info("Sent: %s", response.event_trace)
             except Exception:
-                logger.critical(
-                    "Some general exception occurred",
-                    exc_info=True
-                )
+                logger.critical("Some general exception occurred", exc_info=True)
             self.__queue.task_done()
 
     async def ingest_data(self, raw_data) -> None:
