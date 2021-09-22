@@ -1,8 +1,5 @@
 from typing import Optional
 
-from time import sleep
-sleep(199999)
-
 from the_flash import TheFlash, ServiceResponse, ServiceLetter
 
 from src.transform.chain import get_transformer, AtomicTransformerException
