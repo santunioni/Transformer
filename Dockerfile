@@ -12,7 +12,7 @@ RUN apt update && apt install -y musl-dev python3-dev libffi-dev gcc g++ build-e
 
 
 # Setting up python virtual env for user
-RUN adduser -S the_flash
+RUN useradd the_flash -ms /bin/bash 
 USER the_flash
 RUN mkdir -p /home/the_flash/app/venv
 WORKDIR /home/the_flash/app
