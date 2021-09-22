@@ -12,7 +12,7 @@ class ValueSanitizerConfig(TransformerConfig):
     """
     command_name: Literal["value-sanitizer"]
     key_pattern: Pattern
-    sub_pattern: Optional[Pattern]
+    substitution_pattern: Optional[Pattern]
     sub_string: str = ''
     string_methods: Optional[Union[list[str], str]]
 
@@ -37,8 +37,8 @@ class ValueSanitizer(Transformer):
         data_copy = data.copy()
         for key in filter(lambda k: bool(self.__config.key_pattern.fullmatch(k)), data.keys()):
             value = data[key]
-            if self.__config.sub_pattern:
-                value = re.sub(self.__config.sub_pattern, self.__config.sub_string, value)
+            if self.__config.substitution_pattern:
+                value = re.sub(self.__config.substitution_pattern, self.__config.sub_string, value)
             if self.__config.string_methods is not None:
                 if isinstance(self.__config.string_methods, list):
                     for string_method_name in self.__config.string_methods:

@@ -19,9 +19,10 @@ class TestValueSanitizer(unittest.TestCase):
             "e": {'a': 's', 'g': [1, 2]},
             "f": [1, 2, 3, 4]
         }
+
         self.transformer_config = ValueSanitizerConfig(command_name="value-sanitizer",
                                                        key_pattern='^(email_).*',
-                                                       sub_pattern='#gmail.com',
+                                                       substitution_pattern='#gmail.com',
                                                        sub_string='@decode.buzz',
                                                        string_methods=['lower'])
         self.transformer = ValueSanitizer(config=self.transformer_config)
@@ -43,7 +44,7 @@ class TestValueSanitizer(unittest.TestCase):
         }
         self.transformer_config = ValueSanitizerConfig(command_name="value-sanitizer",
                                                        key_pattern='cpf',
-                                                       sub_pattern='[^0-9]')
+                                                       substitution_pattern='[^0-9]')
         self.transformer = ValueSanitizer(config=self.transformer_config)
         transformed_data = self.transformer.transform(data, {})
         self.assertEqual(target_data, transformed_data)
