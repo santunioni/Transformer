@@ -32,7 +32,7 @@ docker-build:
 
 docker-run: docker-build
 	@docker rm -f $(container_name) || true
-	@docker run -it --env-file=local.env --network host --name $(container_name) decode/$(container_name):latest
+	@docker run -it --env-file=local.env --network host --name $(container_name) decode/$(container_name):latest $(command)
 
 measure:
 	@poetry run python -m tests.measure

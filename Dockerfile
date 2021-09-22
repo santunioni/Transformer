@@ -1,30 +1,33 @@
-FROM python:3.9 as requirements-exporter
-RUN pip install poetry
-COPY poetry.lock pyproject.toml ./
-RUN poetry export --without-hashes > requirements.txt
+FROM python:3.9-slim AS build-image
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends build-essential gcc git
 
-
-
-FROM python:3.9
-# Installing build dependencies
-# RUN apk update && apk add --no-cache musl-dev python3-dev libffi-dev gcc g++ build-base git
-RUN apt update && apt install -y musl-dev python3-dev libffi-dev gcc g++ build-essential git
-
-
-# Setting up python virtual env for user
-RUN useradd the_flash -ms /bin/bash 
-USER the_flash
-RUN mkdir -p /home/the_flash/app/venv
-WORKDIR /home/the_flash/app
-RUN python -m venv venv && venv/bin/pip install --upgrade pip && venv/bin/pip install --upgrade setuptools
-
-# Installing dependencies from GitLab
+# Manipulate authentification with git
 ARG GIT_USERNAME
 ARG GIT_ACCESS_TOKEN
 RUN git config --global url."http://${GIT_USERNAME}:${GIT_ACCESS_TOKEN}@gitlab.".insteadOf "ssh://git@gitlab."
-COPY --from=requirements-exporter requirements.txt ./requirements.txt
-RUN venv/bin/pip install --no-cache-dir -r requirements.txt
 
-# Copying and running source code
-COPY src ./src
-ENTRYPOINT ["venv/bin/python", "-m", "src.main"]
+# Activating VENV
+ENV VIRTUAL_ENV=/opt/venv
+RUN python -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# Export requirements.txt from poetry
+RUN pip install poetry
+COPY poetry.lock pyproject.toml ./
+RUN poetry export --without-hashes > requirements.txt
+# Install all
+RUN pip install --upgrade pip && pip install --upgrade setuptools
+RUN pip install -r requirements.txt
+
+
+FROM python:3.9-slim
+# Copy VENV and use it!
+ENV VIRTUAL_ENV=/opt/venv
+COPY --from=build-image $VIRTUAL_ENV $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+# Copy app
+WORKDIR /app
+COPY src/ ./src
+# Run it!
+CMD ["python", "-m", "src.main"]
