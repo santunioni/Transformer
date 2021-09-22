@@ -9,7 +9,6 @@ from src.service.transform.commands.add_key import AddKeyValuesConfig, AddKeyVal
 from src.service.transform.commands.aggregate_keys import AggregateKeyValue, AggregateKeyValueConfig
 from src.service.transform.commands.del_key import DeleteKeysConfig, DeleteKeys
 from src.service.transform.commands.map_keys import MapKeysConfig, MapKeys
-from src.service.transform.commands.empiricus_change import EmpiricusChangeKeyValueConfig, EmpiricusChangeKeyValue
 
 from src.service.transform.commands.value_sanitizer import ValueSanitizer, ValueSanitizerConfig
 
@@ -58,7 +57,6 @@ class TransformerChain(Transformer):
 AnyTransformerConfig = Union[
     MapKeysConfig,
     DeleteKeysConfig,
-    EmpiricusChangeKeyValueConfig,
     AggregateKeyValueConfig,
     AddKeyValuesConfig,
     TransformerChainConfig,
@@ -69,7 +67,6 @@ AnyTransformerConfig = Union[
 New Transformers must have its mapping here in order to work properly."""
 CONFIG_NAME_TO_TRANSFORMER_CLASS: dict[str, Type[Transformer]] = {
     MapKeysConfig.__name__: MapKeys,
-    EmpiricusChangeKeyValueConfig.__name__: EmpiricusChangeKeyValue,
     AddKeyValuesConfig.__name__: AddKeyValues,
     DeleteKeysConfig.__name__: DeleteKeys,
     AggregateKeyValueConfig.__name__: AggregateKeyValue,
