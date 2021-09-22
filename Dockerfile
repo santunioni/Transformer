@@ -10,9 +10,9 @@ FROM python:3.9-alpine
 RUN pip install --upgrade pip
 RUN apk update && apk add --no-cache musl-dev python3-dev libffi-dev gcc g++ build-base git
 
-ARG GIT_TOKEN
-ARG GIT_USER
-RUN git config --global url."http://${GIT_USER}:${GIT_TOKEN}@gitlab.".insteadOf "ssh://git@gitlab."
+ARG GIT_USERNAME
+ARG GIT_ACCESS_TOKEN
+RUN git config --global url."http://${GIT_USERNAME}:${GIT_ACCESS_TOKEN}@gitlab.".insteadOf "ssh://git@gitlab."
 
 WORKDIR ~/app/
 COPY --from=builder requirements.txt ./requirements.txt
