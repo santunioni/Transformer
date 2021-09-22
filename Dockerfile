@@ -1,4 +1,4 @@
-FROM python:3.9 as builder
+FROM python:3.9 as requirements-exporter
 RUN pip install poetry
 COPY poetry.lock pyproject.toml ./
 RUN poetry export --without-hashes > requirements.txt
@@ -22,7 +22,7 @@ RUN python -m venv venv && venv/bin/pip install --upgrade pip && venv/bin/pip in
 ARG GIT_USERNAME
 ARG GIT_ACCESS_TOKEN
 RUN git config --global url."http://${GIT_USERNAME}:${GIT_ACCESS_TOKEN}@gitlab.".insteadOf "ssh://git@gitlab."
-COPY --from=builder requirements.txt ./requirements.txt
+COPY --from=requirements-exporter requirements.txt ./requirements.txt
 RUN venv/bin/pip install --no-cache-dir -r requirements.txt
 
 # Copying and running source code

@@ -46,7 +46,7 @@ if __name__ == "__main__":
             filename="local.env",
             raise_error_if_not_found=True))
     try:
-        asyncio.run(send_parallel(2000))
+        asyncio.run(send_parallel(10000))
     except BaseException as e:
         print(e)
         print("Shutting down.")

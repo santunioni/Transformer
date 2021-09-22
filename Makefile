@@ -27,9 +27,11 @@ run:
 	@rm profile.prof || true
 	@poetry run python -m cProfile -o profile.prof -s time -m src.main
 
-docker-run:
-	@docker rm -f $(container_name) || true
+docker-build:
 	@docker build --build-arg GIT_USERNAME=$(GIT_USERNAME) --build-arg GIT_ACCESS_TOKEN=$(GIT_ACCESS_TOKEN) -t decode/$(container_name):latest .
+
+docker-run: docker-build
+	@docker rm -f $(container_name) || true
 	@docker run -it --env-file=local.env --network host --name $(container_name) decode/$(container_name):latest
 
 measure:
