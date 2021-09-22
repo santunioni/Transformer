@@ -11,6 +11,7 @@ from src.service.transform.commands.del_key import DeleteKeysConfig, DeleteKeys
 from src.service.transform.commands.map_keys import MapKeysConfig, MapKeys
 from src.service.transform.commands.empiricus_change import EmpiricusChangeKeyValueConfig, EmpiricusChangeKeyValue
 
+from src.service.transform.commands.value_sanitizer import ValueSanitizer, ValueSanitizerConfig
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +61,8 @@ AnyTransformerConfig = Union[
     EmpiricusChangeKeyValueConfig,
     AggregateKeyValueConfig,
     AddKeyValuesConfig,
-    TransformerChainConfig
+    TransformerChainConfig,
+    ValueSanitizerConfig
 ]
 
 """Its important to notice that this dictionary is responsible for getting a class out of the config.
@@ -71,7 +73,8 @@ CONFIG_NAME_TO_TRANSFORMER_CLASS: dict[str, Type[Transformer]] = {
     AddKeyValuesConfig.__name__: AddKeyValues,
     DeleteKeysConfig.__name__: DeleteKeys,
     AggregateKeyValueConfig.__name__: AggregateKeyValue,
-    TransformerChainConfig.__name__: TransformerChain
+    TransformerChainConfig.__name__: TransformerChain,
+    ValueSanitizerConfig.__name__: ValueSanitizer
 }
 
 """This only exists because TransformerChain has a reference to itself during its creation"""
