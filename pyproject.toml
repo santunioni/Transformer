@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "JSON Transformer"
-version = "2.0.0"
+version = "2.0.1"
 description = "Declare possible commands for manipulating JSON Data."
 authors = [
     "Otavio Dantas <otavio-dantas@live.com>",
