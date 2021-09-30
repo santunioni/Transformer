@@ -31,7 +31,7 @@ def transform_data(letter: ServiceLetter[TransformConfig]) -> Optional[ServiceRe
 
 
 os.environ["SERVICE_NAME"] = "json-transformer"
-os.environ["SERVICE_VERSION"] = "1.2.0"
+os.environ["SERVICE_VERSION"] = "2.0.0"
 
 
 app = TheFlash(config_parser=TransformConfig)
