@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 
 from the_flash import TheFlash, ServiceResponse, ServiceLetter
@@ -32,7 +33,6 @@ def transform_data(letter: ServiceLetter[TransformConfig]) -> Optional[ServiceRe
 
 os.environ["SERVICE_NAME"] = "json-transformer"
 os.environ["SERVICE_VERSION"] = "2.0.0"
-
 
 app = TheFlash(config_parser=TransformConfig)
 app.letter_handlers.set_default(transform_data)

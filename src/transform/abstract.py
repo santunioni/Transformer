@@ -19,6 +19,7 @@ class Transformer(ABC):
     """
     A abstract transformer has declares and interface for the general transform method.
     """
+
     @abstractmethod
     def __init__(self, config: BaseHashableModel):
         logger.info(

@@ -22,6 +22,7 @@ class ValueSanitizer(Transformer):
     The ValueSanitizer Transformer is able to sanitize values of keys selected. They do that by substitution and
     implementation of string methods.
     """
+
     def __init__(self, config: ValueSanitizerConfig):
         super().__init__(config)
         self.__config = config
