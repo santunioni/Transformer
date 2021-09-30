@@ -199,7 +199,7 @@ dev = ["tox", "bump2version (<1)", "sphinx (<2)", "importlib-metadata (<3)", "im
 
 [[package]]
 name = "devtools"
-version = "0.7.0"
+version = "0.8.0"
 description = "Python's missing debug print command and other development tools."
 category = "dev"
 optional = false
@@ -842,7 +842,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "0b5fab8ba6391fbab1039a1d920538a78526c637ef4a268de3143a884f6e812f"
+content-hash = "036e3e56d2d7d92e2745c062cb901ba7c529f61073fd3f1c9c7ffd1921b0dcda"
 
 [metadata.files]
 aiohttp = [
@@ -1022,8 +1022,8 @@ deprecated = [
     {file = "Deprecated-1.2.13.tar.gz", hash = "sha256:43ac5335da90c31c24ba028af536a91d41d53f9e6901ddb021bcc572ce44e38d"},
 ]
 devtools = [
-    {file = "devtools-0.7.0-py3-none-any.whl", hash = "sha256:15819ddf5affc8ebc9c631973ae26b9758fe9b66604f6926a872258191ab3fbb"},
-    {file = "devtools-0.7.0.tar.gz", hash = "sha256:41f34f1dccf302ce0a96567c3af0720451e6c9eb89bddc64ac07e1136dd595a0"},
+    {file = "devtools-0.8.0-py3-none-any.whl", hash = "sha256:00717ef184223cf36c65bbd17c6eb412f8a7564f47957f9e8b2b7610661b17fb"},
+    {file = "devtools-0.8.0.tar.gz", hash = "sha256:6162a2f61c70242479dff3163e7837e6a9bf32451661af1347bfa3115602af16"},
 ]
 executing = [
     {file = "executing-0.8.1-py2.py3-none-any.whl", hash = "sha256:cfaa61564eff6e7a3afda98ea0ba7c646171d9e325203a159bf29a3c2438c129"},
