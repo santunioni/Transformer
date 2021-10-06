@@ -64,6 +64,6 @@ version = "2.1.5"
 tag_format = "v$major.$minor.$patch"
 version_files = [
     "VERSION",
-    ".bumpversion.cfg",
-    "pyproject.toml"
+    "pyproject.toml",
+    "transformer/__init__.py"
 ]
