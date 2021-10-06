@@ -34,6 +34,10 @@ flake8 = "^3.9.2"
 [tool.poetry.urls]
 "Bug Tracker" = "https://gitlab.decode.buzz/the-flash/libraries/json-transformer/issues"
 
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.mypy]
 ignore_missing_imports = true
 no_silence_site_packages = true
