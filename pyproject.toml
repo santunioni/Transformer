@@ -1,6 +1,7 @@
 [tool.poetry]
 name = "transformer"
 version = "2.1.4"
+license = "Proprietary"
 description = "Declare possible commands for manipulating JSON Data."
 authors = [
     "Otavio Dantas <otavio-dantas@live.com>",
@@ -11,7 +12,6 @@ readme = "README.md"
 homepage = "https://gitlab.decode.buzz/the-flash/libraries/json-transformer"
 repository = "https://gitlab.decode.buzz/the-flash/libraries/json-transformer"
 include = ["transformer/py.typed"]
-exclude = ["transformer/main.py"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -22,7 +22,6 @@ pydantic = "^1.8.2"
 pytest = "^6.2.5"
 pytest-cov = "^3.0.0"
 mypy = "^0.910"
-pylint = "^2.10.2"
 python-dotenv = "^0.19.0"
 devtools = "^0.8.0"
 types-ujson = "^0.1.1"

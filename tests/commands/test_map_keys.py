@@ -1,13 +1,6 @@
-import random
 import unittest
-import uuid
 
-from the_flash.models.mat_events import ServiceLetter
-
-from tests.factory.letter_factory import data_factory
 from transformer.commands.map_keys import MapKeys, MapKeysConfig
-from transformer.config import TransformConfig
-from transformer.main import transform_data
 
 
 class SetupMapping(unittest.TestCase):
@@ -263,41 +256,6 @@ class SetupMapping(unittest.TestCase):
                 }
             ],
         }
-
-
-class TestBackwardsCompatibility(SetupMapping):
-    def test_backwards_compatibility(self):
-        raw_cfg = {
-            "mapping": {k: k.lower() for k in data_factory().keys()},
-            "preserve_unmapped": random.choice([True, False]),
-        }
-        letter = ServiceLetter[TransformConfig].parse_obj(
-            {
-                "event_trace": str(uuid.uuid4()),
-                "mat_id": "Alguma esteira",
-                "index_in_flow": 0,
-                "config": raw_cfg,
-                "data": {},
-            }
-        )
-        self.assertEqual(len(letter.config.transforms.__root__), 1)
-        self.assertIsInstance(letter.config.transforms.__root__[0], MapKeysConfig)
-        generated_config = letter.config.transforms.__root__[0].dict()
-        self.assertTrue(all(generated_config[k] == v for k, v in raw_cfg.items()))
-
-    def test_handle_letter(self):
-        letter = ServiceLetter[TransformConfig].parse_obj(
-            {
-                "mat_id": "Alguma Esteira",
-                "event_trace": str(uuid.uuid4()),
-                "index_in_flow": 0,
-                "data": self.data,
-                "metadata": self.metadata,
-                "config": {"mapping": self.mapping, "preserve_unmapped": False},
-            }
-        )
-        response = transform_data(letter)
-        self.assertEqual(self.target_data, response.data)
 
 
 class TestMapping(SetupMapping):
