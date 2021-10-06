@@ -3,4 +3,4 @@ from .config import TransformConfig  # noqa
 
 __all__ = ["TransformConfig", "get_transformer"]
 
-__VERSION__ = "2.1.6"
+__VERSION__ = "2.1.7"
