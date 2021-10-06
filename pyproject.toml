@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "JSON Transformer"
+name = "transformer"
 version = "2.0.1"
 description = "Declare possible commands for manipulating JSON Data."
 authors = [
@@ -7,21 +7,66 @@ authors = [
     "Vinícius <vinicius.vargas.ext@decode.buzz>",
     "Pedro Dardengo <pedro.mesquita.ext@decode.buzz>"
 ]
+readme = "README.md"
+homepage = "https://gitlab.decode.buzz/the-flash/attachable-microservices/generic-services/json-transformer"
+repository = "https://gitlab.decode.buzz/the-flash/attachable-microservices/generic-services/json-transformer"
+include = ["transformer/py.typed"]
+exclude = ["transformer/main.py"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-the-flash = {git = "ssh://git@gitlab.decode.buzz/the-flash/core/the-flash-framework.git", rev = "v0.2.0"}
-
+the-flash = {git = "ssh://git@gitlab.decode.buzz/the-flash/core/the-flash-framework.git", rev = "v0.3.0"}
+ujson = "^4.2.0"
+pydantic = "^1.8.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
-pytest-cov = "^2.12.1"
+pytest-cov = "^3.0.0"
 mypy = "^0.910"
 pylint = "^2.10.2"
 python-dotenv = "^0.19.0"
 devtools = "^0.8.0"
-snakeviz = "^2.1.0"
 types-ujson = "^0.1.1"
 Faker = "^8.12.1"
-aiounittest = "^1.4.0"
 bumpversion = "^0.6.0"
+pre-commit = "^2.15.0"
+commitizen = "^2.19.0"
+black = "^21.9b0"
+flake8 = "^3.9.2"
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://gitlab.decode.buzz/the-flash/attachable-microservices/generic-services/json-transformer/issues"
+
+[tool.mypy]
+ignore_missing_imports = true
+no_silence_site_packages = true
+disallow_untyped_calls = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_untyped_globals = true
+disallow_redefinition = true
+no_implicit_reexport = true
+pretty = true
+sqlite_cache = true
+
+[[tool.mypy.overrides]]
+module=["faker.*", "dotenv.*", "redis.*"]
+follow_imports = "skip"
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module=["pydantic.*"]
+no_implicit_optional = false
+warn_unused_ignores = false
+disallow_untyped_calls = false
+disallow_untyped_globals = false
+
+[tool.commitizen]
+version = "v2.0.1"
+tag_format = "v$major.$minor.$patch"
+version_files = [
+    "VERSION",
+    "transformer/main.py",
+    ".bumpversion.cfg"
+]

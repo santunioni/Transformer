@@ -11,14 +11,17 @@ class DeleteKeysConfig(TransformerConfig):
     Pattern are a RegEx pattern that will instruct the transformer to delete every key that is a fullmatch to the
     pattern.
     """
-    command_name: Literal["delete-keys"]
+
+    name: Literal["delete-keys"]
     keys: Optional[list[str]]
     pattern: Optional[Pattern]
 
     @root_validator
     def check_if_at_least_one_is_passed(cls, values):
-        keys, pattern = values.get('keys'), values.get('pattern')
-        assert not (keys is None and pattern is None), "Keys and Pattern can't be both None."
+        keys, pattern = values.get("keys"), values.get("pattern")
+        assert not (
+            keys is None and pattern is None
+        ), "Keys and Pattern can't be both None."
         return values
 
 

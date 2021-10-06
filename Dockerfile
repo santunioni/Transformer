@@ -42,6 +42,6 @@ COPY --from=build-image $VIRTUAL_ENV $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 # Copy app
 WORKDIR /app
-COPY src/ ./src
+COPY transformer/ ./src
 # Run it!
 CMD ["python", "-m", "src.main"]

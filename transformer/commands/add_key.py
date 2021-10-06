@@ -6,7 +6,8 @@ from ..abstract import Transformer, TransformerConfig
 
 class AddKeyValuesConfig(TransformerConfig):
     """The key_values dict is a dict of key-value pairs to be added to the data"""
-    command_name: Literal["add-key-values"]
+
+    name: Literal["add-key-values"]
     key_values: dict
 
 
@@ -14,7 +15,7 @@ class AddKeyValues(Transformer):
     """
     This Transform is able to add key-value pairs to the data. The pairs are passed inside a dict and they will be
     incorporated into the data.
-    The non triviality of this transform comes from the possibility of passing pairs that uses values of other pairs
+    The non triviality of this transformer comes from the possibility of passing pairs that uses values of other pairs
     in the existing data or metadata.
     For Example:
     data = {'data_key_1': 'data_value_1'}
@@ -50,12 +51,14 @@ class AddKeyValues(Transformer):
         """
         replaced_key_value_dict = {}
         for key, value in self.__config.key_values.items():
-            if '${' in key:
+            if "${" in key:
                 key = AddKeyValues._replace_key_placeholders_with_values(
-                    key, data, metadata)
-            if isinstance(value, str) and '${' in value:
+                    key, data, metadata
+                )
+            if isinstance(value, str) and "${" in value:
                 value = AddKeyValues._replace_key_placeholders_with_values(
-                    value, data, metadata)
+                    value, data, metadata
+                )
             replaced_key_value_dict[key] = value
 
         data = {**data, **replaced_key_value_dict}
@@ -64,7 +67,8 @@ class AddKeyValues(Transformer):
 
     @staticmethod
     def _replace_key_placeholders_with_values(
-            string: str, data: dict, metadata: dict) -> str:
+        string: str, data: dict, metadata: dict
+    ) -> str:
         """
         Implements the actual substitution of placeholders to values.
         Placeholders inside ${} seek their values in the current data.
@@ -74,12 +78,11 @@ class AddKeyValues(Transformer):
         :param metadata: metadata.
         :return: replaced string.
         """
-        keys = re.findall('\\${(.+?)}', string)
-        metadata_keys = re.findall('@{(.+?)}', string)
+        keys = re.findall("\\${(.+?)}", string)
+        metadata_keys = re.findall("@{(.+?)}", string)
         for key in keys:
-            string = string.replace('${' + key + '}', str(data[key]).lower())
+            string = string.replace("${" + key + "}", str(data[key]).lower())
         if metadata is not None:
             for key in metadata_keys:
-                string = string.replace(
-                    '@{' + key + '}', str(metadata[key]).lower())
+                string = string.replace("@{" + key + "}", str(metadata[key]).lower())
         return string

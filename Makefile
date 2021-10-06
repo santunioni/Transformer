@@ -7,7 +7,7 @@ container_name=json-transformer
 
 lint:
 	@echo "/ -------------------------- pylint analysis starts -----------------------------"
-	@poetry run pylint --rcfile=pylintrc.cfg --jobs 4 src
+	@poetry run pylint src
 	@echo "-------------------------- pylint analysis ends ----------------------------- /"
 	@echo ""
 
@@ -19,7 +19,7 @@ mypy:
 	@echo ""
 
 tests:
-	@poetry run pytest --cov src --cov-report term-missing --cov-report html tests
+	@poetry run pytest --cov src tests
 
 quality: lint mypy tests
 

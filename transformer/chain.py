@@ -2,16 +2,14 @@ from __future__ import annotations
 
 import logging
 from functools import lru_cache
-from typing import Sequence, Union, Type
+from typing import Sequence, Type, Union
 
-from the_flash import BaseHashableModel
-
-from .abstract import Transformer
-from .commands.add_key import AddKeyValuesConfig, AddKeyValues
-from .commands.aggregate_keys import AggregateKeyValueConfig, AggregateKeyValue
-from .commands.del_key import DeleteKeysConfig, DeleteKeys
-from .commands.map_keys import MapKeysConfig, MapKeys
-from .commands.value_sanitizer import ValueSanitizerConfig, ValueSanitizer
+from .abstract import BaseHashableModel, Transformer
+from .commands.add_key import AddKeyValues, AddKeyValuesConfig
+from .commands.aggregate_keys import AggregateKeyValue, AggregateKeyValueConfig
+from .commands.del_key import DeleteKeys, DeleteKeysConfig
+from .commands.map_keys import MapKeys, MapKeysConfig
+from .commands.value_sanitizer import ValueSanitizer, ValueSanitizerConfig
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +59,7 @@ AnyTransformerConfig = Union[
     AggregateKeyValueConfig,
     AddKeyValuesConfig,
     TransformerChainConfig,
-    ValueSanitizerConfig
+    ValueSanitizerConfig,
 ]
 
 """Its important to notice that this dictionary is responsible for getting a class out of the config.
@@ -72,7 +70,7 @@ CONFIG_NAME_TO_TRANSFORMER_CLASS: dict[str, Type[Transformer]] = {
     DeleteKeysConfig.__name__: DeleteKeys,
     AggregateKeyValueConfig.__name__: AggregateKeyValue,
     TransformerChainConfig.__name__: TransformerChain,
-    ValueSanitizerConfig.__name__: ValueSanitizer
+    ValueSanitizerConfig.__name__: ValueSanitizer,
 }
 
 """This only exists because TransformerChain has a reference to itself during its creation"""

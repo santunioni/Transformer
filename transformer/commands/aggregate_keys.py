@@ -14,21 +14,24 @@ class AggregateKeyValueConfig(TransformerConfig):
     The pattern aggregates all values with the pattern into the new key.
     Both can be used at the same time but they cant be both None.
     """
-    command_name: Literal["aggregate-keys"]
+
+    name: Literal["aggregate-keys"]
     keys: Optional[list[str]]
     pattern: Optional[Pattern]
     new_key: str
 
     @root_validator
     def check_if_at_least_one_is_passed(cls, values):
-        keys, pattern = values.get('keys'), values.get('pattern')
-        assert not (keys is None and pattern is None), "Keys and Pattern can't be both None."
+        keys, pattern = values.get("keys"), values.get("pattern")
+        assert not (
+            keys is None and pattern is None
+        ), "Keys and Pattern can't be both None."
         return values
 
 
 class AggregateKeyValue(Transformer):
     """
-    This transform is responsible for aggregating data. Pass a list of keys or a RegEx pattern and the keys
+    This transformer is responsible for aggregating data. Pass a list of keys or a RegEx pattern and the keys
     will be stored inside a list in a new_key.
     Both pattern and Keys list can be used at the same time.
     """
@@ -68,7 +71,9 @@ class AggregateKeyValue(Transformer):
             keys_set = set(filter(lambda k: k in data.keys(), self.__config.keys))
         if self.__config.pattern is not None:
             pattern = self.__config.pattern
-            pattern_keys_set = set(filter(lambda k: bool(pattern.fullmatch(k)), data.keys()))
+            pattern_keys_set = set(
+                filter(lambda k: bool(pattern.fullmatch(k)), data.keys())
+            )
 
         for key in set.union(keys_set, pattern_keys_set):
             value_list.append(data[key])

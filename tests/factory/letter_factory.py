@@ -2,7 +2,6 @@ import random
 import uuid
 
 from faker import Faker
-
 from the_flash.models.mat_events import ServiceLetter
 
 fake = Faker()
@@ -14,7 +13,7 @@ def data_factory():
         "Address": fake.address(),
         "Email": fake.email(),
         "Country": fake.country(),
-        "Age": random.randint(10, 50)
+        "Age": random.randint(10, 50),
     }
     return lying_data
 
@@ -23,17 +22,19 @@ def config_factory():
     lying_data = data_factory()
     config = {
         "mapping": {k: k.lower() for k, v in lying_data.items()},
-        "preserve_unmapped": random.choice([True, False])
+        "preserve_unmapped": random.choice([True, False]),
     }
     return config
 
 
 def letter_gen(number):
     for _ in range(number):
-        yield ServiceLetter[dict].parse_obj(dict(
-            event_trace=str(uuid.uuid4()),
-            mat_id=random.choice(["alguma esteira", "pme"]),
-            data=data_factory(),
-            config=config_factory(),
-            index_in_flow=0
-        ))
+        yield ServiceLetter[dict].parse_obj(
+            dict(
+                event_trace=str(uuid.uuid4()),
+                mat_id=random.choice(["alguma esteira", "pme"]),
+                data=data_factory(),
+                config=config_factory(),
+                index_in_flow=0,
+            )
+        )

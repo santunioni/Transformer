@@ -1,6 +1,6 @@
-from typing import Union, Any, Literal, Optional
+from typing import Any, Literal, Optional, Union
 
-from ..abstract import TransformerConfig, Transformer
+from ..abstract import Transformer, TransformerConfig
 
 
 class MapKeysConfig(TransformerConfig):
@@ -8,7 +8,8 @@ class MapKeysConfig(TransformerConfig):
     This is the configuration for the MapKeys transformer.
     In order to call this transformer pass the name "map-keys" and a mapping dict.
     """
-    command_name: Literal["map-keys"]
+
+    name: Literal["map-keys"]
     mapping: dict[str, str]
     preserve_unmapped: bool = True
 
@@ -57,11 +58,15 @@ class MapKeys(Transformer):
             if metadata is not None:
                 for meta_key, meta_value in metadata.items():
                     map_key = map_key.replace("@{" + meta_key + "}", str(meta_value))
-                    map_value = map_value.replace("@{" + meta_key + "}", str(meta_value))
+                    map_value = map_value.replace(
+                        "@{" + meta_key + "}", str(meta_value)
+                    )
 
             if map_key in flat_data:
-                commands = map_value.split('.')
-                translated_dict = MapKeys.__map_data(translated_dict, commands, flat_data[map_key])
+                commands = map_value.split(".")
+                translated_dict = MapKeys.__map_data(
+                    translated_dict, commands, flat_data[map_key]
+                )
 
         if self.__config.preserve_unmapped:
             for unmapped_key in set(flat_data.keys() - self.__config.mapping.keys()):
@@ -71,7 +76,7 @@ class MapKeys(Transformer):
 
     @staticmethod
     def flatten_data(
-            input_data: dict[str, Union[list, set, dict, str, int, bool, float, None]]
+        input_data: dict[str, Union[list, set, dict, str, int, bool, float, None]]
     ) -> dict[str, Union[str, int, bool, float, None]]:
         """
         This method is recursive by necessity. It flattens the keys inside data.
@@ -84,10 +89,20 @@ class MapKeys(Transformer):
         sep = "."
         obj: dict[str, Union[str, int, bool, float, None]] = {}
 
-        def scan(input_value: Union[list, set, dict[str, Any], str, int, bool, float, None], parent_key: str = ""):
+        def scan(
+            input_value: Union[list, set, dict[str, Any], str, int, bool, float, None],
+            parent_key: str = "",
+        ):
             if isinstance(input_value, (list, set)):
                 for index, value in enumerate(input_value):
-                    scan(value, parent_key + (sep if parent_key != "" else "") + "$[" + str(index) + "]")
+                    scan(
+                        value,
+                        parent_key
+                        + (sep if parent_key != "" else "")
+                        + "$["
+                        + str(index)
+                        + "]",
+                    )
             elif isinstance(input_value, dict):
                 for key, value in input_value.items():
                     scan(value, parent_key + (sep if parent_key != "" else "") + key)
@@ -98,7 +113,9 @@ class MapKeys(Transformer):
         return obj
 
     @staticmethod
-    def __map_data(current_structure: Union[dict, list], command_list: list[str], value: Any):
+    def __map_data(
+        current_structure: Union[dict, list], command_list: list[str], value: Any
+    ):
         """
         This method is also recursive by necessity. It reads the values from the mapping
         in order to build the new data structure.
@@ -120,26 +137,42 @@ class MapKeys(Transformer):
         command = command_list[0]
         new_command_list = command_list[1:]
 
-        if '$[' not in command and isinstance(current_structure, dict):
+        if "$[" not in command and isinstance(current_structure, dict):
             if len(command_list) == 1:
                 current_structure[command] = value
                 return current_structure
-            if '$[' not in command_list[1]:
-                next_structure = current_structure[command] if command in current_structure.keys() else {}
+            if "$[" not in command_list[1]:
+                next_structure = (
+                    current_structure[command]
+                    if command in current_structure.keys()
+                    else {}
+                )
             else:
-                index = int(command_list[1].replace('$[', '').replace(']', ''))
-                next_structure = MapKeys.__create_big_enough_list(index, current_structure.get(command))
-            current_structure[command] = MapKeys.__map_data(next_structure, new_command_list, value)
+                index = int(command_list[1].replace("$[", "").replace("]", ""))
+                next_structure = MapKeys.__create_big_enough_list(
+                    index, current_structure.get(command)
+                )
+            current_structure[command] = MapKeys.__map_data(
+                next_structure, new_command_list, value
+            )
         else:
-            index = int(command.replace('$[', '').replace(']', ''))
+            index = int(command.replace("$[", "").replace("]", ""))
             if len(command_list) == 1:
                 current_structure[index] = value
                 return current_structure
-            if '$[' not in command_list[1]:
-                next_structure = current_structure[index] if current_structure[index] is not None else {}
+            if "$[" not in command_list[1]:
+                next_structure = (
+                    current_structure[index]
+                    if current_structure[index] is not None
+                    else {}
+                )
             else:
-                next_structure = MapKeys.__create_big_enough_list(index, current_structure[index])
-            current_structure[index] = MapKeys.__map_data(next_structure, new_command_list, value)
+                next_structure = MapKeys.__create_big_enough_list(
+                    index, current_structure[index]
+                )
+            current_structure[index] = MapKeys.__map_data(
+                next_structure, new_command_list, value
+            )
 
         return current_structure
 

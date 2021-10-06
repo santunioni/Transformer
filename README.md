@@ -28,7 +28,7 @@ class TransformerChainConfig <<pydantic>> {
 __root__: Sequence[TransformerConfig]
 }
 class TransformerConfig <<pydantic>> {
-command_name: str
+name: str
 }
 
 abstract Transformer {
@@ -47,7 +47,7 @@ class MapKeys {
 }
 
 class MapKeysConfig <<pydantic>> {
-    command_name: Literal['map_keys']
+    name: Literal['map_keys']
     mapping: dict
 }
 
@@ -114,7 +114,7 @@ mapping = {
     "client.email": "emails.$[0]",
 }
 
-# The output after the transform.
+# The output after the transformer.
 output_data = {
     "id": "deal_pipedrive_id",
     "client": {"name": "Marli Aparecida Ana das Neves"},
