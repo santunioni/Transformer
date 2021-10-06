@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "transformer"
-version = "2.0.1"
+version = "2.1.0"
 description = "Declare possible commands for manipulating JSON Data."
 authors = [
     "Otavio Dantas <otavio-dantas@live.com>",
@@ -8,14 +8,13 @@ authors = [
     "Pedro Dardengo <pedro.mesquita.ext@decode.buzz>"
 ]
 readme = "README.md"
-homepage = "https://gitlab.decode.buzz/the-flash/attachable-microservices/generic-services/json-transformer"
-repository = "https://gitlab.decode.buzz/the-flash/attachable-microservices/generic-services/json-transformer"
+homepage = "https://gitlab.decode.buzz/the-flash/libraries/json-transformer"
+repository = "https://gitlab.decode.buzz/the-flash/libraries/json-transformer"
 include = ["transformer/py.typed"]
 exclude = ["transformer/main.py"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-the-flash = {git = "ssh://git@gitlab.decode.buzz/the-flash/core/the-flash-framework.git", rev = "v0.3.0"}
 ujson = "^4.2.0"
 pydantic = "^1.8.2"
 
@@ -35,7 +34,7 @@ black = "^21.9b0"
 flake8 = "^3.9.2"
 
 [tool.poetry.urls]
-"Bug Tracker" = "https://gitlab.decode.buzz/the-flash/attachable-microservices/generic-services/json-transformer/issues"
+"Bug Tracker" = "https://gitlab.decode.buzz/the-flash/libraries/json-transformer/issues"
 
 [tool.mypy]
 ignore_missing_imports = true
@@ -51,7 +50,7 @@ pretty = true
 sqlite_cache = true
 
 [[tool.mypy.overrides]]
-module=["faker.*", "dotenv.*", "redis.*"]
+module=["faker.*", "dotenv.*"]
 follow_imports = "skip"
 warn_unused_ignores = true
 
@@ -63,10 +62,10 @@ disallow_untyped_calls = false
 disallow_untyped_globals = false
 
 [tool.commitizen]
-version = "v2.0.1"
+version = "v2.1.0"
 tag_format = "v$major.$minor.$patch"
 version_files = [
     "VERSION",
-    "transformer/main.py",
-    ".bumpversion.cfg"
+    ".bumpversion.cfg",
+    "pyproject.toml"
 ]
