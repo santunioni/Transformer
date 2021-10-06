@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "transformer"
-version = "2.1.5"
+version = "2.1.6"
 license = "Proprietary"
 description = "Declare possible commands for manipulating JSON Data."
 authors = [
@@ -60,7 +60,7 @@ disallow_untyped_calls = false
 disallow_untyped_globals = false
 
 [tool.commitizen]
-version = "2.1.5"
+version = "2.1.6"
 tag_format = "v$major.$minor.$patch"
 version_files = [
     "VERSION",
