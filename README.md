@@ -18,63 +18,8 @@ selected transformations and its specific configurations.
 
 The Transformed JSON with all transformations performed. 
 
-## Architecture
-```plantuml
-@startuml
-'https://plantuml.com/class-diagram
-class BaseTransformerConfig <<pydantic>> {
-}
-class TransformerChainConfig <<pydantic>> {
-__root__: Sequence[TransformerConfig]
-}
-class TransformerConfig <<pydantic>> {
-name: str
-}
-
-abstract Transformer {
-    config: BaseTransformerConfig
-    + transform()
-}
-
-class TransformerChain {
-    config: TransformerChainConfig
-    + transform()
-}
-
-class MapKeys {
-    - config: MapKeysConfig
-    + transform()
-}
-
-class MapKeysConfig <<pydantic>> {
-    name: Literal['map_keys']
-    mapping: dict
-}
-
-class AnotherTransform {
-    - config: AnotherTransformConfig
-    + transform()
-}
-
-TransformerChain -r-|> Transformer
-TransformerChain *-l- TransformerChainConfig
-
-TransformerConfig -u-|> BaseTransformerConfig
-TransformerChainConfig --|> BaseTransformerConfig
-Transformer --* BaseTransformerConfig
-
-MapKeys -u-|> Transformer
-MapKeys *-d- MapKeysConfig
-MapKeysConfig -d-|> TransformerConfig
-AnotherTransform -u-|> Transformer
-AnotherTransform *-d- AnotherTransformConfig
-AnotherTransformConfig -d-|> TransformerConfig
-@enduml
-
-```
 
 ## Transformers
-
 
 ### MapKeys
 The MapKeys is a complete dict re-designer.
