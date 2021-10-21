@@ -11,3 +11,4 @@ htmlmypy
 profile.*
 *.diff
 .ssh
+.tox/

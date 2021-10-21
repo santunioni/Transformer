@@ -1,21 +1,18 @@
+
 @startuml
 'https://plantuml.com/class-diagram
-class BaseTransformerConfig <<pydantic>> {
+class TransformerConfig <<pydantic>> {
 }
 class TransformerChainConfig <<pydantic>> {
 __root__: Sequence[TransformerConfig]
 }
-class TransformerConfig <<pydantic>> {
-command_name: str
-}
-
 abstract Transformer {
-    config: BaseTransformerConfig
+    - config: TransformerConfig
     + transform()
 }
 
 class TransformerChain {
-    config: TransformerChainConfig
+    - config: TransformerChainConfig
     + transform()
 }
 
@@ -25,30 +22,29 @@ class MapKeys {
 }
 
 class MapKeysConfig <<pydantic>> {
-    command_name: Literal['map_keys']
-    mapping: dict
+    + mapping: dict
 }
-
-
 
 class AnotherTransform {
     - config: AnotherTransformConfig
     + transform()
 }
+class AnotherTransformConfig  <<pydantic>> {
+}
 
 
+Transformer *-l- TransformerConfig
 
-TransformerChain -r-|> Transformer
-TransformerChain *-l- TransformerChainConfig
 
-TransformerConfig -u-|> BaseTransformerConfig
-TransformerChainConfig --|> BaseTransformerConfig
-Transformer --* BaseTransformerConfig
+TransformerChain -u-|> Transformer
+TransformerChain *-d- TransformerChainConfig
+'TransformerChainConfig -d-|> TransformerConfig
 
 MapKeys -u-|> Transformer
 MapKeys *-d- MapKeysConfig
-MapKeysConfig -d-|> TransformerConfig
+'MapKeysConfig -d-|> TransformerConfig
+
 AnotherTransform -u-|> Transformer
 AnotherTransform *-d- AnotherTransformConfig
-AnotherTransformConfig -d-|> TransformerConfig
+'AnotherTransformConfig -d-|> TransformerConfig
 @enduml

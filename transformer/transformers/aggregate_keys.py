@@ -1,22 +1,21 @@
 import logging
-from typing import Literal, Optional, Pattern
+from typing import Dict, List, Optional, Pattern
 
 from pydantic import root_validator
 
-from ..abstract import Transformer, TransformerConfig
+from transformer.transformers.abstract import ExtraHashableModel, Transformer
 
 logger = logging.getLogger(__name__)
 
 
-class AggregateKeyValueConfig(TransformerConfig):
+class AggregateKeyValueConfig(ExtraHashableModel):
     """
     The Keys are optional, and can be used to aggregate all values of these keys.
     The pattern aggregates all values with the pattern into the new key.
     Both can be used at the same time but they cant be both None.
     """
 
-    name: Literal["aggregate-keys"]
-    keys: Optional[list[str]]
+    keys: Optional[List[str]]
     pattern: Optional[Pattern]
     new_key: str
 
@@ -29,19 +28,14 @@ class AggregateKeyValueConfig(TransformerConfig):
         return values
 
 
-class AggregateKeyValue(Transformer):
+class AggregateKeyValue(Transformer[AggregateKeyValueConfig]):
     """
     This transformer is responsible for aggregating data. Pass a list of keys or a RegEx pattern and the keys
     will be stored inside a list in a new_key.
     Both pattern and Keys list can be used at the same time.
     """
 
-    def __init__(self, config: AggregateKeyValueConfig):
-        """"""
-        super().__init__(config)
-        self.__config = config
-
-    def transform(self, data: dict, metadata: dict) -> dict:
+    def transform(self, data: Dict, metadata: Dict) -> Dict:
         """
         new_key: emails
         pattern: ^(email_).
@@ -67,10 +61,10 @@ class AggregateKeyValue(Transformer):
         value_list = []
         keys_set = set()
         pattern_keys_set = set()
-        if self.__config.keys is not None:
-            keys_set = set(filter(lambda k: k in data.keys(), self.__config.keys))
-        if self.__config.pattern is not None:
-            pattern = self.__config.pattern
+        if self._config.keys is not None:
+            keys_set = set(filter(lambda k: k in data.keys(), self._config.keys))
+        if self._config.pattern is not None:
+            pattern = self._config.pattern
             pattern_keys_set = set(
                 filter(lambda k: bool(pattern.fullmatch(k)), data.keys())
             )
@@ -79,5 +73,5 @@ class AggregateKeyValue(Transformer):
             value_list.append(data[key])
             del data_copy[key]
 
-        data_copy[self.__config.new_key] = value_list
+        data_copy[self._config.new_key] = value_list
         return data_copy

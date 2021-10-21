@@ -1,19 +1,18 @@
-from typing import Literal, Optional, Pattern
+from typing import Dict, List, Optional, Pattern
 
 from pydantic import root_validator
 
-from ..abstract import Transformer, TransformerConfig
+from transformer.transformers.abstract import ExtraHashableModel, Transformer
 
 
-class DeleteKeysConfig(TransformerConfig):
+class DeleteKeysConfig(ExtraHashableModel):
     """
     Keys are a list of keys to be deleted.
     Pattern are a RegEx pattern that will instruct the transformer to delete every key that is a fullmatch to the
     pattern.
     """
 
-    name: Literal["delete-keys"]
-    keys: Optional[list[str]]
+    keys: Optional[List[str]]
     pattern: Optional[Pattern]
 
     @root_validator
@@ -25,19 +24,14 @@ class DeleteKeysConfig(TransformerConfig):
         return values
 
 
-class DeleteKeys(Transformer):
+class DeleteKeys(Transformer[DeleteKeysConfig]):
     """
     This simply delete key-value pairs from the data dict. Its possible to specify the keys directly or to
     pass a Regular Expression (RegEx), every key that is a complete match to the RegEx will be deleted.
     Both can be used at the same time.
     """
 
-    def __init__(self, config: DeleteKeysConfig):
-        """"""
-        super().__init__(config)
-        self.__config = config
-
-    def transform(self, data: dict, metadata: dict) -> dict:
+    def transform(self, data: Dict, metadata: Dict) -> Dict:
         """
         Implements the deletion of key-value pairs.
         :param data: Data that contains the keys that should be deleted.
@@ -45,14 +39,14 @@ class DeleteKeys(Transformer):
         :return: Data without keys.
         """
         data_copy = data.copy()
-        if self.__config.keys is not None:
-            for key in self.__config.keys:
+        if self._config.keys is not None:
+            for key in self._config.keys:
                 try:
                     del data_copy[key]
                 except KeyError:
                     pass
-        if self.__config.pattern is not None:
-            pattern = self.__config.pattern
+        if self._config.pattern is not None:
+            pattern = self._config.pattern
             for key in filter(lambda k: bool(pattern.fullmatch(k)), data.keys()):
                 try:
                     del data_copy[key]

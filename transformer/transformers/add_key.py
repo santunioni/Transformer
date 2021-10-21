@@ -1,17 +1,16 @@
 import re
-from typing import Literal
+from typing import Dict
 
-from ..abstract import Transformer, TransformerConfig
+from transformer.transformers.abstract import ExtraHashableModel, Transformer
 
 
-class AddKeyValuesConfig(TransformerConfig):
+class AddKeyValuesConfig(ExtraHashableModel):
     """The key_values dict is a dict of key-value pairs to be added to the data"""
 
-    name: Literal["add-key-values"]
-    key_values: dict
+    key_values: Dict
 
 
-class AddKeyValues(Transformer):
+class AddKeyValues(Transformer[AddKeyValuesConfig]):
     """
     This Transform is able to add key-value pairs to the data. The pairs are passed inside a dict and they will be
     incorporated into the data.
@@ -36,11 +35,7 @@ class AddKeyValues(Transformer):
     Only keys that map to strings can be passed. The strings are passed with .lower() method.
     """
 
-    def __init__(self, config: AddKeyValuesConfig):
-        super().__init__(config)
-        self.__config = config
-
-    def transform(self, data: dict, metadata: dict) -> dict:
+    def transform(self, data: Dict, metadata: Dict) -> Dict:
         """
         Add the key values to the data.
         First the keys in key_values are replaced then its values (if they are strings).
@@ -50,7 +45,7 @@ class AddKeyValues(Transformer):
         :return: the transformed data
         """
         replaced_key_value_dict = {}
-        for key, value in self.__config.key_values.items():
+        for key, value in self._config.key_values.items():
             if "${" in key:
                 key = AddKeyValues._replace_key_placeholders_with_values(
                     key, data, metadata

@@ -1,6 +1,5 @@
-from .chain import get_transformer  # noqa
-from .config import TransformConfig  # noqa
+from .command import ChainCommand, Command
 
-__all__ = ["TransformConfig", "get_transformer"]
+__all__ = ["ChainCommand", "Command"]
 
-__VERSION__ = "2.1.7"
+__version__ = "2.1.7"

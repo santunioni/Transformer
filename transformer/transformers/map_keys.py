@@ -1,20 +1,19 @@
-from typing import Any, Literal, Optional, Union
+from typing import Any, Dict, List, Optional, Set, Union
 
-from ..abstract import Transformer, TransformerConfig
+from transformer.transformers.abstract import ExtraHashableModel, Transformer
 
 
-class MapKeysConfig(TransformerConfig):
+class MapKeysConfig(ExtraHashableModel):
     """
     This is the configuration for the MapKeys transformer.
     In order to call this transformer pass the name "map-keys" and a mapping dict.
     """
 
-    name: Literal["map-keys"]
-    mapping: dict[str, str]
+    mapping: Dict[str, str]
     preserve_unmapped: bool = True
 
 
-class MapKeys(Transformer):
+class MapKeys(Transformer[MapKeysConfig]):
     """
     The MapKeys is a complete dict re-designer.
     It lets you rename the keys and also restructure the entire dict. Creating new nested data where there wasn't
@@ -22,12 +21,7 @@ class MapKeys(Transformer):
     dictionary.
     """
 
-    def __init__(self, config: MapKeysConfig):
-        """"""
-        super().__init__(config)
-        self.__config = config
-
-    def transform(self, data: dict, metadata: dict) -> dict:
+    def transform(self, data: Dict, metadata: Dict) -> Dict:
         """
         The mapping is done in 4 major steps:
 
@@ -53,7 +47,7 @@ class MapKeys(Transformer):
         flat_data = MapKeys.flatten_data(data)
         translated_dict: dict = {}
 
-        for map_key, map_value in self.__config.mapping.items():
+        for map_key, map_value in self._config.mapping.items():
 
             if metadata is not None:
                 for meta_key, meta_value in metadata.items():
@@ -68,16 +62,16 @@ class MapKeys(Transformer):
                     translated_dict, commands, flat_data[map_key]
                 )
 
-        if self.__config.preserve_unmapped:
-            for unmapped_key in set(flat_data.keys() - self.__config.mapping.keys()):
+        if self._config.preserve_unmapped:
+            for unmapped_key in set(flat_data.keys() - self._config.mapping.keys()):
                 translated_dict[unmapped_key] = flat_data[unmapped_key]
 
         return translated_dict
 
     @staticmethod
     def flatten_data(
-        input_data: dict[str, Union[list, set, dict, str, int, bool, float, None]]
-    ) -> dict[str, Union[str, int, bool, float, None]]:
+        input_data: Dict[str, Union[List, Set, Dict, str, int, bool, float, None]]
+    ) -> Dict[str, Union[str, int, bool, float, None]]:
         """
         This method is recursive by necessity. It flattens the keys inside data.
         A key_1 of dictionary inside a another dict inside a list inside another dict
@@ -87,10 +81,10 @@ class MapKeys(Transformer):
         :return: flattened data.
         """
         sep = "."
-        obj: dict[str, Union[str, int, bool, float, None]] = {}
+        obj: Dict[str, Union[str, int, bool, float, None]] = {}
 
         def scan(
-            input_value: Union[list, set, dict[str, Any], str, int, bool, float, None],
+            input_value: Union[List, Set, Dict[str, Any], str, int, bool, float, None],
             parent_key: str = "",
         ):
             if isinstance(input_value, (list, set)):
@@ -114,7 +108,7 @@ class MapKeys(Transformer):
 
     @staticmethod
     def __map_data(
-        current_structure: Union[dict, list], command_list: list[str], value: Any
+        current_structure: Union[Dict, List], command_list: List[str], value: Any
     ):
         """
         This method is also recursive by necessity. It reads the values from the mapping
@@ -130,7 +124,7 @@ class MapKeys(Transformer):
         the value from the parameter is put inside the structure.
 
         :param current_structure: Can be a list or a dict.
-        :param command_list: The list of commands, the current and next command are important.
+        :param command_list: The list of transformers, the current and next command are important.
         :param value: The value that will be passed at the last command.
         :return: Return the built structure for this command list incorporated into the passed initial structure.
         """
@@ -177,7 +171,7 @@ class MapKeys(Transformer):
         return current_structure
 
     @staticmethod
-    def __create_big_enough_list(index: int, list_to_write: Optional[list[Any]]):
+    def __create_big_enough_list(index: int, list_to_write: Optional[List[Any]]):
         """
         It gets a list structure in list_to_write and them puts its values in the correct indexes in a list
         of length given by index. But only if the index is greater than the length list_to_write, otherwise it simply

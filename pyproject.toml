@@ -1,3 +1,44 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.commitizen]
+version = "2.1.7"
+tag_format = "$major.$minor.$patch$prerelease"
+update_changelog_on_bump = true
+annotated_tag = true
+check_consistency = true
+version_files = [
+    "VERSION",
+    "pyproject.toml",
+    "transformer/__init__.py"
+]
+
+[tool.mypy]
+ignore_missing_imports = true
+no_silence_site_packages = true
+disallow_untyped_calls = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_untyped_globals = true
+disallow_redefinition = true
+no_implicit_reexport = true
+pretty = true
+sqlite_cache = true
+
+[[tool.mypy.overrides]]
+module = ["faker.*", "dotenv.*", "pytest.*"]
+follow_imports = "skip"
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = ["pydantic.*"]
+no_implicit_optional = false
+warn_unused_ignores = false
+disallow_untyped_calls = false
+disallow_untyped_globals = false
+
 [tool.poetry]
 name = "transformer"
 version = "2.1.7"
@@ -14,60 +55,55 @@ repository = "https://gitlab.decode.buzz/the-flash/libraries/json-transformer"
 include = ["transformer/py.typed"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 ujson = "^4.2.0"
 pydantic = "^1.8.2"
 
 [tool.poetry.dev-dependencies]
+tox = "^3.24.4"
 pytest = "^6.2.5"
 pytest-cov = "^3.0.0"
+python-dotenv = "^0.19.1"
 mypy = "^0.910"
-python-dotenv = "^0.19.0"
 devtools = "^0.8.0"
-types-ujson = "^0.1.1"
+types-ujson = "^4.2.0"
 Faker = "^8.12.1"
 pre-commit = "^2.15.0"
 commitizen = "^2.19.0"
 black = "^21.9b0"
-flake8 = "^3.9.2"
+flake8 = "^4.0.1"
+pylint = "^2.11.1"
+pytest-randomly = "^3.10.1"
 
-[tool.poetry.urls]
-"Bug Tracker" = "https://gitlab.decode.buzz/the-flash/libraries/json-transformer/issues"
+[tool.pylint.design]
+max-returns = 8
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.mypy]
-ignore_missing_imports = true
-no_silence_site_packages = true
-disallow_untyped_calls = true
-no_implicit_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-disallow_untyped_globals = true
-disallow_redefinition = true
-no_implicit_reexport = true
-pretty = true
-sqlite_cache = true
-
-[[tool.mypy.overrides]]
-module=["faker.*", "dotenv.*"]
-follow_imports = "skip"
-warn_unused_ignores = true
-
-[[tool.mypy.overrides]]
-module=["pydantic.*"]
-no_implicit_optional = false
-warn_unused_ignores = false
-disallow_untyped_calls = false
-disallow_untyped_globals = false
-
-[tool.commitizen]
-version = "2.1.7"
-tag_format = "v$major.$minor.$patch"
-version_files = [
-    "VERSION",
-    "pyproject.toml",
-    "transformer/__init__.py"
+[tool.pylint.messages_control]
+max-line-length = 120
+disable = [
+    "missing-docstring",
+    "unused-argument",
+    "line-too-long",
+    "fixme",
+    "too-few-public-methods",
+    "too-many-arguments",
+    "c-extension-no-member",
+    "no-name-in-module"
 ]
+
+[tool.pytest]
+mock_use_standalone_module = true
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = True
+envlist = py38,py39,py310
+[tox:.package]
+basepython = python3
+
+[testenv]
+deps = pytest
+       pytest-randomly
+commands = pytest tests
+"""

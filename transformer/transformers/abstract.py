@@ -1,5 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
+from typing import Dict, Generic, TypeVar
 
 import ujson
 from pydantic import BaseModel, Extra
@@ -11,7 +12,7 @@ def ujson_dumps(data, default, **dumps_kwargs):  # pylint: disable=W0613
     return ujson.dumps(data, ensure_ascii=False)
 
 
-class BaseHashableModel(BaseModel):
+class ExtraHashableModel(BaseModel):
     def __hash__(self):
         return hash(str(self))
 
@@ -21,31 +22,24 @@ class BaseHashableModel(BaseModel):
         extra = Extra.allow
 
 
-class TransformerConfig(BaseHashableModel):
-    """
-    A General transformer config has a UNIQUE name, declared in each transformer config.
-    Each Transformer config has also its own parameters.
-    New Transformer's added to this service require the creation of a standard name for it.
-    """
-
-    name: str
+TransformerConfig = TypeVar("TransformerConfig")
 
 
-class Transformer(ABC):
+class Transformer(Generic[TransformerConfig], ABC):
     """
     A abstract transformer has declares and interface for the general transformer method.
     """
 
-    @abstractmethod
-    def __init__(self, config: BaseHashableModel):
+    def __init__(self, config: TransformerConfig):
         logger.info(
             "Initializing object of class %s with config parameter of class %s ...",
             self.__class__.__name__,
             config.__class__.__name__,
         )
+        self._config = config
 
     @abstractmethod
-    def transform(self, data: dict, metadata: dict) -> dict:
+    def transform(self, data: Dict, metadata: Dict) -> Dict:
         """
         A General transformer method, each concrete transformer will implement this method. This method is the one
         that actually implements the transformation on the relevant data.
