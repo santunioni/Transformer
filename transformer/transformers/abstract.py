@@ -31,7 +31,7 @@ class Transformer(Generic[TransformerConfig], ABC):
     """
 
     def __init__(self, config: TransformerConfig):
-        logger.info(
+        logger.debug(
             "Initializing object of class %s with config parameter of class %s ...",
             self.__class__.__name__,
             config.__class__.__name__,
