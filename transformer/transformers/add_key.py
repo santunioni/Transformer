@@ -1,5 +1,5 @@
 import re
-from typing import Dict
+from typing import Dict, Tuple
 
 from transformer.transformers.abstract import ExtraHashableModel, Transformer
 
@@ -35,7 +35,7 @@ class AddKeyValues(Transformer[AddKeyValuesConfig]):
     Only keys that map to strings can be passed. The strings are passed with .lower() method.
     """
 
-    def transform(self, data: Dict, metadata: Dict) -> Dict:
+    def transform(self, data: Dict, metadata: Dict) -> Tuple[Dict, Dict]:
         """
         Add the key values to the data.
         First the keys in key_values are replaced then its values (if they are strings).
@@ -58,7 +58,7 @@ class AddKeyValues(Transformer[AddKeyValuesConfig]):
 
         data = {**data, **replaced_key_value_dict}
 
-        return data
+        return data, metadata
 
     @staticmethod
     def _replace_key_placeholders_with_values(

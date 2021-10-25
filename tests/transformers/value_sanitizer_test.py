@@ -28,7 +28,7 @@ def test_aggregate_keys():
             string_methods=["lower"],
         )
     )
-    transformed_data = sanitizer.transform(data, {})
+    transformed_data, _ = sanitizer.transform(data, {})
     assert target_data == transformed_data
 
 
@@ -48,5 +48,5 @@ def test_cpf_mask_remover():
     sanitizer = ValueSanitizer(
         config=ValueSanitizerConfig(key_pattern="cpf", substitution_pattern="[^0-9]")
     )
-    transformed_data = sanitizer.transform(data, {})
+    transformed_data, _ = sanitizer.transform(data, {})
     assert target_data == transformed_data

@@ -17,11 +17,11 @@ def test_delete_keys(data, target_data):
     transformer = DeleteKeys(
         config=DeleteKeysConfig(keys=["email_1", "email_2", "email_3"])
     )
-    transformed_data = transformer.transform(data, {})
+    transformed_data, _ = transformer.transform(data, {})
     assert target_data == transformed_data
 
 
 def test_delete_pattern(data, target_data):
     transformer = DeleteKeys(config=DeleteKeysConfig(pattern="^(email_).*"))
-    transformed_data = transformer.transform(data, {})
+    transformed_data, _ = transformer.transform(data, {})
     assert target_data == transformed_data

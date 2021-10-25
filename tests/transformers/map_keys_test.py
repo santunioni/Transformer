@@ -276,7 +276,7 @@ def test_flatten_dict(data_credito):
 
 def test_mapped_dict(data_credito, metadata_credito, target_data, mapping):
     mapper = MapKeys(config=MapKeysConfig(mapping=mapping, preserve_unmapped=False))
-    assert target_data == mapper.transform(data_credito, metadata_credito)
+    assert target_data == mapper.transform(data_credito, metadata_credito)[0]
 
 
 def test_unflatted_dict(
@@ -285,7 +285,7 @@ def test_unflatted_dict(
     mapper = MapKeys(
         config=MapKeysConfig(mapping=nested_mapping, preserve_unmapped=False)
     )
-    assert nested_target_data == mapper.transform(data_credito, metadata_credito)
+    assert nested_target_data == mapper.transform(data_credito, metadata_credito)[0]
 
 
 if __name__ == "__main__":

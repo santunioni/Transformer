@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 from transformer.transformers.abstract import ExtraHashableModel, Transformer
 
@@ -21,7 +21,7 @@ class MapKeys(Transformer[MapKeysConfig]):
     dictionary.
     """
 
-    def transform(self, data: Dict, metadata: Dict) -> Dict:
+    def transform(self, data: Dict, metadata: Dict) -> Tuple[Dict, Dict]:
         """
         The mapping is done in 4 major steps:
 
@@ -66,7 +66,7 @@ class MapKeys(Transformer[MapKeysConfig]):
             for unmapped_key in set(flat_data.keys() - self._config.mapping.keys()):
                 translated_dict[unmapped_key] = flat_data[unmapped_key]
 
-        return translated_dict
+        return translated_dict, metadata
 
     @staticmethod
     def flatten_data(

@@ -8,7 +8,15 @@ from transformer.transformers.aggregate_keys import (
     AggregateKeyValueConfig,
 )
 from transformer.transformers.del_key import DeleteKeys, DeleteKeysConfig
+from transformer.transformers.dinamize_unpack import (
+    DinamizeUnpack,
+    DinamizeUnpackConfig,
+)
 from transformer.transformers.map_keys import MapKeys, MapKeysConfig
+from transformer.transformers.pipedrive_unpack import (
+    PipedriveUnpack,
+    PipedriveUnpackConfig,
+)
 from transformer.transformers.value_sanitizer import (
     ValueSanitizer,
     ValueSanitizerConfig,
@@ -22,6 +30,8 @@ COMMAND_NAMES = Literal[
     "delete-keys",
     "aggregate-keys",
     "add-key-values",
+    "pipedrive-unpack",
+    "dinamize-unpack",
 ]
 NAME_TO_CONFIG_AND_TRANSFORM_CLASSES: Mapping[
     COMMAND_NAMES, Tuple[Type[ExtraHashableModel], Type[Transformer]]
@@ -31,6 +41,8 @@ NAME_TO_CONFIG_AND_TRANSFORM_CLASSES: Mapping[
     "delete-keys": (DeleteKeysConfig, DeleteKeys),
     "aggregate-keys": (AggregateKeyValueConfig, AggregateKeyValue),
     "add-key-values": (AddKeyValuesConfig, AddKeyValues),
+    "pipedrive-unpack": (PipedriveUnpackConfig, PipedriveUnpack),
+    "dinamize-unpack": (DinamizeUnpackConfig, DinamizeUnpack),
 }
 
 

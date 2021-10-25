@@ -1,12 +1,8 @@
-from typing import Dict, Iterable
+from typing import Dict, Iterable, Tuple
 
 from transformer.transformers.abstract import Transformer
 
 TransformerChainConfig = Iterable[Transformer]
-
-
-class AtomicTransformerException(Exception):
-    ...
 
 
 class TransformerChain(Transformer[TransformerChainConfig]):
@@ -17,7 +13,7 @@ class TransformerChain(Transformer[TransformerChainConfig]):
     This class is called first
     """
 
-    def transform(self, data: Dict, metadata: Dict) -> Dict:
+    def transform(self, data: Dict, metadata: Dict) -> Tuple[Dict, Dict]:
         """
         This is actually a chain that will call each transformer in the first config list and pass its result
         (the transformed data) to the next transformer.
@@ -25,10 +21,6 @@ class TransformerChain(Transformer[TransformerChainConfig]):
         :param metadata: Metadata
         :return: data to be inserted in the ServiceResponse object.
         """
-        data_copy = data.copy()
-        try:
-            for transformer in self._config:
-                data_copy = transformer.transform(data_copy, metadata)
-            return data_copy
-        except Exception as err:
-            raise AtomicTransformerException from err
+        for transformer in self._config:
+            data, metadata = transformer.transform(data, metadata)
+        return data, metadata

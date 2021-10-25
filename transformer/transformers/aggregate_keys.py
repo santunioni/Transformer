@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List, Optional, Pattern
+from typing import Dict, List, Optional, Pattern, Tuple
 
 from pydantic import root_validator
 
@@ -35,7 +35,7 @@ class AggregateKeyValue(Transformer[AggregateKeyValueConfig]):
     Both pattern and Keys list can be used at the same time.
     """
 
-    def transform(self, data: Dict, metadata: Dict) -> Dict:
+    def transform(self, data: Dict, metadata: Dict) -> Tuple[Dict, Dict]:
         """
         new_key: emails
         pattern: ^(email_).
@@ -74,4 +74,4 @@ class AggregateKeyValue(Transformer[AggregateKeyValueConfig]):
             del data_copy[key]
 
         data_copy[self._config.new_key] = value_list
-        return data_copy
+        return data_copy, metadata

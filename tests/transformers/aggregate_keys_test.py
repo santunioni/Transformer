@@ -20,7 +20,7 @@ def test_aggregate_keys(data, target_data):
     transformer = AggregateKeyValue(
         config=AggregateKeyValueConfig(keys=keys, new_key="emails")
     )
-    transformed_data = transformer.transform(data, {})
+    transformed_data, _ = transformer.transform(data, {})
     for p in (transformed_data, target_data):
         p["emails"] = set(p["emails"])
     assert target_data == transformed_data
@@ -30,7 +30,7 @@ def test_aggregate_pattern(data, target_data):
     transformer = AggregateKeyValue(
         config=AggregateKeyValueConfig(pattern="^(email_).*", new_key="emails")
     )
-    transformed_data = transformer.transform(data, {})
+    transformed_data, _ = transformer.transform(data, {})
     for p in (transformed_data, target_data):
         p["emails"] = set(p["emails"])
     assert target_data == transformed_data

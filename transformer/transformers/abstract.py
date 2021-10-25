@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, Generic, TypeVar
+from typing import Dict, Generic, Tuple, TypeVar
 
 import ujson
 from pydantic import BaseModel, Extra
@@ -39,7 +39,7 @@ class Transformer(Generic[TransformerConfig], ABC):
         self._config = config
 
     @abstractmethod
-    def transform(self, data: Dict, metadata: Dict) -> Dict:
+    def transform(self, data: Dict, metadata: Dict) -> Tuple[Dict, Dict]:
         """
         A General transformer method, each concrete transformer will implement this method. This method is the one
         that actually implements the transformation on the relevant data.

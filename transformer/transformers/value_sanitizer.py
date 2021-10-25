@@ -1,5 +1,5 @@
 import re
-from typing import Dict, List, Optional, Pattern, Union
+from typing import Dict, List, Optional, Pattern, Tuple, Union
 
 from transformer.transformers.abstract import ExtraHashableModel, Transformer
 
@@ -23,7 +23,7 @@ class ValueSanitizer(Transformer[ValueSanitizerConfig]):
     implementation of string methods.
     """
 
-    def transform(self, data: Dict, metadata: Dict) -> Dict:
+    def transform(self, data: Dict, metadata: Dict) -> Tuple[Dict, Dict]:
         """
         Implements the transformer by finding all keys thta match keys_pattern, then for each key implement the
         substitution then the string_methods.
@@ -48,4 +48,4 @@ class ValueSanitizer(Transformer[ValueSanitizerConfig]):
                     value = getattr(str, self._config.string_methods)(value)
             del data_copy[key]
             data_copy[key] = value
-        return data_copy
+        return data_copy, metadata

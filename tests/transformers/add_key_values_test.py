@@ -20,7 +20,7 @@ def target_data(data):
 def test_add_placeholder(data, target_data):
     key_values = {"a_${a}": True, "b_${b}": "${a}_${b}"}
     adder = AddKeyValues(config=AddKeyValuesConfig(key_values=key_values))
-    transformed_data = adder.transform(data, {})
+    transformed_data, _ = adder.transform(data, {})
     assert target_data == transformed_data
 
 
@@ -45,5 +45,5 @@ def test_empiricus_dinamize_manipulation():
         },
     )
     adder = AddKeyValues(config=transformer_config)
-    new_data = adder.transform(data, {})
+    new_data, _ = adder.transform(data, {})
     assert new_data == target_data
