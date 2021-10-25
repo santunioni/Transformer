@@ -1,3 +1,13 @@
+## 2.2.0 (2021-10-25)
+
+### Feat
+
+- add possibility for changing the metadata
+
+### BREAKING CHANGE
+
+- Breaks backward compatibility, as the clients must now unpack the (data, metadata) tuple for retrieving the data field.
+
 ## 2.2.0a1 (2021-10-23)
 
 ## 2.2.0a0 (2021-10-21)
