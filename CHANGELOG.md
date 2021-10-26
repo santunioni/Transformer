@@ -1,3 +1,9 @@
+## 2.2.1 (2021-10-26)
+
+### Fix
+
+- pipedrive and dinamize unpack commands now create nested dict
+
 ## 2.2.0 (2021-10-25)
 
 ### Feat
