@@ -1,3 +1,9 @@
+## 2.3.0 (2021-10-27)
+
+### Feat
+
+- Adds behaviour to Map Keys
+
 ## 2.2.1 (2021-10-26)
 
 ### Fix
