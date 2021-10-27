@@ -11,6 +11,7 @@ class MapKeysConfig(ExtraHashableModel):
 
     mapping: Dict[str, str]
     preserve_unmapped: bool = True
+    ignore_missing_data: bool = True
 
 
 class MapKeys(Transformer[MapKeysConfig]):
@@ -49,6 +50,9 @@ class MapKeys(Transformer[MapKeysConfig]):
 
         for map_key, map_value in self._config.mapping.items():
 
+            if self._config.ignore_missing_data and map_key not in flat_data.keys():
+                continue
+
             if metadata is not None:
                 for meta_key, meta_value in metadata.items():
                     map_key = map_key.replace("@{" + meta_key + "}", str(meta_value))
@@ -73,7 +77,7 @@ class MapKeys(Transformer[MapKeysConfig]):
         input_data: Dict[str, Union[List, Set, Dict, str, int, bool, float, None]]
     ) -> Dict[str, Union[str, int, bool, float, None]]:
         """
-        This method is recursive by necessity. It flattens the keys inside data.
+        This method is recursive. It flattens the keys inside data.
         A key_1 of dictionary inside a another dict inside a list inside another dict
         will be turn into
         key_3.$[list_index].key_2.key_1
@@ -111,7 +115,7 @@ class MapKeys(Transformer[MapKeysConfig]):
         current_structure: Union[Dict, List], command_list: List[str], value: Any
     ):
         """
-        This method is also recursive by necessity. It reads the values from the mapping
+        This method is recursive. It reads the values from the mapping
         in order to build the new data structure.
 
         The command_list specifies the structure. It can be something like ['key_1', '$[1]', 'key_2'].
@@ -131,7 +135,7 @@ class MapKeys(Transformer[MapKeysConfig]):
         command = command_list[0]
         new_command_list = command_list[1:]
 
-        if "$[" not in command and isinstance(current_structure, dict):
+        if "$[" not in command and isinstance(current_structure, Dict):
             if len(command_list) == 1:
                 current_structure[command] = value
                 return current_structure
@@ -146,6 +150,7 @@ class MapKeys(Transformer[MapKeysConfig]):
                 next_structure = MapKeys.__create_big_enough_list(
                     index, current_structure.get(command)
                 )
+
             current_structure[command] = MapKeys.__map_data(
                 next_structure, new_command_list, value
             )
