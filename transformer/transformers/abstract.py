@@ -39,12 +39,15 @@ class Transformer(Generic[TransformerConfig], ABC):
         self._config = config
 
     @abstractmethod
-    def transform(self, data: Dict, metadata: Dict) -> Tuple[Dict, Dict]:
+    def transform(self, payload: Dict, /, metadata: Dict) -> Tuple[Dict, Dict]:
         """
         A General transformer method, each concrete transformer will implement this method. This method is the one
         that actually implements the transformation on the relevant data.
-        :param data: The data tha comes in the ServiceLetter.
+        :param payload: The data tha comes in the ServiceLetter.
         :param metadata: Metadata can possibly be used to insert a few alterations in the transformer.
         :return: returns the data that will be insert on a ServiceResponse object.
         """
         ...
+
+    def __call__(self, data: Dict, metadata: Dict) -> Tuple[Dict, Dict]:
+        return self.transform(data, metadata)

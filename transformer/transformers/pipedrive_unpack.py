@@ -8,21 +8,21 @@ class PipedriveUnpackConfig(ExtraHashableModel):
 
 
 class PipedriveUnpack(Transformer[PipedriveUnpackConfig]):
-    def transform(self, data: Dict, metadata: Dict) -> Tuple[Dict, Dict]:
-        _object = data.get("meta", {}).get("object")
+    def transform(
+        self, payload: Dict, /, metadata: Optional[Dict] = None
+    ) -> Tuple[Dict, Dict]:
+        _object = payload.get("meta", {}).get("object")
         r_data = {
             "pipedrive": {
-                f"{_object}": {
-                    key: value for key, value in data.get("current", {}).items()
-                },
-                "company": {"id": data.get("meta", {}).get("company_id")},
+                f"{_object}": {payload.get("current", {})},
+                "company": {"id": payload.get("meta", {}).get("company_id")},
             }
         }
         r_metadata = {
             key: value
-            for key, value in data.get("meta", {}).items()
+            for key, value in payload.get("meta", {}).items()
             if key in ("action", "change_source", "company_id", "host", "id")
         }
         r_metadata.update({"origin": "pipedrive", "object": _object})
-        r_metadata.update(metadata)
+        r_metadata.update(metadata or {})
         return r_data, r_metadata

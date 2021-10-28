@@ -23,19 +23,21 @@ class ValueSanitizer(Transformer[ValueSanitizerConfig]):
     implementation of string methods.
     """
 
-    def transform(self, data: Dict, metadata: Dict) -> Tuple[Dict, Dict]:
+    def transform(
+        self, payload: Dict, /, metadata: Optional[Dict] = None
+    ) -> Tuple[Dict, Dict]:
         """
         Implements the transformer by finding all keys thta match keys_pattern, then for each key implement the
         substitution then the string_methods.
-        :param data: Untransformed Data
+        :param payload: Untransformed Data
         :param metadata: Metadata
         :return: Transformed data
         """
-        data_copy = data.copy()
+        data_copy = payload.copy()
         for key in filter(
-            lambda k: bool(self._config.key_pattern.fullmatch(k)), data.keys()
+            lambda k: bool(self._config.key_pattern.fullmatch(k)), payload.keys()
         ):
-            value = data[key]
+            value = payload[key]
             if self._config.substitution_pattern:
                 value = re.sub(
                     self._config.substitution_pattern, self._config.sub_string, value
@@ -48,4 +50,4 @@ class ValueSanitizer(Transformer[ValueSanitizerConfig]):
                     value = getattr(str, self._config.string_methods)(value)
             del data_copy[key]
             data_copy[key] = value
-        return data_copy, metadata
+        return data_copy, metadata or {}

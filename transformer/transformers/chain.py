@@ -1,4 +1,4 @@
-from typing import Dict, Iterable, Tuple
+from typing import Dict, Iterable, Optional, Tuple
 
 from transformer.transformers.abstract import Transformer
 
@@ -13,14 +13,18 @@ class TransformerChain(Transformer[TransformerChainConfig]):
     This class is called first
     """
 
-    def transform(self, data: Dict, metadata: Dict) -> Tuple[Dict, Dict]:
+    def transform(
+        self, payload: Dict, /, metadata: Optional[Dict] = None
+    ) -> Tuple[Dict, Dict]:
         """
         This is actually a chain that will call each transformer in the first config list and pass its result
         (the transformed data) to the next transformer.
-        :param data: Initial untransformed data.
+        :param payload: Initial untransformed data.
         :param metadata: Metadata
         :return: data to be inserted in the ServiceResponse object.
         """
+        if metadata is None:
+            metadata = {}
         for transformer in self._config:
-            data, metadata = transformer.transform(data, metadata)
-        return data, metadata
+            payload, metadata = transformer.transform(payload, metadata)
+        return payload, metadata

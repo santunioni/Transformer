@@ -35,7 +35,9 @@ class AggregateKeyValue(Transformer[AggregateKeyValueConfig]):
     Both pattern and Keys list can be used at the same time.
     """
 
-    def transform(self, data: Dict, metadata: Dict) -> Tuple[Dict, Dict]:
+    def transform(
+        self, payload: Dict, /, metadata: Optional[Dict] = None
+    ) -> Tuple[Dict, Dict]:
         """
         new_key: emails
         pattern: ^(email_).
@@ -57,21 +59,21 @@ class AggregateKeyValue(Transformer[AggregateKeyValueConfig]):
 
         :return:
         """
-        data_copy = data.copy()
+        data_copy = payload.copy()
         value_list = []
         keys_set = set()
         pattern_keys_set = set()
         if self._config.keys is not None:
-            keys_set = set(filter(lambda k: k in data.keys(), self._config.keys))
+            keys_set = set(filter(lambda k: k in payload.keys(), self._config.keys))
         if self._config.pattern is not None:
             pattern = self._config.pattern
             pattern_keys_set = set(
-                filter(lambda k: bool(pattern.fullmatch(k)), data.keys())
+                filter(lambda k: bool(pattern.fullmatch(k)), payload.keys())
             )
 
         for key in set.union(keys_set, pattern_keys_set):
-            value_list.append(data[key])
+            value_list.append(payload[key])
             del data_copy[key]
 
         data_copy[self._config.new_key] = value_list
-        return data_copy, metadata
+        return data_copy, metadata or {}

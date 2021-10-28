@@ -31,14 +31,16 @@ class DeleteKeys(Transformer[DeleteKeysConfig]):
     Both can be used at the same time.
     """
 
-    def transform(self, data: Dict, metadata: Dict) -> Tuple[Dict, Dict]:
+    def transform(
+        self, payload: Dict, /, metadata: Optional[Dict] = None
+    ) -> Tuple[Dict, Dict]:
         """
         Implements the deletion of key-value pairs.
-        :param data: Data that contains the keys that should be deleted.
+        :param payload: Data that contains the keys that should be deleted.
         :param metadata: Metadata.
         :return: Data without keys.
         """
-        data_copy = data.copy()
+        data_copy = payload.copy()
         if self._config.keys is not None:
             for key in self._config.keys:
                 try:
@@ -47,9 +49,9 @@ class DeleteKeys(Transformer[DeleteKeysConfig]):
                     pass
         if self._config.pattern is not None:
             pattern = self._config.pattern
-            for key in filter(lambda k: bool(pattern.fullmatch(k)), data.keys()):
+            for key in filter(lambda k: bool(pattern.fullmatch(k)), payload.keys()):
                 try:
                     del data_copy[key]
                 except KeyError:
                     pass
-        return data_copy, metadata
+        return data_copy, metadata or {}

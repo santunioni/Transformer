@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 from transformer.transformers.abstract import ExtraHashableModel, Transformer
 
@@ -35,30 +35,35 @@ class AddKeyValues(Transformer[AddKeyValuesConfig]):
     Only keys that map to strings can be passed. The strings are passed with .lower() method.
     """
 
-    def transform(self, data: Dict, metadata: Dict) -> Tuple[Dict, Dict]:
+    def transform(
+        self, payload: Dict, /, metadata: Optional[Dict] = None
+    ) -> Tuple[Dict, Dict]:
         """
         Add the key values to the data.
         First the keys in key_values are replaced then its values (if they are strings).
         They are stored in another dict which is merged with data dict.
-        :param data: the data that shall be transformed.
+        :param payload: the data that shall be transformed.
         :param metadata: metadata.
         :return: the transformed data
         """
+        if metadata is None:
+            metadata = {}
+
         replaced_key_value_dict = {}
         for key, value in self._config.key_values.items():
             if "${" in key:
                 key = AddKeyValues._replace_key_placeholders_with_values(
-                    key, data, metadata
+                    key, payload, metadata
                 )
             if isinstance(value, str) and "${" in value:
                 value = AddKeyValues._replace_key_placeholders_with_values(
-                    value, data, metadata
+                    value, payload, metadata
                 )
             replaced_key_value_dict[key] = value
 
-        data = {**data, **replaced_key_value_dict}
+        payload = {**payload, **replaced_key_value_dict}
 
-        return data, metadata
+        return payload, metadata
 
     @staticmethod
     def _replace_key_placeholders_with_values(

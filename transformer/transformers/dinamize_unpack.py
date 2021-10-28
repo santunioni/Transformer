@@ -8,12 +8,14 @@ class DinamizeUnpackConfig(ExtraHashableModel):
 
 
 class DinamizeUnpack(Transformer[DinamizeUnpackConfig]):
-    def transform(self, data: Dict, metadata: Dict) -> Tuple[Dict, Dict]:
-        dt = {
+    def transform(
+        self, payload: Dict, /, metadata: Optional[Dict] = None
+    ) -> Tuple[Dict, Dict]:
+        return_data = {
             "dinamize": {
                 field.get("Name"): field.get("Value")
-                for field in data.get("custom_fields", {}).values()
+                for field in payload.get("custom_fields", {}).values()
             }
         }
-        dt["dinamize"].update(data.get("fixed_fields", {}))
-        return dt, metadata
+        return_data["dinamize"].update(payload.get("fixed_fields", {}))
+        return return_data, metadata or {}

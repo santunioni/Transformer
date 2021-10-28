@@ -2,13 +2,13 @@ from typing import Sequence
 
 from pydantic import BaseModel
 
-from transformer.registry import COMMAND_NAMES, get_transformer
+from transformer.registry import CommandNames, get_transformer
 from transformer.transformers.abstract import ExtraHashableModel, Transformer
 from transformer.transformers.chain import TransformerChain
 
 
 class Command(ExtraHashableModel):
-    name: COMMAND_NAMES
+    name: CommandNames
     config: ExtraHashableModel
 
     def get_transformer(self) -> Transformer:

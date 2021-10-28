@@ -24,7 +24,7 @@ from transformer.transformers.value_sanitizer import (
 
 #   It's important to registry all transformers provided by the lib here,
 # aiming automatic instantiation of transformers
-COMMAND_NAMES = Literal[
+CommandNames = Literal[
     "map-keys",
     "value-sanitizer",
     "delete-keys",
@@ -34,7 +34,7 @@ COMMAND_NAMES = Literal[
     "dinamize-unpack",
 ]
 NAME_TO_CONFIG_AND_TRANSFORM_CLASSES: Mapping[
-    COMMAND_NAMES, Tuple[Type[ExtraHashableModel], Type[Transformer]]
+    CommandNames, Tuple[Type[ExtraHashableModel], Type[Transformer]]
 ] = {
     "map-keys": (MapKeysConfig, MapKeys),
     "value-sanitizer": (ValueSanitizerConfig, ValueSanitizer),
@@ -47,10 +47,10 @@ NAME_TO_CONFIG_AND_TRANSFORM_CLASSES: Mapping[
 
 
 class _Command(Protocol):
-    name: COMMAND_NAMES
+    name: CommandNames
     config: Any
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         ...
 
 
@@ -62,4 +62,4 @@ def get_transformer(command: _Command) -> Transformer:
     return transformer
 
 
-__all__ = ["COMMAND_NAMES", "NAME_TO_CONFIG_AND_TRANSFORM_CLASSES", "get_transformer"]
+__all__ = ["CommandNames", "NAME_TO_CONFIG_AND_TRANSFORM_CLASSES", "get_transformer"]

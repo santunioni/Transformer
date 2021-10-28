@@ -22,7 +22,9 @@ class MapKeys(Transformer[MapKeysConfig]):
     dictionary.
     """
 
-    def transform(self, data: Dict, metadata: Dict) -> Tuple[Dict, Dict]:
+    def transform(
+        self, payload: Dict, /, metadata: Optional[Dict] = None
+    ) -> Tuple[Dict, Dict]:
         """
         The mapping is done in 4 major steps:
 
@@ -45,7 +47,7 @@ class MapKeys(Transformer[MapKeysConfig]):
             If False, those keys are deleted.
         :return: transformed and restructured data.
         """
-        flat_data = MapKeys.flatten_data(data)
+        flat_data = MapKeys.flatten_data(payload)
         translated_dict: dict = {}
 
         for map_key, map_value in self._config.mapping.items():
@@ -70,7 +72,7 @@ class MapKeys(Transformer[MapKeysConfig]):
             for unmapped_key in set(flat_data.keys() - self._config.mapping.keys()):
                 translated_dict[unmapped_key] = flat_data[unmapped_key]
 
-        return translated_dict, metadata
+        return translated_dict, metadata or {}
 
     @staticmethod
     def flatten_data(
