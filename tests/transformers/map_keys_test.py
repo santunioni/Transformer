@@ -2,6 +2,7 @@ import unittest
 
 import pytest
 
+from transformer.transformers.flatten import Flatter, FlatterConfig
 from transformer.transformers.map_keys import MapKeys, MapKeysConfig
 
 
@@ -269,7 +270,7 @@ def nested_target_data():
 
 
 def test_flatten_dict(data_credito):
-    flatten_dict = MapKeys.flatten_data(data_credito)
+    flatten_dict, _ = Flatter(FlatterConfig()).transform(data_credito)
     for _, v in flatten_dict.items():
         assert not isinstance(v, (dict, list, set))
 

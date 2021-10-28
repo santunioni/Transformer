@@ -1,6 +1,7 @@
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from transformer.transformers.abstract import ExtraHashableModel, Transformer
+from transformer.transformers.flatten import Flatter, Unflatter
 
 
 class MapKeysConfig(ExtraHashableModel):
@@ -22,32 +23,34 @@ class MapKeys(Transformer[MapKeysConfig]):
     dictionary.
     """
 
+    def __init__(self, config: MapKeysConfig) -> None:
+        super().__init__(config)
+        self.__flatter = Flatter()
+        self.__unflatter = Unflatter()
+
     def transform(
         self, payload: Dict, /, metadata: Optional[Dict] = None
     ) -> Tuple[Dict, Dict]:
         """
         The mapping is done in 4 major steps:
 
-        1. The flattening process:
-            Turns the data_dict into a flat dict. Head to __flatten_data staticmethod for details.
+        1. Flattens the data.
         2. Metadata Replacers:
             Some key mapping parameters are specified in the metadata. Keys that have placeholders like
             ${metadata_key} will be substituted by values on the specified metadata key.
         3. Map Data.
-            The actual mapping occurs here. In this moment the keys of the mapping inside config match the keys of the
-            flat data dict. By using a key of the map in the data dict you are able to retrieve a value in the data.
-            The place where this value will be put into can be obtained by using the key that got this value in the
-            mapping dict. This results in a string Ex.: key_1.key_2.$[3].key_3. The string specifies the new structure
-            where this value in be put. In the last example it will reside in key_3 which is the key of a dictionary
-            inside the 4th place of a list, this list is inside key_2 of another dictionary, which in turn is in
-            another dictionary in key_1.
-        4. Preserve unmapped.
-            This step is optional and can be specified in the config, by default it happens.
-            It is responsible for preserving the keys that where not specified in the mapping process.
-            If False, those keys are deleted.
+                In this moment the keys of the mapping inside config match the keys of the flat payload. That is, the
+            payload and self._config.mapping have matching keys. Maybe not all keys in payload are in
+            self._config.mapping, in which case we choose what to do with those extra keys with the config
+            self._config.preserve_unmapped. If the opposite happens, the self._config.mapping have keys not present
+            in the payload, the configuration self._config.ignore_missing_data chooses what should be done.
+        4. Unflattens the data.
         :return: transformed and restructured data.
         """
-        flat_data = MapKeys.flatten_data(payload)
+        if metadata is None:
+            metadata = {}
+
+        flat_data, metadata = self.__flatter.transform(payload, metadata)
         translated_dict: dict = {}
 
         for map_key, map_value in self._config.mapping.items():
@@ -55,12 +58,9 @@ class MapKeys(Transformer[MapKeysConfig]):
             if self._config.ignore_missing_data and map_key not in flat_data.keys():
                 continue
 
-            if metadata is not None:
-                for meta_key, meta_value in metadata.items():
-                    map_key = map_key.replace("@{" + meta_key + "}", str(meta_value))
-                    map_value = map_value.replace(
-                        "@{" + meta_key + "}", str(meta_value)
-                    )
+            for meta_key, meta_value in metadata.items():
+                map_key = map_key.replace("@{" + meta_key + "}", str(meta_value))
+                map_value = map_value.replace("@{" + meta_key + "}", str(meta_value))
 
             if map_key in flat_data:
                 commands = map_value.split(".")
@@ -72,45 +72,7 @@ class MapKeys(Transformer[MapKeysConfig]):
             for unmapped_key in set(flat_data.keys() - self._config.mapping.keys()):
                 translated_dict[unmapped_key] = flat_data[unmapped_key]
 
-        return translated_dict, metadata or {}
-
-    @staticmethod
-    def flatten_data(
-        input_data: Dict[str, Union[List, Set, Dict, str, int, bool, float, None]]
-    ) -> Dict[str, Union[str, int, bool, float, None]]:
-        """
-        This method is recursive. It flattens the keys inside data.
-        A key_1 of dictionary inside a another dict inside a list inside another dict
-        will be turn into
-        key_3.$[list_index].key_2.key_1
-        :param input_data:The data tha will be flattened
-        :return: flattened data.
-        """
-        sep = "."
-        obj: Dict[str, Union[str, int, bool, float, None]] = {}
-
-        def scan(
-            input_value: Union[List, Set, Dict[str, Any], str, int, bool, float, None],
-            parent_key: str = "",
-        ):
-            if isinstance(input_value, (list, set)):
-                for index, value in enumerate(input_value):
-                    scan(
-                        value,
-                        parent_key
-                        + (sep if parent_key != "" else "")
-                        + "$["
-                        + str(index)
-                        + "]",
-                    )
-            elif isinstance(input_value, dict):
-                for key, value in input_value.items():
-                    scan(value, parent_key + (sep if parent_key != "" else "") + key)
-            else:
-                obj[parent_key] = input_value
-
-        scan(input_data)
-        return obj
+        return self.__unflatter.transform(translated_dict, metadata)
 
     @staticmethod
     def __map_data(
