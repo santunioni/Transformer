@@ -1,3 +1,17 @@
+## 2.4.0 (2021-10-29)
+
+### Feat
+
+- implement Flatter and Unflatter commands
+
+### Refactor
+
+- extract the Flatten logic out of MapKeys to a new transformer
+
+### Fix
+
+- make metadata an optional parameter for serveral transforms
+
 ## 2.3.0 (2021-10-27)
 
 ### Feat
