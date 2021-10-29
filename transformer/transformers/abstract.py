@@ -13,11 +13,13 @@ def ujson_dumps(data, default, **dumps_kwargs):  # pylint: disable=W0613
 
 
 class ExtraHashableModel(BaseModel):
+    def __hash__(self):
+        return hash(str(self))
+
     class Config:
         json_dumps = ujson_dumps
         json_loads = ujson.loads
         extra = Extra.allow
-        frozen = True
 
 
 TransformerConfig = TypeVar("TransformerConfig")
