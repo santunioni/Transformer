@@ -1,3 +1,15 @@
+## 2.4.1 (2021-10-29)
+
+### Fix
+
+- fix bug introduced in ExtraHashableModel, where dicts were not hashable
+- transformers return tuple[dict, dict] only when receives metadata as argument
+- pipedrive unpacking command is now working
+
+### Perf
+
+- create non-pydantic config for using flatter commands internally
+
 ## 2.4.0 (2021-10-29)
 
 ### Feat

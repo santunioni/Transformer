@@ -3,7 +3,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.commitizen]
-version = "2.4.0"
+version = "2.4.1"
 tag_format = "$major.$minor.$patch$prerelease"
 update_changelog_on_bump = true
 annotated_tag = true
@@ -41,7 +41,7 @@ disallow_untyped_globals = false
 
 [tool.poetry]
 name = "transformer"
-version = "2.4.0"
+version = "2.4.1"
 license = "Proprietary"
 description = "Declare possible commands for manipulating JSON Data."
 authors = [
