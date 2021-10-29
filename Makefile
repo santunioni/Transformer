@@ -13,6 +13,6 @@ mypy:
 	poetry run mypy transformer tests
 
 tests:
-	poetry run pytest --cov transformer tests
+	poetry run pytest
 
 quality: formatters linters mypy tests

@@ -1,7 +1,15 @@
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Dict, Mapping, Optional, Set, Tuple
+
+from pydantic import validator
 
 from transformer.transformers.abstract import ExtraHashableModel, Transformer
-from transformer.transformers.flatten import Flatter, Unflatter
+from transformer.transformers.flatters import Flatter, FlatterConfig, Unflatter
+
+
+class ReportMissingData(Exception):
+    def __init__(self, keys: Set[str]):
+        self.keys = keys
+        self.message = f"The keys f{self.keys} are missing in the payload."
 
 
 class MapKeysConfig(ExtraHashableModel):
@@ -10,9 +18,18 @@ class MapKeysConfig(ExtraHashableModel):
     In order to call this transformer pass the name "map-keys" and a mapping dict.
     """
 
-    mapping: Dict[str, str]
+    mapping: Mapping[str, str]
     preserve_unmapped: bool = True
     ignore_missing_data: bool = True
+    level_separator: str = "."
+    return_plain: bool = False
+
+    @validator("mapping")
+    def backwards_compatibility(cls, mapping: Dict[str, str]):
+        return {
+            key.replace(".$[", "["): value.replace(".$[", "[")
+            for key, value in mapping.items()
+        }
 
 
 class MapKeys(Transformer[MapKeysConfig]):
@@ -25,8 +42,9 @@ class MapKeys(Transformer[MapKeysConfig]):
 
     def __init__(self, config: MapKeysConfig) -> None:
         super().__init__(config)
-        self.__flatter = Flatter()
-        self.__unflatter = Unflatter()
+        self.__flatters_config = FlatterConfig(level_separator=config.level_separator)
+        self.__flatter = Flatter(self.__flatters_config)
+        self.__unflatter = Unflatter(self.__flatters_config)
 
     def transform(
         self, payload: Dict, /, metadata: Optional[Dict] = None
@@ -47,116 +65,29 @@ class MapKeys(Transformer[MapKeysConfig]):
         4. Unflattens the data.
         :return: transformed and restructured data.
         """
-        if metadata is None:
-            metadata = {}
-
         flat_data, metadata = self.__flatter.transform(payload, metadata)
-        translated_dict: dict = {}
+        translated_dict: Dict = {}
 
-        for map_key, map_value in self._config.mapping.items():
-
-            if self._config.ignore_missing_data and map_key not in flat_data.keys():
-                continue
+        map_keys_set = set(self._config.mapping.keys())
+        for map_key in map_keys_set.intersection(flat_data.keys()):
+            map_value = self._config.mapping[map_key]
 
             for meta_key, meta_value in metadata.items():
                 map_key = map_key.replace("@{" + meta_key + "}", str(meta_value))
                 map_value = map_value.replace("@{" + meta_key + "}", str(meta_value))
 
-            if map_key in flat_data:
-                commands = map_value.split(".")
-                translated_dict = MapKeys.__map_data(
-                    translated_dict, commands, flat_data[map_key]
-                )
+            translated_dict[map_value] = flat_data[map_key]
+
+        if not self._config.ignore_missing_data:
+            missing_keys = map_keys_set - flat_data.keys()
+            if missing_keys:
+                raise ReportMissingData(missing_keys)
 
         if self._config.preserve_unmapped:
-            for unmapped_key in set(flat_data.keys() - self._config.mapping.keys()):
+            for unmapped_key in flat_data.keys() - self._config.mapping.keys():
                 translated_dict[unmapped_key] = flat_data[unmapped_key]
 
+        if self._config.return_plain:
+            return translated_dict, metadata
+
         return self.__unflatter.transform(translated_dict, metadata)
-
-    @staticmethod
-    def __map_data(
-        current_structure: Union[Dict, List], command_list: List[str], value: Any
-    ):
-        """
-        This method is recursive. It reads the values from the mapping
-        in order to build the new data structure.
-
-        The command_list specifies the structure. It can be something like ['key_1', '$[1]', 'key_2'].
-        The function works by building recursively the structure.
-        In the last example it would use the passed current_structure (a filled or empty dict) to build key_1 inside
-        this dict, them create a list inside it, them another dict on the second position (the first is filled with
-        None) and them put key_2 inside this dict, the value is specified in the value parameter.
-
-        At each structure it builds (a dict or list) the command_list shrinks by one. Until the last command where
-        the value from the parameter is put inside the structure.
-
-        :param current_structure: Can be a list or a dict.
-        :param command_list: The list of transformers, the current and next command are important.
-        :param value: The value that will be passed at the last command.
-        :return: Return the built structure for this command list incorporated into the passed initial structure.
-        """
-        command = command_list[0]
-        new_command_list = command_list[1:]
-
-        if "$[" not in command and isinstance(current_structure, Dict):
-            if len(command_list) == 1:
-                current_structure[command] = value
-                return current_structure
-            if "$[" not in command_list[1]:
-                next_structure = (
-                    current_structure[command]
-                    if command in current_structure.keys()
-                    else {}
-                )
-            else:
-                index = int(command_list[1].replace("$[", "").replace("]", ""))
-                next_structure = MapKeys.__create_big_enough_list(
-                    index, current_structure.get(command)
-                )
-
-            current_structure[command] = MapKeys.__map_data(
-                next_structure, new_command_list, value
-            )
-        else:
-            index = int(command.replace("$[", "").replace("]", ""))
-            if len(command_list) == 1:
-                current_structure[index] = value
-                return current_structure
-            if "$[" not in command_list[1]:
-                next_structure = (
-                    current_structure[index]
-                    if current_structure[index] is not None
-                    else {}
-                )
-            else:
-                next_structure = MapKeys.__create_big_enough_list(
-                    index, current_structure[index]
-                )
-            current_structure[index] = MapKeys.__map_data(
-                next_structure, new_command_list, value
-            )
-
-        return current_structure
-
-    @staticmethod
-    def __create_big_enough_list(index: int, list_to_write: Optional[List[Any]]):
-        """
-        It gets a list structure in list_to_write and them puts its values in the correct indexes in a list
-        of length given by index. But only if the index is greater than the length list_to_write, otherwise it simply
-        returns list_to_write. The index list is populated with None in the places where its not populated by
-        list_to_write.
-        :param index:
-        :param list_to_write:
-        :return:
-        """
-        list_to_be_overwritten = [None for i in range(0, index + 1)]
-        if list_to_write is None:
-            return list_to_be_overwritten
-
-        if len(list_to_be_overwritten) > len(list_to_write):
-            for c_index, value in enumerate(list_to_write):
-                list_to_be_overwritten[c_index] = value
-            return list_to_be_overwritten
-
-        return list_to_write
