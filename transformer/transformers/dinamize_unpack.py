@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional
 
 from transformer.transformers.abstract import ExtraHashableModel, Transformer
 
@@ -8,9 +8,7 @@ class DinamizeUnpackConfig(ExtraHashableModel):
 
 
 class DinamizeUnpack(Transformer[Any]):
-    def transform(
-        self, payload: Dict[str, Any], metadata: Optional[Dict] = None
-    ) -> Tuple[Dict, Dict]:
+    def transform(self, payload: Dict[str, Any], metadata: Optional[Dict] = None):
         return_data = {
             "dinamize": {
                 field.get("Name"): field.get("Value")
@@ -18,4 +16,8 @@ class DinamizeUnpack(Transformer[Any]):
             }
         }
         return_data["dinamize"].update(payload.get("fixed_fields", {}))
-        return return_data, metadata or {}
+
+        if metadata is None:
+            return return_data
+
+        return return_data, metadata

@@ -1,7 +1,7 @@
 import random
 import string
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Protocol, Tuple
+from typing import Any, Dict, List, Optional, Protocol
 
 from transformer.transformers.abstract import ExtraHashableModel, Transformer
 
@@ -48,8 +48,8 @@ class Flatter(Transformer[_FlatterConfig]):
         super().__init__(config or FlatterConfig())
 
     def transform(
-        self, payload: Dict[str, Any], metadata: Optional[Dict] = None
-    ) -> Tuple[Dict, Dict]:
+        self, payload: Dict[str, Any], metadata: Optional[Dict[str, Any]] = None
+    ):
         """
         This method is recursive. It flattens the keys inside data.
         A key_1 of dictionary inside a another dict inside a list inside another dict
@@ -86,7 +86,11 @@ class Flatter(Transformer[_FlatterConfig]):
                 new_obj[parent_key] = input_value
 
         inspect_and_transform(payload)
-        return new_obj, metadata or {}
+
+        if metadata is None:
+            return new_obj
+
+        return new_obj, metadata
 
 
 class Unflatter(Transformer[_UnflatterConfig]):
@@ -100,8 +104,8 @@ class Unflatter(Transformer[_UnflatterConfig]):
         super().__init__(cfg)
 
     def transform(
-        self, payload: Dict[str, Any], metadata: Optional[Dict] = None
-    ) -> Tuple[Dict, Dict]:
+        self, payload: Dict[str, Any], metadata: Optional[Dict[str, Any]] = None
+    ):
         """
         This method transform payloads with flat syntax into a nested object. The unflattering algorithm
         assumes the input is entirely flat, which is why I am calling the Flatter().transform() method on the payload
@@ -117,7 +121,7 @@ class Unflatter(Transformer[_UnflatterConfig]):
         ...     "item2[0].subitem[1]": "value6",
         ...     "item2[1][0].key1": "value7",
         ...     "item2[1][1].key2": "value8"
-        ... })[0]
+        ... })
         >>> expected = {
         ...     'item': [
         ...         {'subitem': [{'key': 'value1'}, {'key': 'value2'}]},
@@ -130,7 +134,7 @@ class Unflatter(Transformer[_UnflatterConfig]):
         ... }
         >>> assert actual == expected
         """
-        payload, metadata = self.__flatter.transform(payload, metadata)
+        payload, _ = self.__flatter.transform(payload, {})
         new_obj: Dict = {}
         for key, value in payload.items():  # type: str, Any
             nested = new_obj
@@ -154,6 +158,9 @@ class Unflatter(Transformer[_UnflatterConfig]):
                 elif index not in nested:
                     nested[index] = value
                 nested = nested[index]
+
+        if metadata is None:
+            return new_obj
 
         return new_obj, metadata
 

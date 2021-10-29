@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional
 
 from transformer.transformers.abstract import ExtraHashableModel, Transformer
 
@@ -12,8 +12,8 @@ class PipedriveUnpack(Transformer[Any]):
         super().__init__(config)
 
     def transform(
-        self, payload: Dict[str, Any], metadata: Optional[Dict] = None
-    ) -> Tuple[Dict, Dict]:
+        self, payload: Dict[str, Any], metadata: Optional[Dict[str, Any]] = None
+    ):
         _object = payload.get("meta", {}).get("object")
         r_data = {
             "pipedrive": {
@@ -28,4 +28,9 @@ class PipedriveUnpack(Transformer[Any]):
         }
         r_metadata.update({"origin": "pipedrive", "object": _object})
         r_metadata.update(metadata or {})
-        return r_data, r_metadata
+
+        if metadata is not None:
+            return r_data, r_metadata
+
+        r_data["pipedrive"]["metadata"] = r_metadata
+        return r_data

@@ -4,7 +4,7 @@ from transformer.transformers.flatters import Flatter, Unflatter
 
 
 def test_flatter_returns_flat_structure(highly_nested_data):
-    flat_dict = Flatter().transform(highly_nested_data)[0]
+    flat_dict = Flatter().transform(highly_nested_data)
     assert all(type(key) is str for key in flat_dict.keys())
     assert all(
         type(value) not in (dict, list, set)
@@ -15,8 +15,8 @@ def test_flatter_returns_flat_structure(highly_nested_data):
 
 
 def test_unflatter_completely_undo_flatter(highly_nested_data):
-    flatten_dict = Flatter().transform(highly_nested_data)[0]
-    unflatten_dict = Unflatter().transform(flatten_dict)[0]
+    flatten_dict = Flatter().transform(highly_nested_data)
+    unflatten_dict = Unflatter().transform(flatten_dict)
     assert highly_nested_data == unflatten_dict
 
 
@@ -49,8 +49,10 @@ def nested():
 
 
 def test_flatter(flat, nested):
-    assert Flatter().transform(nested)[0] == flat
+    assert Flatter().transform(nested, {})[0] == flat
+    assert Flatter().transform(nested) == flat
 
 
 def test_unflatter(flat, nested):
-    assert Unflatter().transform(flat)[0] == nested
+    assert Unflatter().transform(flat, {})[0] == nested
+    assert Unflatter().transform(flat) == nested

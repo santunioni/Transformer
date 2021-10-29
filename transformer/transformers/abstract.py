@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Generic, Tuple, TypeVar
+from typing import Any, Dict, Generic, Optional, Tuple, TypeVar, Union, overload
 
 import ujson
 from pydantic import BaseModel, Extra
@@ -36,10 +36,20 @@ class Transformer(Generic[TransformerConfig], ABC):
         )
         self._config = config
 
+    @overload
+    def transform(self, payload: Dict[str, Any]) -> Dict:
+        ...
+
+    @overload
+    def transform(
+        self, payload: Dict[str, Any], metadata: Dict[str, Any]
+    ) -> Tuple[Dict, Dict]:
+        ...
+
     @abstractmethod
     def transform(
-        self, payload: Dict[str, Any], /, metadata: Dict[str, Any]
-    ) -> Tuple[Dict, Dict]:
+        self, payload: Dict[str, Any], metadata: Optional[Dict[str, Any]] = None
+    ) -> Union[Dict, Tuple[Dict, Dict]]:
         """
         A General transformer method, each concrete transformer will implement this method. This method is the one
         that actually implements the transformation on the relevant data.
@@ -49,5 +59,17 @@ class Transformer(Generic[TransformerConfig], ABC):
         """
         ...
 
-    def __call__(self, data: Dict[str, Any], metadata: Dict) -> Tuple[Dict, Dict]:
-        return self.transform(data, metadata)
+    @overload
+    def __call__(self, payload: Dict[str, Any]) -> Dict:
+        ...
+
+    @overload
+    def __call__(
+        self, payload: Dict[str, Any], metadata: Dict[str, Any]
+    ) -> Tuple[Dict, Dict]:
+        ...
+
+    def __call__(
+        self, payload: Dict[str, Any], metadata: Optional[Dict[str, Any]] = None
+    ) -> Union[Dict, Tuple[Dict, Dict]]:
+        return self.transform(payload, metadata or {})

@@ -1,5 +1,5 @@
 import re
-from typing import Any, Dict, Mapping, Optional, Tuple
+from typing import Any, Dict, Mapping, Optional
 
 from transformer.transformers.abstract import ExtraHashableModel, Transformer
 
@@ -36,8 +36,8 @@ class AddKeyValues(Transformer[AddKeyValuesConfig]):
     """
 
     def transform(
-        self, payload: Dict[str, Any], metadata: Optional[Dict] = None
-    ) -> Tuple[Dict, Dict]:
+        self, payload: Dict[str, Any], metadata: Optional[Dict[str, Any]] = None
+    ):
         """
         Add the key values to the data.
         First the keys in key_values are replaced then its values (if they are strings).
@@ -46,28 +46,27 @@ class AddKeyValues(Transformer[AddKeyValuesConfig]):
         :param metadata: metadata.
         :return: the transformed data
         """
-        if metadata is None:
-            metadata = {}
-
         replaced_key_value_dict = {}
         for key, value in self._config.key_values.items():
-            if "${" in key:
+            if any(map(key.__contains__, ("${", "@{"))):
                 key = AddKeyValues._replace_key_placeholders_with_values(
                     key, payload, metadata
                 )
-            if isinstance(value, str) and "${" in value:
+            if isinstance(value, str) and any(map(value.__contains__, ("${", "@{"))):
                 value = AddKeyValues._replace_key_placeholders_with_values(
                     value, payload, metadata
                 )
             replaced_key_value_dict[key] = value
 
-        payload = {**payload, **replaced_key_value_dict}
+        payload.update(replaced_key_value_dict)
+        if metadata is None:
+            return payload
 
         return payload, metadata
 
     @staticmethod
     def _replace_key_placeholders_with_values(
-        string: str, data: dict, metadata: dict
+        string: str, data: Dict[str, Any], metadata: Optional[Dict[str, Any]]
     ) -> str:
         """
         Implements the actual substitution of placeholders to values.

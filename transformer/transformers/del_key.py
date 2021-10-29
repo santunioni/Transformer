@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, Pattern, Sequence, Tuple
+from typing import Any, Dict, Optional, Pattern, Sequence
 
 from pydantic import root_validator
 
@@ -32,8 +32,8 @@ class DeleteKeys(Transformer[DeleteKeysConfig]):
     """
 
     def transform(
-        self, payload: Dict[str, Any], metadata: Optional[Dict] = None
-    ) -> Tuple[Dict, Dict]:
+        self, payload: Dict[str, Any], metadata: Optional[Dict[str, Any]] = None
+    ):
         """
         Implements the deletion of key-value pairs.
         :param payload: Data that contains the keys that should be deleted.
@@ -54,4 +54,8 @@ class DeleteKeys(Transformer[DeleteKeysConfig]):
                     del data_copy[key]
                 except KeyError:
                     pass
-        return data_copy, metadata or {}
+
+        if metadata is None:
+            return data_copy
+
+        return data_copy, metadata

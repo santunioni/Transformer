@@ -1,4 +1,4 @@
-from typing import Any, Dict, Mapping, Optional, Set, Tuple
+from typing import Any, Dict, Mapping, Optional, Set
 
 from pydantic import validator
 
@@ -47,8 +47,8 @@ class MapKeys(Transformer[MapKeysConfig]):
         self.__unflatter = Unflatter(self.__flatters_config)
 
     def transform(
-        self, payload: Dict[str, Any], metadata: Optional[Dict] = None
-    ) -> Tuple[Dict, Dict]:
+        self, payload: Dict[str, Any], metadata: Optional[Dict[str, Any]] = None
+    ):
         """
         The mapping is done in 4 major steps:
 
@@ -65,16 +65,19 @@ class MapKeys(Transformer[MapKeysConfig]):
         4. Unflattens the data.
         :return: transformed and restructured data.
         """
-        flat_data, metadata = self.__flatter.transform(payload, metadata)
+        flat_data = self.__flatter.transform(payload)
         translated_dict: Dict = {}
 
         map_keys_set = set(self._config.mapping.keys())
         for map_key in map_keys_set.intersection(flat_data.keys()):
             map_value = self._config.mapping[map_key]
 
-            for meta_key, meta_value in metadata.items():
-                map_key = map_key.replace("@{" + meta_key + "}", str(meta_value))
-                map_value = map_value.replace("@{" + meta_key + "}", str(meta_value))
+            if metadata is not None:
+                for meta_key, meta_value in metadata.items():
+                    map_key = map_key.replace("@{" + meta_key + "}", str(meta_value))
+                    map_value = map_value.replace(
+                        "@{" + meta_key + "}", str(meta_value)
+                    )
 
             translated_dict[map_value] = flat_data[map_key]
 
@@ -89,5 +92,8 @@ class MapKeys(Transformer[MapKeysConfig]):
 
         if self._config.return_plain:
             return translated_dict, metadata
+
+        if metadata is None:
+            return self.__unflatter.transform(translated_dict)
 
         return self.__unflatter.transform(translated_dict, metadata)
