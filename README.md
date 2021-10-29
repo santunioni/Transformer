@@ -32,12 +32,12 @@ the data from the input dictionary.
 
 The mapping is a JSON. On the key side of the mapping you put the nested path of the key you want. A nested path is for
 example. A value inside key_1 inside the first index of a list, inside another dictc in key_2 has the
-path: ```key_2.$[1].key_1```
+path: ```key_2[1].key_1```
 On the value side you put the nested path of where the value get in the key side in the data will be mapped. Look at the
 example for more information.
 
 - The placeholder "@{}" is used to get value inside the metadata. You need to put the key inside the placeholder.
-- The placeholder "$[]" is used to map the data into a specific index in the list. You need to put the index inside the
+- The placeholder "[]" is used to map the data into a specific index in the list. You need to put the index inside the
   placeholder.
 - The nested path is written with the keys and indexes separated by "."
 
@@ -60,7 +60,7 @@ input_data = {
 mapping = {
     "id": "@{origin}_@{type}_id",
     "cliente.nome": "client.name",
-    "client.email": "emails.$[0]",
+    "client.email": "emails[0]",
 }
 
 # The output after the transformer.

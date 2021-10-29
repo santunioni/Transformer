@@ -12,7 +12,7 @@ from transformer.transformers.dinamize_unpack import (
     DinamizeUnpack,
     DinamizeUnpackConfig,
 )
-from transformer.transformers.flatters import Flatter, FlatterConfig, Unflatter
+from transformer.transformers.flatters import Flatter, FlatterConfigPydantic, Unflatter
 from transformer.transformers.map_keys import MapKeys, MapKeysConfig
 from transformer.transformers.pipedrive_unpack import (
     PipedriveUnpack,
@@ -39,8 +39,8 @@ CommandNames = Literal[
 NAME_TO_CONFIG_AND_TRANSFORM_CLASSES: Mapping[
     CommandNames, Tuple[Type[ExtraHashableModel], Type[Transformer]]
 ] = {
-    "flatten": (FlatterConfig, Flatter),
-    "unflatten": (FlatterConfig, Unflatter),
+    "flatten": (FlatterConfigPydantic, Flatter),
+    "unflatten": (FlatterConfigPydantic, Unflatter),
     "map-keys": (MapKeysConfig, MapKeys),
     "value-sanitizer": (ValueSanitizerConfig, ValueSanitizer),
     "delete-keys": (DeleteKeysConfig, DeleteKeys),

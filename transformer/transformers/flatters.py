@@ -1,21 +1,52 @@
 import random
 import string
-from abc import ABC
-from typing import Any, Dict, List, Optional, Tuple
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Protocol, Tuple
 
 from transformer.transformers.abstract import ExtraHashableModel, Transformer
 
 
-class FlatterConfig(ExtraHashableModel):
+class _UnflatterConfig(Protocol):
+    level_separator: str
+
+
+class _FlatterConfig(Protocol):
+    level_separator: str
+    keep_empty_objects: bool
+
+
+class UnflatterConfigPydantic(ExtraHashableModel):
     level_separator: str = "."
 
 
-class _Flatter(Transformer[FlatterConfig], ABC):
-    def __init__(self, config: FlatterConfig = FlatterConfig()) -> None:
-        super().__init__(config)
+class FlatterConfigPydantic(UnflatterConfigPydantic):
+    keep_empty_objects: bool = True
 
 
-class Flatter(_Flatter):
+@dataclass
+class UnflatterConfig:
+    """
+    Same as UnflatterConfigPydantic, but as a dataclass. This is intended to be used when parsing
+    is not required as is the case for internal usage. Parsing takes too much time.
+    """
+
+    level_separator: str = "."
+
+
+@dataclass
+class FlatterConfig(UnflatterConfig):
+    """
+    Same as FlatterConfigPydantic, but as a dataclass. This is intended to be used when parsing
+    config is not required, as is the case for internal usage.
+    """
+
+    keep_empty_objects: bool = True
+
+
+class Flatter(Transformer[_FlatterConfig]):
+    def __init__(self, config: Optional[_FlatterConfig] = None) -> None:
+        super().__init__(config or FlatterConfig())
+
     def transform(
         self, payload: Dict, /, metadata: Optional[Dict] = None
     ) -> Tuple[Dict, Dict]:
@@ -35,14 +66,14 @@ class Flatter(_Flatter):
             parent_key: str = "",
         ):
             if isinstance(input_value, (list, set)):
-                if input_value:
+                if self._config.keep_empty_objects and not input_value:
+                    new_obj[parent_key] = input_value
+                else:
                     for index, value in enumerate(input_value):
                         inspect_and_transform(
                             value,
                             f"{parent_key}[{index}]",
                         )
-                else:
-                    new_obj[parent_key] = input_value
             elif isinstance(input_value, dict):
                 for key, value in input_value.items():
                     inspect_and_transform(
@@ -58,14 +89,15 @@ class Flatter(_Flatter):
         return new_obj, metadata or {}
 
 
-class Unflatter(_Flatter):
-    def __init__(self, config: FlatterConfig = FlatterConfig()) -> None:
-        super().__init__(config)
-        self.__flatter = Flatter()
+class Unflatter(Transformer[_UnflatterConfig]):
+    def __init__(self, config: Optional[_UnflatterConfig] = None) -> None:
+        cfg: _UnflatterConfig = config or UnflatterConfig()
+        self.__flatter = Flatter(FlatterConfig(level_separator=cfg.level_separator))
         # some random char that will never exist in business keys:
         self.__replace_char = "".join(
             random.choice(string.ascii_letters + string.digits) for _ in range(20)
         )
+        super().__init__(cfg)
 
     def transform(
         self, payload: Dict[str, Any], /, metadata: Optional[Dict] = None
@@ -136,7 +168,9 @@ class Unflatter(_Flatter):
         >>> actual = Unflatter()._get_key_structures("item[0].subitem[0].key")
         >>> assert actual == expected
 
-        >>> actual = Unflatter(FlatterConfig(level_separator="|"))._get_key_structures("item[0]|subitem[0]|key")
+        >>> actual = Unflatter(
+        ...     FlatterConfig(level_separator="|")
+        ... )._get_key_structures("item[0]|subitem[0]|key")
         >>> assert actual == expected
         """
         return list(
@@ -149,11 +183,3 @@ class Unflatter(_Flatter):
                 .split(self.__replace_char),
             )
         )
-
-
-if __name__ == "__main__":
-    import doctest
-
-    import flatters  # noqa
-
-    print(doctest.testmod(flatters))
