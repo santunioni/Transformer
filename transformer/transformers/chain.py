@@ -1,4 +1,4 @@
-from typing import Dict, Iterable, Optional, Tuple
+from typing import Any, Dict, Iterable, Optional, Tuple
 
 from transformer.transformers.abstract import Transformer
 
@@ -14,7 +14,7 @@ class TransformerChain(Transformer[TransformerChainConfig]):
     """
 
     def transform(
-        self, payload: Dict, /, metadata: Optional[Dict] = None
+        self, payload: Dict[str, Any], metadata: Optional[Dict] = None
     ) -> Tuple[Dict, Dict]:
         """
         This is actually a chain that will call each transformer in the first config list and pass its result

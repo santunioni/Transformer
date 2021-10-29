@@ -7,9 +7,9 @@ class DinamizeUnpackConfig(ExtraHashableModel):
     __root__: Optional[Any]
 
 
-class DinamizeUnpack(Transformer[DinamizeUnpackConfig]):
+class DinamizeUnpack(Transformer[Any]):
     def transform(
-        self, payload: Dict, /, metadata: Optional[Dict] = None
+        self, payload: Dict[str, Any], metadata: Optional[Dict] = None
     ) -> Tuple[Dict, Dict]:
         return_data = {
             "dinamize": {

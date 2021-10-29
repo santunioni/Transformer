@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, Optional, Pattern, Sequence, Tuple
+from typing import Any, Dict, Optional, Pattern, Sequence, Tuple
 
 from pydantic import root_validator
 
@@ -36,7 +36,7 @@ class AggregateKeyValue(Transformer[AggregateKeyValueConfig]):
     """
 
     def transform(
-        self, payload: Dict, /, metadata: Optional[Dict] = None
+        self, payload: Dict[str, Any], metadata: Optional[Dict] = None
     ) -> Tuple[Dict, Dict]:
         """
         new_key: emails

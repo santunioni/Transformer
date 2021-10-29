@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Mapping, Optional, Tuple
+from typing import Any, Dict, Mapping, Optional, Tuple
 
 from transformer.transformers.abstract import ExtraHashableModel, Transformer
 
@@ -36,7 +36,7 @@ class AddKeyValues(Transformer[AddKeyValuesConfig]):
     """
 
     def transform(
-        self, payload: Dict, /, metadata: Optional[Dict] = None
+        self, payload: Dict[str, Any], metadata: Optional[Dict] = None
     ) -> Tuple[Dict, Dict]:
         """
         Add the key values to the data.

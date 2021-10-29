@@ -16,6 +16,8 @@ repos:
   - id: end-of-file-fixer
   - id: name-tests-test
   - id: sort-simple-yaml
+  - id: pretty-format-json
+    args: [--autofix, --indent, '2', --top-keys, 'id,name']
 
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
   rev: v2.2.0

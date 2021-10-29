@@ -48,7 +48,7 @@ class Flatter(Transformer[_FlatterConfig]):
         super().__init__(config or FlatterConfig())
 
     def transform(
-        self, payload: Dict, /, metadata: Optional[Dict] = None
+        self, payload: Dict[str, Any], metadata: Optional[Dict] = None
     ) -> Tuple[Dict, Dict]:
         """
         This method is recursive. It flattens the keys inside data.
@@ -100,7 +100,7 @@ class Unflatter(Transformer[_UnflatterConfig]):
         super().__init__(cfg)
 
     def transform(
-        self, payload: Dict[str, Any], /, metadata: Optional[Dict] = None
+        self, payload: Dict[str, Any], metadata: Optional[Dict] = None
     ) -> Tuple[Dict, Dict]:
         """
         This method transform payloads with flat syntax into a nested object. The unflattering algorithm

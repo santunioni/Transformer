@@ -49,5 +49,5 @@ class Transformer(Generic[TransformerConfig], ABC):
         """
         ...
 
-    def __call__(self, data: Dict, metadata: Dict) -> Tuple[Dict, Dict]:
+    def __call__(self, data: Dict[str, Any], metadata: Dict) -> Tuple[Dict, Dict]:
         return self.transform(data, metadata)

@@ -1,4 +1,4 @@
-from typing import Dict, Mapping, Optional, Set, Tuple
+from typing import Any, Dict, Mapping, Optional, Set, Tuple
 
 from pydantic import validator
 
@@ -25,7 +25,7 @@ class MapKeysConfig(ExtraHashableModel):
     return_plain: bool = False
 
     @validator("mapping")
-    def backwards_compatibility(cls, mapping: Dict[str, str]):
+    def backwards_compatibility(cls, mapping: Mapping[str, str]):
         return {
             key.replace(".$[", "["): value.replace(".$[", "[")
             for key, value in mapping.items()
@@ -47,7 +47,7 @@ class MapKeys(Transformer[MapKeysConfig]):
         self.__unflatter = Unflatter(self.__flatters_config)
 
     def transform(
-        self, payload: Dict, /, metadata: Optional[Dict] = None
+        self, payload: Dict[str, Any], metadata: Optional[Dict] = None
     ) -> Tuple[Dict, Dict]:
         """
         The mapping is done in 4 major steps:

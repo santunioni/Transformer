@@ -7,14 +7,17 @@ class PipedriveUnpackConfig(ExtraHashableModel):
     __root__: Optional[Any]
 
 
-class PipedriveUnpack(Transformer[PipedriveUnpackConfig]):
+class PipedriveUnpack(Transformer[Any]):
+    def __init__(self, config: Any = 0):
+        super().__init__(config)
+
     def transform(
-        self, payload: Dict, /, metadata: Optional[Dict] = None
+        self, payload: Dict[str, Any], metadata: Optional[Dict] = None
     ) -> Tuple[Dict, Dict]:
         _object = payload.get("meta", {}).get("object")
         r_data = {
             "pipedrive": {
-                f"{_object}": {payload.get("current", {})},
+                f"{_object}": payload.get("current", {}),
                 "company": {"id": payload.get("meta", {}).get("company_id")},
             }
         }
