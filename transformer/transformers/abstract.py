@@ -1,6 +1,6 @@
 import logging
 from abc import ABC, abstractmethod
-from typing import Dict, Generic, Tuple, TypeVar
+from typing import Any, Dict, Generic, Tuple, TypeVar
 
 import ujson
 from pydantic import BaseModel, Extra
@@ -13,13 +13,11 @@ def ujson_dumps(data, default, **dumps_kwargs):  # pylint: disable=W0613
 
 
 class ExtraHashableModel(BaseModel):
-    def __hash__(self):
-        return hash(str(self))
-
     class Config:
         json_dumps = ujson_dumps
         json_loads = ujson.loads
         extra = Extra.allow
+        frozen = True
 
 
 TransformerConfig = TypeVar("TransformerConfig")
@@ -39,7 +37,9 @@ class Transformer(Generic[TransformerConfig], ABC):
         self._config = config
 
     @abstractmethod
-    def transform(self, payload: Dict, /, metadata: Dict) -> Tuple[Dict, Dict]:
+    def transform(
+        self, payload: Dict[str, Any], /, metadata: Dict[str, Any]
+    ) -> Tuple[Dict, Dict]:
         """
         A General transformer method, each concrete transformer will implement this method. This method is the one
         that actually implements the transformation on the relevant data.

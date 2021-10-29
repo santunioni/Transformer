@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Optional, Tuple
+from typing import Dict, Mapping, Optional, Tuple
 
 from transformer.transformers.abstract import ExtraHashableModel, Transformer
 
@@ -7,7 +7,7 @@ from transformer.transformers.abstract import ExtraHashableModel, Transformer
 class AddKeyValuesConfig(ExtraHashableModel):
     """The key_values dict is a dict of key-value pairs to be added to the data"""
 
-    key_values: Dict
+    key_values: Mapping
 
 
 class AddKeyValues(Transformer[AddKeyValuesConfig]):

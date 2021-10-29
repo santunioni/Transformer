@@ -91,8 +91,8 @@ disable = [
     "no-name-in-module"
 ]
 
-[tool.pytest]
-mock_use_standalone_module = true
+[tool.pytest.ini_options]
+addopts = "--doctest-modules --cov-report html --cov-report term --cov=transformer"
 
 [tool.tox]
 legacy_tox_ini = """

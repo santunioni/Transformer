@@ -1,5 +1,5 @@
 import logging
-from typing import Dict, List, Optional, Pattern, Tuple
+from typing import Dict, Optional, Pattern, Sequence, Tuple
 
 from pydantic import root_validator
 
@@ -15,7 +15,7 @@ class AggregateKeyValueConfig(ExtraHashableModel):
     Both can be used at the same time but they cant be both None.
     """
 
-    keys: Optional[List[str]]
+    keys: Optional[Sequence[str]]
     pattern: Optional[Pattern]
     new_key: str
 

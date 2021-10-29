@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Pattern, Tuple
+from typing import Dict, Optional, Pattern, Sequence, Tuple
 
 from pydantic import root_validator
 
@@ -12,7 +12,7 @@ class DeleteKeysConfig(ExtraHashableModel):
     pattern.
     """
 
-    keys: Optional[List[str]]
+    keys: Optional[Sequence[str]]
     pattern: Optional[Pattern]
 
     @root_validator

@@ -1,5 +1,5 @@
 import re
-from typing import Dict, List, Optional, Pattern, Tuple, Union
+from typing import Dict, Optional, Pattern, Sequence, Tuple, Union
 
 from transformer.transformers.abstract import ExtraHashableModel, Transformer
 
@@ -14,7 +14,7 @@ class ValueSanitizerConfig(ExtraHashableModel):
     key_pattern: Pattern
     substitution_pattern: Optional[Pattern]
     sub_string: str = ""
-    string_methods: Optional[Union[List[str], str]]
+    string_methods: Optional[Union[Sequence[str], str]]
 
 
 class ValueSanitizer(Transformer[ValueSanitizerConfig]):
