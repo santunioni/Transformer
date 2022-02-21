@@ -1,6 +1,6 @@
 import pytest
-
 from resources import credito
+
 from transformer.transformers.map_keys import MapKeys, MapKeysConfig
 
 
@@ -40,7 +40,7 @@ def nested_target_data():
         "pipedrive_deal_id": 1645687,
         "client": {
             "cpf": "99915697902",
-            "email": "marliaparecidaanadasneves-77@decode.buzz",
+            "email": "marliaparecidaanadasneves-77@mail.com",
         },
         "name": "Marli Aparecida Ana das Neves",
         "bank_data": [

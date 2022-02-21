@@ -42,17 +42,20 @@ disallow_untyped_globals = false
 [tool.poetry]
 name = "transformer"
 version = "2.4.1"
-license = "Proprietary"
+license = "MIT"
 description = "Declare possible commands for manipulating JSON Data."
 authors = [
     "Otavio Dantas <otavio-dantas@live.com>",
-    "Vinícius <vinicius.vargas.ext@decode.buzz>",
-    "Pedro Dardengo <pedro.mesquita.ext@decode.buzz>"
+    "Vinícius <santunionivinicius@gmail.com>",
+    "Pedro Dardengo Mesquita <pedrodardengo@hotmail.com>"
 ]
 readme = "README.md"
-homepage = "https://gitlab.decode.buzz/the-flash/libraries/json-transformer"
-repository = "https://gitlab.decode.buzz/the-flash/libraries/json-transformer"
-include = ["transformer/py.typed"]
+homepage = "https://github.com/santunioni/transformer"
+repository = "https://github.com/santunioni/transformer"
+include = [
+    "transformer/py.typed",
+    "LICENSE"
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"

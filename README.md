@@ -53,7 +53,7 @@ input_data = {
     "id": 1645687,
     "cliente": {
         "nome": "Marli Aparecida Ana das Neves",
-        "email": "marliaparecidaanadasneves-77@decode.buzz"
+        "email": "marliaparecidaanadasneves-77@mail.com"
     }}
 
 # the mapping configuration
@@ -67,7 +67,7 @@ mapping = {
 output_data = {
     "id": "deal_pipedrive_id",
     "client": {"name": "Marli Aparecida Ana das Neves"},
-    "emails": ["marliaparecidaanadasneves-77@decode.buzz"]
+    "emails": ["marliaparecidaanadasneves-77@mail.com"]
 }
 ```
 

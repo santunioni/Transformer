@@ -1,7 +1,6 @@
 from typing import Dict
 
 import pytest
-
 from resources import credito, pipedrive
 
 
@@ -14,9 +13,9 @@ def data() -> Dict:
         "b": "B-VALUE",
         "e": {"a": "s", "g": [1, 2]},
         "f": [1, 2, 3, 4],
-        "email_1": "lala@decode.buzz",
-        "email_2": "lele@decode.buzz",
-        "email_3": "lili@decode.buzz",
+        "email_1": "lala@mail.com",
+        "email_2": "lele@mail.com",
+        "email_3": "lili@mail.com",
     }
 
 

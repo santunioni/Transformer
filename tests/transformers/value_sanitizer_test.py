@@ -14,8 +14,8 @@ def test_aggregate_keys():
     }
     target_data = {
         "id": 1645687,
-        "email_1": "nome@decode.buzz",
-        "email_2": "nome@decode.buzz",
+        "email_1": "nome@mail.com",
+        "email_2": "nome@mail.com",
         "e": {"a": "s", "g": [1, 2]},
         "f": [1, 2, 3, 4],
     }
@@ -24,7 +24,7 @@ def test_aggregate_keys():
         config=ValueSanitizerConfig(
             key_pattern="^(email_).*",
             substitution_pattern="#gmail.com",
-            sub_string="@decode.buzz",
+            sub_string="@mail.com",
             string_methods=["lower"],
         )
     )
